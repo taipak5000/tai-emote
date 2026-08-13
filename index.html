@@ -460,18 +460,11 @@
     </div>
 
     <p class="sec-label" style="padding:22px 4px 8px;">達成率をシェア</p>
-    <div class="feature-row">
-      <button type="button" class="feature-btn" onclick="saveOverallAsImage()">
-        <span class="feature-icon">🖼️</span>
-        <span class="feature-label">画像で保存</span>
-        <span class="feature-desc">エモートの所持率を画像で保存</span>
-      </button>
-      <button type="button" class="feature-btn twitter" onclick="shareOverallOnTwitter()">
-        <span class="feature-icon">📤</span>
-        <span class="feature-label">Xでシェア</span>
-        <span class="feature-desc">所持率をXに投稿してみんなに自慢しよう</span>
-      </button>
-    </div>
+    <button type="button" class="feature-btn twitter" onclick="shareOverallOnTwitter()">
+      <span class="feature-icon">📤🖼️</span>
+      <span class="feature-label">Xで画像を共有</span>
+      <span class="feature-desc">所持率を画像にしてXへ投稿できます（画像の保存も同時にできます）</span>
+    </button>
     <button type="button" class="feature-btn" style="margin-top:8px;" onclick="openCustomizeModal()">
       <span class="feature-icon">🎨</span>
       <span class="feature-label">カスタマイズして共有</span>
@@ -516,10 +509,7 @@
     <textarea id="customizeComment" class="customize-comment-input" maxlength="120" placeholder="例）プレイヤーネーム：〇〇（未入力の場合は通常の文言になります）"></textarea>
 
     <div class="action-row" style="margin-top:16px;">
-      <button class="action-btn primary full" onclick="saveOverallAsImage(true)">🖼️ この設定で画像保存</button>
-    </div>
-    <div class="action-row">
-      <button class="action-btn twitter full" onclick="shareOverallOnTwitter(true)">📤 この設定でXへシェア</button>
+      <button class="action-btn twitter full" onclick="shareOverallOnTwitter(true)">📤🖼️ この設定でXへ画像を共有</button>
     </div>
   </div>
 </div>
@@ -1281,13 +1271,6 @@ function openImagePreview(dataUrl, filename, shareText) {
   }
 
   openModal('imagePreviewModal');
-}
-
-function saveOverallAsImage(fromCustomize) {
-  if (getStats().total === 0) { showToast('まずはエモートを登録してください'); return; }
-  const opts = fromCustomize ? readShareCustomizeFromModal() : {};
-  if (fromCustomize) closeModal('customizeModal');
-  return exportElementAsImage(() => buildOverallExportCardEl(opts), 'エモート所持率');
 }
 
 function buildOverallTweetText(comment) {
