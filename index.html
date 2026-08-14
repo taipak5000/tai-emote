@@ -719,10 +719,15 @@ function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 }
 
-// エモート名クリック時の検索リンク。付与精霊が判明していれば「精霊名 居場所 sky」で、
-// 不明な場合（デフォルトエモートなど）は「エモート名 sky」で検索する
+// エモート名クリック時の検索リンク。付与精霊が判明していれば「精霊名 居場所 sky」で検索する。
+// ただし季節の案内人（AURORA・ムーミンの本など、通常の精霊と違い「居場所」という概念がない
+// キャラクター）が付与するものは「案内人名 sky」で検索する。精霊が不明な場合
+// （デフォルトエモートなど）は「エモート名 sky」で検索する
 function emoteSearchUrl(e) {
-  const q = e.spirit ? `${e.spirit} 居場所 sky` : `${e.name} sky`;
+  let q;
+  if (e.spirit && e.isGuide) q = `${e.spirit} sky`;
+  else if (e.spirit) q = `${e.spirit} 居場所 sky`;
+  else q = `${e.name} sky`;
   return `https://www.google.com/search?q=${encodeURIComponent(q)}`;
 }
 
@@ -1301,9 +1306,9 @@ const EMOTES_DATA = [
   { id: 'emote_084', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c1/SoAurora-Mindful-Miner-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '持ち上げる', nameEn: 'Raise the Roof', maxLevel: 4, location: '円形劇場', spirit: '覚醒の採掘者' },
   { id: 'emote_085', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/61/SoAurora-Warrior-of-Love-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'クルクル', nameEn: 'Twirl', maxLevel: 4, location: '円形劇場', spirit: '慈愛の戦士' },
   { id: 'emote_086', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f1/SoAurora-Seed-of-Hope-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '手拍子', nameEn: 'Rhythmic Clap', maxLevel: 4, location: '円形劇場', spirit: '希望の君' },
-  { id: 'emote_087', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b3/SoAurora-Ultimate-Expression-Dance-2-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '指揮', nameEn: 'Conduct', maxLevel: 4, location: '円形劇場', spirit: 'オーロラ' },
-  { id: 'emote_088', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/9/9b/SoAurora-Ultimate-Expression-Dance-1-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'サイレント拍手', nameEn: 'Silent Clap', maxLevel: 4, location: '円形劇場', spirit: 'オーロラ' },
-  { id: 'emote_089', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a6/SoAurora-Ultimate-Expression-Dance-3-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'スキップ', nameEn: 'Skipping', maxLevel: 4, location: '円形劇場', spirit: 'オーロラ' },
+  { id: 'emote_087', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b3/SoAurora-Ultimate-Expression-Dance-2-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '指揮', nameEn: 'Conduct', maxLevel: 4, location: '円形劇場', spirit: 'AURORA', isGuide: true },
+  { id: 'emote_088', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/9/9b/SoAurora-Ultimate-Expression-Dance-1-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'サイレント拍手', nameEn: 'Silent Clap', maxLevel: 4, location: '円形劇場', spirit: 'AURORA', isGuide: true },
+  { id: 'emote_089', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a6/SoAurora-Ultimate-Expression-Dance-3-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'スキップ', nameEn: 'Skipping', maxLevel: 4, location: '円形劇場', spirit: 'AURORA', isGuide: true },
   { id: 'emote_090', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/66/SoRemembrance-Pleading-Child-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '懇願', nameEn: 'Pleading', maxLevel: 4, location: '君憶う保存庫', spirit: '懇願する幼子' },
   { id: 'emote_091', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/1/1c/SoRemembrance-Tiptoeing-Tea-Brewer-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'ぬき足', nameEn: 'Tiptoeing', maxLevel: 4, location: '君憶う保存庫', spirit: 'ぬき足の茶人' },
   { id: 'emote_092', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a0/SoRemembrance-Bereft-Veteran-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '嘆く', nameEn: 'Grieving', maxLevel: 4, location: '君憶う保存庫', spirit: '喪失の初老' },
@@ -1313,15 +1318,15 @@ const EMOTES_DATA = [
   { id: 'emote_096', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c2/Passage-Overactive-Overachiever-Emote-icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '懸垂', nameEn: 'Pull-up', maxLevel: 4, location: '孤島', spirit: '活発すぎる頑張り屋' },
   { id: 'emote_097', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/78/Jolly-Geologist-Emote-icon-Credit-Morybel.png/revision/latest/scale-to-width-down/51', name: '上機嫌', nameEn: 'Jolly Dance', maxLevel: 4, location: '草原連峰', spirit: '上機嫌な地質学者' },
   { id: 'emote_098', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/72/Ascetic-Monk-Emote-icon-Credit-Morybel.png/revision/latest/scale-to-width-down/51', name: '目隠しバランスポーズ', nameEn: 'Blindfold Balance Pose', maxLevel: 4, location: '草原連峰', spirit: '節制の修行者' },
-  { id: 'emote_099', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/79/AURORA-Cure-for-Me-expression-icon-Credit-Morybel.png/revision/latest/scale-to-width-down/51', name: 'キュア・フォー・ミー', nameEn: 'Cure for Me Dance', maxLevel: 2, location: '円形劇場', spirit: 'AURORA' },
+  { id: 'emote_099', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/79/AURORA-Cure-for-Me-expression-icon-Credit-Morybel.png/revision/latest/scale-to-width-down/51', name: 'キュア・フォー・ミー', nameEn: 'Cure for Me Dance', maxLevel: 2, location: '円形劇場', spirit: 'AURORA', isGuide: true },
   { id: 'emote_100', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/e/e5/Herb-Gatherer-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '口笛', nameEn: 'Whistle', maxLevel: 4, location: '三日月オアシス', spirit: '薬草採集人' },
   { id: 'emote_101', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/6c/Hunter-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '手足を曲げる', nameEn: 'Flex', maxLevel: 4, location: '三日月オアシス', spirit: '狩人' },
   { id: 'emote_102', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/07/Princess-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '浮遊スピン', nameEn: 'Float Spin', maxLevel: 4, location: '三日月オアシス', spirit: '王女' },
-  { id: 'emote_103', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/73/The-Moomin-Storybook-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '本を読む', nameEn: 'Read', maxLevel: 4, location: 'ムーミン谷', spirit: 'ムーミンの本' },
+  { id: 'emote_103', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/73/The-Moomin-Storybook-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '本を読む', nameEn: 'Read', maxLevel: 4, location: 'ムーミン谷', spirit: 'ムーミンの本', isGuide: true },
   { id: 'emote_104', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b2/Radiance-Leaping-Dancer-Cartwheel-expression-icon.png/revision/latest/scale-to-width-down/51', name: '側転', nameEn: 'Cartwheel', maxLevel: 4, location: '花鳥郷', spirit: '光に染まる飛び跳ねる舞踏家' },
   { id: 'emote_105', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a8/Radiance-Greeting-Shaman-Expression-icon.png/revision/latest/scale-to-width-down/51', name: 'ハートジェスチャー', nameEn: 'Heart Gesture', maxLevel: 4, location: '花鳥郷', spirit: '光に染まる礼を尽くす祈祷師' },
   { id: 'emote_106', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c6/Radiance-Provoking-Performer-Expression-icon.png/revision/latest/scale-to-width-down/51', name: 'アップダンス', nameEn: 'Hype Dance', maxLevel: 4, location: '花鳥郷', spirit: '光に染まる挑戦的な表現者' },
-  { id: 'emote_107', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/2e/Blue-Bird-Guide-ultimate-expression.png/revision/latest/scale-to-width-down/51', name: '咳き込む', nameEn: 'Cough', maxLevel: 4, location: '青い鳥劇場', spirit: '青い鳥の案内人' },
+  { id: 'emote_107', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/2e/Blue-Bird-Guide-ultimate-expression.png/revision/latest/scale-to-width-down/51', name: '咳き込む', nameEn: 'Cough', maxLevel: 4, location: '青い鳥劇場', spirit: '青い鳥の案内人', isGuide: true },
   { id: 'emote_108', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/e/e3/Royal-Hairtousle-Teen-emote-icon.png/revision/latest/scale-to-width-down/51', name: '驚き', nameEn: 'Surprised', maxLevel: 4, location: '青い鳥劇場', spirit: '高貴なぽんぽんする若者' },
   { id: 'emote_109', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/62/Migrating-Manta-Whisperer-emote-icon.png/revision/latest/scale-to-width-down/51', name: 'レースフラッグ', nameEn: 'Flag Signal', maxLevel: 4, location: '風の街道', spirit: '渡りのマンタの語り部' },
   { id: 'emote_110', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/fb/Migrating-Bird-Whisperer-emote-icon.png/revision/latest/scale-to-width-down/51', name: '飛行ごっこ', nameEn: 'Flight Run', maxLevel: 4, location: '風の街道', spirit: '渡りの鳥の語り部' },
