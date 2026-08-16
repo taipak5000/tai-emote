@@ -248,6 +248,17 @@
       flex-wrap: wrap; transition: background 0.2s;
     }
     .emote-card.is-complete { background: rgba(52,199,89,0.05); }
+    .emote-card-icon {
+      width: 44px; height: 44px; border-radius: var(--r-sm); flex-shrink: 0;
+      background: var(--bg); display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative;
+      filter: grayscale(1) opacity(0.5); transition: filter 0.15s;
+    }
+    .emote-card.is-complete .emote-card-icon { filter: none; }
+    .emote-card-icon img { width: 100%; height: 100%; object-fit: contain; padding: 12%; display: block; }
+    .emote-card-icon.img-fallback img { display: none; }
+    .emote-card-icon-fallback { display: none; font-size: 20px; }
+    .emote-card-icon.img-fallback .emote-card-icon-fallback { display: block; }
     .emote-info { min-width: 140px; flex: 1; }
     .emote-name { display: block; font-size: 15px; font-weight: 600; color: var(--text); text-decoration: none; }
     .emote-name:hover { text-decoration: underline; }
@@ -2039,6 +2050,10 @@ function renderList() {
     }
     return `
       <div class="emote-card ${isComplete ? 'is-complete' : ''}">
+        <div class="emote-card-icon">
+          <img src="${e.img}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('img-fallback')">
+          <span class="emote-card-icon-fallback">🎭</span>
+        </div>
         <div class="emote-info">
           <a href="${emoteSearchUrl(e)}" target="_blank" rel="noopener noreferrer" class="emote-name" onclick="event.stopPropagation()">${escapeHtml(e.name)}</a>
           <div class="emote-name-en">${escapeHtml(e.nameEn)} ／ ${escapeHtml(e.location)}</div>
