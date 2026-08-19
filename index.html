@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="エモート管理">
-  <title>エモート所持率管理</title>
+  <title id="pageTitleTag">エモート所持率管理</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     /* ── Design tokens（アイテム所持率管理と統一） ──────────────── */
@@ -53,6 +53,12 @@
     .sidebar-toggle-btn {
       background: var(--card); border: 1px solid var(--sep); border-radius: var(--r-sm);
       padding: 6px 12px; font-size: 13px; font-weight: 600; color: var(--text);
+    }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .lang-toggle-btn {
+      background: var(--card); border: 1px solid var(--sep); border-radius: var(--r-sm);
+      padding: 6px 10px; font-size: 12.5px; font-weight: 700; color: var(--text);
+      white-space: nowrap;
     }
 
     /* ── プロフィールバー ─────────────────────── */
@@ -414,8 +420,11 @@
 <div class="pf-tint-overlay" aria-hidden="true"></div>
 
 <nav>
-  <div class="nav-title">🎭 エモート所持率管理</div>
-  <button class="sidebar-toggle-btn" onclick="openSidebarMobile()">☰ ツール</button>
+  <div class="nav-title" data-i18n="navTitle">🎭 エモート所持率管理</div>
+  <div class="nav-right">
+    <button type="button" class="lang-toggle-btn" id="langToggleBtn" onclick="toggleLang()">EN</button>
+    <button class="sidebar-toggle-btn" onclick="openSidebarMobile()" data-i18n="sidebarHamburger">☰ ツール</button>
+  </div>
 </nav>
 
 <div class="pf-bar" id="pfBar"></div>
@@ -424,47 +433,47 @@
 
 <div class="pf-modal-overlay" id="pfModalOverlay" onclick="if(event.target===this) pfCloseModal()">
   <div class="pf-modal-card">
-    <h3>🗂️ プロフィール（保存枠）</h3>
+    <h3 data-i18n="pfModalTitle">🗂️ プロフィール（保存枠）</h3>
     <div id="pfModalBody"></div>
     <div class="pf-add-row">
-      <input type="text" class="pf-input" id="pfNewName" placeholder="例: サブ垢1" maxlength="30">
-      <button type="button" class="pf-add-btn" onclick="pfAddProfile()">追加</button>
+      <input type="text" class="pf-input" id="pfNewName" placeholder="例: サブ垢1" maxlength="30" data-i18n-placeholder="pfNewNamePlaceholder">
+      <button type="button" class="pf-add-btn" onclick="pfAddProfile()" data-i18n="pfAddBtn">追加</button>
     </div>
-    <div class="pf-hint">プロフィールを切り替えると、エモートの所持状況が切り替え先のプロフィールのものに入れ替わります（このブラウザ内にすべて保存されます）。</div>
+    <div class="pf-hint" data-i18n="pfSwitchHint">プロフィールを切り替えると、エモートの所持状況が切り替え先のプロフィールのものに入れ替わります（このブラウザ内にすべて保存されます）。</div>
     <div class="pf-currency-section">
       <div class="pf-currency-title" onclick="pfToggleCurrency()">
-        <span>💰 所持通貨</span>
+        <span data-i18n="currencySectionLabel">💰 所持通貨</span>
         <span class="pf-currency-toggle-label" id="pfCurrencyToggleLabel">閉じる ▲</span>
       </div>
       <div id="pfCurrencyBody"></div>
     </div>
-    <button type="button" class="pf-icon-btn" style="width:100%; margin-top:10px; padding:8px;" onclick="dmOpenModal()">💾 データのバックアップ・復元・削除</button>
-    <button type="button" class="pf-close-btn" onclick="pfCloseModal()">閉じる</button>
+    <button type="button" class="pf-icon-btn" style="width:100%; margin-top:10px; padding:8px;" onclick="dmOpenModal()" data-i18n="pfBackupOpenBtn">💾 データのバックアップ・復元・削除</button>
+    <button type="button" class="pf-close-btn" onclick="pfCloseModal()" data-i18n="pfCloseBtn">閉じる</button>
   </div>
 </div>
 
 <!-- ▸ データのバックアップ・復元・削除モーダル -->
 <div class="pf-modal-overlay" id="dmModalOverlay" onclick="if(event.target===this) dmCloseModal()">
   <div class="pf-modal-card">
-    <h3>💾 データのバックアップ・復元・削除</h3>
-    <div class="pf-hint" style="margin:0 0 14px;">このブラウザに保存されている taipak5000.github.io 系ツール（item・wings・companion・spirit-catalog 等）のデータをまとめて書き出し・読み込み・削除できます。全プロフィール分がまとめて対象になります。</div>
-    <button type="button" class="pf-add-btn" style="width:100%; margin-bottom:8px;" onclick="dmExport()">⬇️ データをエクスポート（ファイルに保存）</button>
+    <h3 data-i18n="backupModalTitle">💾 データのバックアップ・復元・削除</h3>
+    <div class="pf-hint" style="margin:0 0 14px;" data-i18n="backupHint">このブラウザに保存されている taipak5000.github.io 系ツール（item・wings・companion・spirit-catalog 等）のデータをまとめて書き出し・読み込み・削除できます。全プロフィール分がまとめて対象になります。</div>
+    <button type="button" class="pf-add-btn" style="width:100%; margin-bottom:8px;" onclick="dmExport()" data-i18n="backupExportBtn">⬇️ データをエクスポート（ファイルに保存）</button>
     <input type="file" id="dmImportFile" accept="application/json" style="display:none" onchange="dmImportFileSelected(event)">
-    <button type="button" class="pf-icon-btn" style="width:100%; margin-bottom:8px; padding:8px;" onclick="document.getElementById('dmImportFile').click()">⬆️ ファイルからインポート</button>
+    <button type="button" class="pf-icon-btn" style="width:100%; margin-bottom:8px; padding:8px;" onclick="document.getElementById('dmImportFile').click()" data-i18n="backupImportBtn">⬆️ ファイルからインポート</button>
     <div id="dmImportConfirmArea"></div>
     <div id="dmWipeArea">
-      <button type="button" class="pf-icon-btn pf-row-btn-danger" style="width:100%; padding:8px;" onclick="dmStartWipe()">🗑️ 全データを削除</button>
+      <button type="button" class="pf-icon-btn pf-row-btn-danger" style="width:100%; padding:8px;" onclick="dmStartWipe()" data-i18n="backupWipeBtn">🗑️ 全データを削除</button>
     </div>
     <div id="dmStatus" class="pf-hint"></div>
-    <button type="button" class="pf-close-btn" onclick="dmCloseModal()">閉じる</button>
+    <button type="button" class="pf-close-btn" onclick="dmCloseModal()" data-i18n="pfCloseBtn">閉じる</button>
   </div>
 </div>
 
 <div class="pf-modal-overlay" id="dashModalOverlay" onclick="if(event.target===this) pfDashClose()">
   <div class="pf-modal-card">
-    <h3>🗓️ 今日・今週・今月</h3>
-    <div id="dashBody"><div class="pf-hint">読み込み中…</div></div>
-    <button type="button" class="pf-close-btn" onclick="pfDashClose()">閉じる</button>
+    <h3 data-i18n="dashModalTitle">🗓️ 今日・今週・今月</h3>
+    <div id="dashBody"><div class="pf-hint" data-i18n="dashLoading">読み込み中…</div></div>
+    <button type="button" class="pf-close-btn" onclick="pfDashClose()" data-i18n="pfCloseBtn">閉じる</button>
   </div>
 </div>
 
@@ -472,22 +481,22 @@
 
   <aside class="sidebar" id="sidebar">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-      <div class="sidebar-section-label" style="margin-bottom:0;">🔗 関連ツール</div>
-      <button class="sidebar-close-btn" onclick="closeSidebarMobile()">×</button>
+      <div class="sidebar-section-label" style="margin-bottom:0;" data-i18n="sidebarRelatedTools">🔗 関連ツール</div>
+      <button class="sidebar-close-btn" onclick="closeSidebarMobile()" data-i18n="sidebarClose">×</button>
     </div>
     <nav>
-      <a href="https://taipak5000.github.io/tai-item/" class="sidebar-nav-link">📁 アイテム所持管理</a>
-      <a href="https://taipak5000.github.io/tai-emote/" class="sidebar-nav-link current-tool">🎭 エモート所持率管理</a>
-      <a href="https://taipak5000.github.io/share/" class="sidebar-nav-link">📍 創作物管理ツール</a>
-      <a href="https://taipak5000.github.io/tai-nomacan/" class="sidebar-nav-link">🕯️ ノマキャン計算機</a>
-      <a href="https://taipak5000.github.io/star-candle/" class="sidebar-nav-link">🕯️ 星のキャンドル計算機</a>
-      <a href="https://taipak5000.github.io/companion/" class="sidebar-nav-link">✨ 精霊同行ツール</a>
-      <a href="https://taipak5000.github.io/wings/" class="sidebar-nav-link">🪽 羽トラッカー</a>
-      <a href="https://taipak5000.github.io/tai-transfer/" class="sidebar-nav-link">🔄 データ引継ぎ</a>
+      <a href="https://taipak5000.github.io/tai-item/" class="sidebar-nav-link" data-i18n="toolItem">📁 アイテム所持管理</a>
+      <a href="https://taipak5000.github.io/tai-emote/" class="sidebar-nav-link current-tool" data-i18n="toolEmote">🎭 エモート所持率管理</a>
+      <a href="https://taipak5000.github.io/share/" class="sidebar-nav-link" data-i18n="toolShare">📍 創作物管理ツール</a>
+      <a href="https://taipak5000.github.io/tai-nomacan/" class="sidebar-nav-link" data-i18n="toolNomacan">🕯️ ノマキャン計算機</a>
+      <a href="https://taipak5000.github.io/star-candle/" class="sidebar-nav-link" data-i18n="toolStarCandle">🕯️ 星のキャンドル計算機</a>
+      <a href="https://taipak5000.github.io/companion/" class="sidebar-nav-link" data-i18n="toolCompanion">✨ 精霊同行ツール</a>
+      <a href="https://taipak5000.github.io/wings/" class="sidebar-nav-link" data-i18n="toolWings">🪽 羽トラッカー</a>
+      <a href="https://taipak5000.github.io/tai-transfer/" class="sidebar-nav-link" data-i18n="toolDataTransfer">🔄 データ引継ぎ</a>
     </nav>
     <div style="margin-top:18px; padding-top:14px; border-top:0.5px solid var(--sep);">
-      <div class="sidebar-section-label">📱 ホーム画面アイコン</div>
-      <button type="button" class="action-btn secondary full" onclick="openModal('iconCustomModal'); closeSidebarMobile();">🎨 アイコンを<br>カスタマイズ</button>
+      <div class="sidebar-section-label" data-i18n="sidebarHomeIcon">📱 ホーム画面アイコン</div>
+      <button type="button" class="action-btn secondary full" onclick="openModal('iconCustomModal'); closeSidebarMobile();" data-i18n="sidebarCustomizeIcon">🎨 アイコンを<br>カスタマイズ</button>
     </div>
   </aside>
 
@@ -497,7 +506,7 @@
       <div class="cat-header-info">
         <div class="cat-header-icon">🎭</div>
         <div>
-          <div class="cat-header-name">エモート全体</div>
+          <div class="cat-header-name" data-i18n="headerName">エモート全体</div>
           <div class="cat-header-count" id="hdrCount">-- / -- レベル所持</div>
         </div>
       </div>
@@ -506,46 +515,46 @@
 
     <div class="control-panel">
       <div class="control-row">
-        <span class="control-label">名前検索</span>
-        <input type="text" class="select-box search-input" id="searchName" placeholder="🔍 エモート名で絞り込み..." oninput="renderList()">
+        <span class="control-label" data-i18n="controlLabelSearch">名前検索</span>
+        <input type="text" class="select-box search-input" id="searchName" placeholder="🔍 エモート名で絞り込み..." oninput="renderList()" data-i18n-placeholder="searchPlaceholder">
       </div>
       <div class="control-row">
-        <span class="control-label">絞り込み</span>
+        <span class="control-label" data-i18n="controlLabelFilter">絞り込み</span>
         <select class="select-box" id="filterStatus" onchange="renderList()">
-          <option value="all">すべての所持状態</option>
-          <option value="complete">コンプリート済みのみ</option>
-          <option value="partial">一部所持のみ</option>
-          <option value="none">未所持のみ</option>
+          <option value="all" data-i18n="filterStatusAll">すべての所持状態</option>
+          <option value="complete" data-i18n="filterStatusComplete">コンプリート済みのみ</option>
+          <option value="partial" data-i18n="filterStatusPartial">一部所持のみ</option>
+          <option value="none" data-i18n="filterStatusNone">未所持のみ</option>
         </select>
       </div>
       <div class="control-row">
-        <span class="control-label">エリア</span>
+        <span class="control-label" data-i18n="controlLabelArea">エリア</span>
         <select class="select-box" id="filterLocation" onchange="renderList()">
-          <option value="all">すべてのエリア</option>
+          <option value="all" data-i18n="filterAreaAll">すべてのエリア</option>
         </select>
       </div>
     </div>
 
-    <p class="sec-label" style="padding:22px 4px 8px;">達成率をシェア</p>
+    <p class="sec-label" style="padding:22px 4px 8px;" data-i18n="shareSectionLabel">達成率をシェア</p>
     <button type="button" class="feature-btn twitter" onclick="shareOverallOnTwitter()">
       <span class="feature-icon">📤🖼️</span>
-      <span class="feature-label">Xで画像を共有</span>
-      <span class="feature-desc">所持率を画像にしてXへ投稿できます（画像の保存も同時にできます）</span>
+      <span class="feature-label" data-i18n="shareTwitterBtn">Xで画像を共有</span>
+      <span class="feature-desc" data-i18n="shareTwitterDesc">所持率を画像にしてXへ投稿できます（画像の保存も同時にできます）</span>
     </button>
     <button type="button" class="feature-btn" style="margin-top:8px;" onclick="openCustomizeModal()">
       <span class="feature-icon">🎨</span>
-      <span class="feature-label">カスタマイズして共有</span>
-      <span class="feature-desc">背景テーマ・コメントを自分好みに設定してから保存/共有できます</span>
+      <span class="feature-label" data-i18n="shareCustomizeBtn">カスタマイズして共有</span>
+      <span class="feature-desc" data-i18n="shareCustomizeDesc">背景テーマ・コメントを自分好みに設定してから保存/共有できます</span>
     </button>
 
     <div class="list-header-row">
-      <span class="sec-label">エモート一覧</span>
+      <span class="sec-label" data-i18n="listSectionLabel">エモート一覧</span>
       <span class="sec-label" id="listCountLabel"></span>
     </div>
     <div class="list-header-row" style="padding-top:0;">
       <div class="view-toggle">
-        <button type="button" class="view-toggle-btn" id="viewGridBtn" onclick="setViewMode('grid')">🔳 グリッド</button>
-        <button type="button" class="view-toggle-btn" id="viewListBtn" onclick="setViewMode('list')">📋 リスト</button>
+        <button type="button" class="view-toggle-btn" id="viewGridBtn" onclick="setViewMode('grid')" data-i18n="viewGridBtn">🔳 グリッド</button>
+        <button type="button" class="view-toggle-btn" id="viewListBtn" onclick="setViewMode('list')" data-i18n="viewListBtn">📋 リスト</button>
       </div>
     </div>
 
@@ -559,24 +568,24 @@
 <div class="modal-overlay" id="customizeModal" onclick="if(event.target===this)closeModal('customizeModal')">
   <div class="modal-card">
     <div class="modal-header">
-      <span class="modal-title">🎨 画像をカスタマイズ</span>
+      <span class="modal-title" data-i18n="customizeModalTitle">🎨 画像をカスタマイズ</span>
       <button class="modal-close" onclick="closeModal('customizeModal')">✕</button>
     </div>
 
-    <div class="customize-section-label">背景テーマ</div>
+    <div class="customize-section-label" data-i18n="customizeThemeLabel">背景テーマ</div>
     <div class="theme-swatch-row" id="themeSwatchRow"><!-- JS --></div>
 
-    <div class="customize-section-label">表示オプション</div>
+    <div class="customize-section-label" data-i18n="customizeDisplayOptionsLabel">表示オプション</div>
     <label class="customize-toggle-opt">
       <input type="checkbox" id="customizeShowIcons">
-      <span>所持しているエモートのアイコン一覧を載せる</span>
+      <span data-i18n="customizeShowIconsLabel">所持しているエモートのアイコン一覧を載せる</span>
     </label>
 
-    <div class="customize-section-label">コメント（任意）</div>
-    <textarea id="customizeComment" class="customize-comment-input" maxlength="120" placeholder="例）プレイヤーネーム：〇〇（未入力の場合は通常の文言になります）"></textarea>
+    <div class="customize-section-label" data-i18n="customizeCommentLabel">コメント（任意）</div>
+    <textarea id="customizeComment" class="customize-comment-input" maxlength="120" placeholder="例）プレイヤーネーム：〇〇（未入力の場合は通常の文言になります）" data-i18n-placeholder="customizeCommentPlaceholder"></textarea>
 
     <div class="action-row" style="margin-top:16px;">
-      <button class="action-btn twitter full" onclick="shareOverallOnTwitter(true)">📤🖼️ この設定でXへ画像を共有</button>
+      <button class="action-btn twitter full" onclick="shareOverallOnTwitter(true)" data-i18n="customizeShareBtn">📤🖼️ この設定でXへ画像を共有</button>
     </div>
   </div>
 </div>
@@ -594,13 +603,13 @@
       <span id="previewHintText">画像を長押し（PCの場合は右クリック）して「画像を保存」を選んでください</span>
     </div>
 
-    <img id="previewImg" class="preview-img" src="" alt="保存用の画像" />
+    <img id="previewImg" class="preview-img" src="" alt="保存用の画像" data-i18n-alt="previewImgAlt" />
 
     <div class="action-row">
-      <a id="previewDownloadLink" class="action-btn primary full" href="" download="">⬇️ ダウンロード</a>
+      <a id="previewDownloadLink" class="action-btn primary full" href="" download="" data-i18n="previewDownloadBtn">⬇️ ダウンロード</a>
     </div>
     <div class="action-row" id="previewTwitterRow" style="display:none;">
-      <a id="previewTwitterLink" class="action-btn twitter full" href="" target="_blank" rel="noopener noreferrer">📤 Xの投稿画面を開く</a>
+      <a id="previewTwitterLink" class="action-btn twitter full" href="" target="_blank" rel="noopener noreferrer" data-i18n="previewTwitterBtn">📤 Xの投稿画面を開く</a>
     </div>
   </div>
 </div>
@@ -609,28 +618,28 @@
 <div class="modal-overlay" id="iconCustomModal" onclick="if(event.target===this)closeModal('iconCustomModal')">
   <div class="modal-card">
     <div class="modal-header">
-      <span class="modal-title">🎨 ホーム画面アイコンをカスタマイズ</span>
+      <span class="modal-title" data-i18n="iconModalTitle">🎨 ホーム画面アイコンをカスタマイズ</span>
       <button class="modal-close" onclick="closeModal('iconCustomModal')">✕</button>
     </div>
 
     <div class="hint" style="margin-top:0; display:flex; gap:8px; align-items:flex-start;">
       <span>💡</span>
-      <span>
+      <span data-i18n="iconInstructions">
         スマホの「ホーム画面に追加」をしたときのアイコンを、好きな絵文字や画像に変更できます。<br>
         <b>追加する前に</b>設定してください。追加した後に変更しても、既に追加済みのアイコンは自動更新されません（変更したい場合は一度削除して追加し直してください）。
       </span>
     </div>
 
     <div style="display:flex; gap:8px; margin:16px 0 14px;">
-      <button type="button" class="action-btn" id="iconModeEmojiBtn" onclick="pfIconSetMode('emoji')">😀 絵文字</button>
-      <button type="button" class="action-btn" id="iconModeImageBtn" onclick="pfIconSetMode('image')">🖼️ 画像</button>
+      <button type="button" class="action-btn" id="iconModeEmojiBtn" onclick="pfIconSetMode('emoji')" data-i18n="iconEmojiModeBtn">😀 絵文字</button>
+      <button type="button" class="action-btn" id="iconModeImageBtn" onclick="pfIconSetMode('image')" data-i18n="iconImageModeBtn">🖼️ 画像</button>
     </div>
 
     <div id="iconEmojiPanel">
-      <p class="sec-label">絵文字</p>
+      <p class="sec-label" data-i18n="iconEmojiLabel">絵文字</p>
       <input type="text" id="iconEmojiInput" maxlength="8" value="🎭" oninput="pfIconUpdatePreview()"
         style="font-size:28px; text-align:center; width:100%; padding:10px; border-radius:var(--r-sm); border:1px solid var(--sep); background:var(--bg); color:var(--text); box-sizing:border-box;">
-      <p class="sec-label" style="margin-top:14px;">背景色</p>
+      <p class="sec-label" style="margin-top:14px;" data-i18n="iconBgColorLabel">背景色</p>
       <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
         <button type="button" onclick="pfIconPickSwatch('#FF9500')" style="width:32px; height:32px; border-radius:50%; background:#FF9500; border:2px solid transparent;"></button>
         <button type="button" onclick="pfIconPickSwatch('#007AFF')" style="width:32px; height:32px; border-radius:50%; background:#007AFF; border:2px solid transparent;"></button>
@@ -645,43 +654,477 @@
         <button type="button" onclick="pfIconPickSwatch('#32ADE6')" style="width:32px; height:32px; border-radius:50%; background:#32ADE6; border:2px solid transparent;"></button>
         <button type="button" onclick="pfIconPickSwatch('#48484A')" style="width:32px; height:32px; border-radius:50%; background:#48484A; border:2px solid transparent;"></button>
       </div>
-      <p style="font-size:11.5px; color:var(--text-2); margin:0 0 6px;">🎨 タップして好きな色を自由に選ぶこともできます</p>
+      <p style="font-size:11.5px; color:var(--text-2); margin:0 0 6px;" data-i18n="iconFreeColorHint">🎨 タップして好きな色を自由に選ぶこともできます</p>
       <input type="color" id="iconBgColorInput" value="#FF9500" oninput="pfIconUpdatePreview()" style="width:100%; height:40px; border:none; border-radius:var(--r-sm); background:none;">
     </div>
 
     <div id="iconImagePanel" style="display:none;">
-      <p class="sec-label">画像をアップロード</p>
+      <p class="sec-label" data-i18n="iconUploadImageLabel">画像をアップロード</p>
       <input type="file" id="iconImageInput" accept="image/*" onchange="pfIconHandleFile(event)">
     </div>
 
     <div style="display:flex; flex-direction:column; align-items:center; margin:18px 0;">
-      <p class="sec-label">プレビュー</p>
+      <p class="sec-label" data-i18n="iconPreviewLabel">プレビュー</p>
       <canvas id="iconPreviewCanvas" width="96" height="96" style="border-radius:22px; box-shadow:0 2px 8px rgba(0,0,0,0.15);"></canvas>
     </div>
 
     <div class="action-row">
-      <button type="button" class="action-btn secondary" onclick="pfIconReset()">デフォルトに戻す</button>
-      <button type="button" class="action-btn primary" onclick="pfIconSave()">保存して適用</button>
+      <button type="button" class="action-btn secondary" onclick="pfIconReset()" data-i18n="iconResetBtn">デフォルトに戻す</button>
+      <button type="button" class="action-btn primary" onclick="pfIconSave()" data-i18n="iconSaveBtn">保存して適用</button>
     </div>
     <div id="iconSaveStatus" style="text-align:center; font-size:12px; color:var(--text-2); margin-top:10px;"></div>
   </div>
 </div>
 
 <footer style="text-align:center; padding:24px 16px; color:var(--text-2); font-size:13px; border-top:1px solid var(--sep); margin-top:40px; line-height:1.6;">
-  このサイトはSky 星を紡ぐ子どもたちの非公式ファンサイトです。thatgamecompanyは一切関与していません。<br>
-  作成・ご意見: <a href="https://x.com/Skyzztai" target="_blank" rel="noopener noreferrer" style="color:var(--blue); text-decoration:none; font-weight:bold;">@Skyzztai</a>　／　<a href="https://odaibako.net/u/Skyzztai" target="_blank" rel="noopener noreferrer" style="color:var(--blue); text-decoration:none; font-weight:bold;">リクエストフォーム</a><br>
+  <span data-i18n="footerDisclaimer">このサイトはSky 星を紡ぐ子どもたちの非公式ファンサイトです。thatgamecompanyは一切関与していません。</span><br>
+  <span data-i18n="footerCreditLabel">作成・ご意見:</span> <a href="https://x.com/Skyzztai" target="_blank" rel="noopener noreferrer" style="color:var(--blue); text-decoration:none; font-weight:bold;">@Skyzztai</a>　／　<a href="https://odaibako.net/u/Skyzztai" target="_blank" rel="noopener noreferrer" style="color:var(--blue); text-decoration:none; font-weight:bold;" data-i18n="footerRequestForm">リクエストフォーム</a><br>
   <span style="color:var(--text-2); font-size:12px; margin-top:4px; display:inline-block;">
-    参考・画像引用元:
-    <a href="https://sky-children-of-the-light.fandom.com/ja/wiki/%E6%84%9F%E6%83%85%E8%A1%A8%E7%8F%BE" target="_blank" rel="noopener noreferrer" style="color: var(--blue);">感情表現 (Sky Wiki 日本語)</a>
+    <span data-i18n="footerRefImageLabel">参考・画像引用元:</span>
+    <a href="https://sky-children-of-the-light.fandom.com/ja/wiki/%E6%84%9F%E6%83%85%E8%A1%A8%E7%8F%BE" target="_blank" rel="noopener noreferrer" style="color: var(--blue);" data-i18n="footerWikiEmoteJa">感情表現 (Sky Wiki 日本語)</a>
     ／
-    <a href="https://sky-children-of-the-light.fandom.com/wiki/Expressions" target="_blank" rel="noopener noreferrer" style="color: var(--blue);">Expressions (Sky Wiki 英語)</a>
+    <a href="https://sky-children-of-the-light.fandom.com/wiki/Expressions" target="_blank" rel="noopener noreferrer" style="color: var(--blue);" data-i18n="footerWikiEmoteEn">Expressions (Sky Wiki 英語)</a>
   </span><br>
   <span style="color:var(--text-2); font-size:12px; margin-top:4px; display:inline-block;">
-    <a href="https://taipak5000.github.io/tai-info/" target="_blank" rel="noopener noreferrer" style="color: var(--blue);">⚙️ 設定・更新情報・クレジット・プライバシーポリシー</a>
+    <a href="https://taipak5000.github.io/tai-info/" target="_blank" rel="noopener noreferrer" style="color: var(--blue);" data-i18n="footerInfoLink">⚙️ 設定・更新情報・クレジット・プライバシーポリシー</a>
   </span>
 </footer>
 
 <script>
+/* ================================================================
+   🌐 UI言語切替（日本語 / English）
+   'sky_app_lang' は taipak5000.github.io 系ツール共通のキー（sky_app_themeと同様、
+   プロフィールに依存しない端末単位の設定のため nsKey() は使わない）。
+   ================================================================ */
+const LANG_KEY = 'sky_app_lang';
+let LANG = localStorage.getItem(LANG_KEY) || 'ja';
+
+// L(): { ja, en } 形式のオブジェクトから現在の表示言語の文字列を返す
+function L(obj) {
+  if (!obj) return '';
+  if (LANG === 'en' && obj.en) return obj.en;
+  return obj.ja;
+}
+
+const I18N = {
+  ja: {
+    navTitle: '🎭 エモート所持率管理',
+    sidebarHamburger: '☰ ツール',
+    sidebarRelatedTools: '🔗 関連ツール',
+    sidebarClose: '×',
+    toolItem: '📁 アイテム所持管理',
+    toolEmote: '🎭 エモート所持率管理',
+    toolShare: '📍 創作物管理ツール',
+    toolNomacan: '🕯️ ノマキャン計算機',
+    toolStarCandle: '🕯️ 星のキャンドル計算機',
+    toolCompanion: '✨ 精霊同行ツール',
+    toolWings: '🪽 羽トラッカー',
+    toolDataTransfer: '🔄 データ引継ぎ',
+    sidebarHomeIcon: '📱 ホーム画面アイコン',
+    sidebarCustomizeIcon: '🎨 アイコンを<br>カスタマイズ',
+    langToggleBtn: 'EN',
+
+    pageTitle: 'エモート所持率管理',
+
+    headerName: 'エモート全体',
+    headerCountTemplate: '{owned} / {total} レベル所持',
+
+    controlLabelSearch: '名前検索',
+    searchPlaceholder: '🔍 エモート名で絞り込み...',
+    controlLabelFilter: '絞り込み',
+    filterStatusAll: 'すべての所持状態',
+    filterStatusComplete: 'コンプリート済みのみ',
+    filterStatusPartial: '一部所持のみ',
+    filterStatusNone: '未所持のみ',
+    controlLabelArea: 'エリア',
+    filterAreaAll: 'すべてのエリア',
+
+    shareSectionLabel: '達成率をシェア',
+    shareTwitterBtn: '📤🖼️ Xで画像を共有',
+    shareTwitterDesc: '所持率を画像にしてXへ投稿できます（画像の保存も同時にできます）',
+    shareCustomizeBtn: '🎨 カスタマイズして共有',
+    shareCustomizeDesc: '背景テーマ・コメントを自分好みに設定してから保存/共有できます',
+
+    listSectionLabel: 'エモート一覧',
+    listCountTemplate: '{n} / {total}件',
+    viewGridBtn: '🔳 グリッド',
+    viewListBtn: '📋 リスト',
+    emptyMessage: '条件に一致するエモートがありません。',
+    emoteLevelCountTemplate: '{owned} / {total} レベル所持',
+    emoteCompleteLabel: '✓ コンプリート',
+
+    genericCancel: 'キャンセル',
+    pfCloseBtn: '閉じる',
+    pfModalTitle: '🗂️ プロフィール（保存枠）',
+    pfNewNamePlaceholder: '例: サブ垢1',
+    pfAddBtn: '追加',
+    pfSwitchHint: 'プロフィールを切り替えると、エモートの所持状況が切り替え先のプロフィールのものに入れ替わります（このブラウザ内にすべて保存されます）。',
+    pfBackupOpenBtn: '💾 データのバックアップ・復元・削除',
+    pfBarActiveSuffix: 'に切替中（タップで切替）',
+    pfDashBtnTitle: '今日・今週・今月ダッシュボード',
+    pfAccountColorTitle: 'アカウントカラー',
+    pfResetColorTitle: 'カラーを初期値に戻す',
+    pfRenameTitle: '名前を変更',
+    pfRenameSaveBtn: '保存',
+    pfCancelBtn: '取消',
+    pfDeleteConfirmTemplate: '「{name}」を削除しますか？（一覧からの削除のみで、保存済みデータはブラウザ内に残ります）',
+    pfDeleteBtn: '削除',
+    pfDefaultName: 'メイン',
+
+    currencySectionLabel: '💰 所持通貨',
+    currencyToggleOpen: '開く ▼',
+    currencyToggleClose: '閉じる ▲',
+    currencyCandle: 'キャンドル',
+    currencyHeart: 'ハート',
+    currencyAscendedCandle: '星のキャンドル',
+    currencySeasonCandle: 'シーズンキャンドル',
+    currencyGiftPass: 'ギフトパス',
+
+    dashModalTitle: '🗓️ 今日・今週・今月',
+    dashLoading: '読み込み中…',
+    dashLoadFailed: '読み込みに失敗しました',
+    dashSectionDaily: 'デイリー',
+    dashSectionToday: '今日',
+    dashSectionWeek: '今週',
+    dashSectionMonth: '今月',
+    dashNextIn: '次まで',
+    dashNextEventIn: '次回まで',
+    dashNoShardToday: '本日は闇の破片の出現はありません',
+    dashRedShard: '赤闇',
+    dashBlackShard: '黒闇',
+    dashShardErupts: 'が出現',
+    dashShardLineTemplate: '{color}（<b>{realm}・{location}</b>）が出現：',
+    dashGrandCandle: '大キャンドル',
+    dashChangesIn: '次の変更まで',
+    dashQuestSeasonCandle: 'クエスト・シーズンキャンドル',
+    dashGeyser: 'ウニ焼き',
+    dashBreadBaking: 'パン焼き',
+    dashTurtleDarkness: '亀闇',
+    dashCurrentlyActive: 'が開催中',
+    dashEndsIn: '終了まで',
+    dashSeasonEndsInSuffix: '終了まで',
+    dashRevisitSpirit: '再訪精霊',
+    dashRevisitHereNow: 'が来訪中',
+    dashRevisitReturnsIn: 'の次回来訪まで',
+    dashNoCurrentSeasonEvent: '現在開催中の季節・イベントはありません',
+    dashEyeOfEden: '原罪',
+    dashWeeklyResetIn: '週間リセットまで',
+    dashEverySundayPacific: '毎週日曜0時・太平洋時間',
+    dashNextUpdate: '次回アップデート予定',
+    dashSeasonLoadFailed: 'シーズン情報が取得できませんでした',
+    dashDayUnit: '日',
+    labelSep: '：',
+
+    realmPrairie: '草原',
+    realmForest: '雨林',
+    realmValley: '峡谷',
+    realmWasteland: '捨てられた地',
+    realmVault: '書庫',
+
+    backupModalTitle: '💾 データのバックアップ・復元・削除',
+    backupHint: 'このブラウザに保存されている taipak5000.github.io 系ツール（item・wings・companion・spirit-catalog 等）のデータをまとめて書き出し・読み込み・削除できます。全プロフィール分がまとめて対象になります。',
+    backupExportBtn: '⬇️ データをエクスポート（ファイルに保存）',
+    backupImportBtn: '⬆️ ファイルからインポート',
+    backupWipeBtn: '🗑️ 全データを削除',
+    backupExportSuccessTemplate: '書き出しました（{n}件のキー）。',
+    backupImportFileReadError: 'ファイルの読み込みに失敗しました（JSON形式ではありません）。',
+    backupImportFileInvalid: 'このツールで書き出したファイルではないようです。',
+    backupImportConfirmTemplate: '{n}件のキーをインポートします。現在保存されているデータは上書きされます（インポートするファイルに無いキーはそのまま残ります）。よろしいですか？',
+    backupImportExecuteBtn: 'インポート実行',
+    backupImportSuccess: 'インポートしました。ページを再読み込みします…',
+    backupWipeConfirmText: 'すべてのプロフィール・所持アイテム・お気に入り・精霊ツリーの進捗など、このブラウザに保存されている全データを削除します。この操作は取り消せません。先にエクスポートしておくことをおすすめします。本当に削除しますか？',
+    backupWipeExecuteBtn: '完全に削除する',
+    backupWipeSuccess: '削除しました。ページを再読み込みします…',
+
+    iconModalTitle: '🎨 ホーム画面アイコンをカスタマイズ',
+    iconInstructions: 'スマホの「ホーム画面に追加」をしたときのアイコンを、好きな絵文字や画像に変更できます。<br><b>追加する前に</b>設定してください。追加した後に変更しても、既に追加済みのアイコンは自動更新されません（変更したい場合は一度削除して追加し直してください）。',
+    iconEmojiModeBtn: '😀 絵文字',
+    iconImageModeBtn: '🖼️ 画像',
+    iconEmojiLabel: '絵文字',
+    iconBgColorLabel: '背景色',
+    iconFreeColorHint: '🎨 タップして好きな色を自由に選ぶこともできます',
+    iconUploadImageLabel: '画像をアップロード',
+    iconPreviewLabel: 'プレビュー',
+    iconResetBtn: 'デフォルトに戻す',
+    iconSaveBtn: '保存して適用',
+    iconSaveStatusSelectImage: '画像を選択してください',
+    iconSaveStatusFailed: '保存に失敗しました(容量オーバーの可能性があります)',
+    iconSaveStatusSuccess: '✅ 保存しました。これでホーム画面に追加すると反映されます',
+    iconSaveStatusReset: 'デフォルトのアイコンに戻しました',
+
+    customizeModalTitle: '🎨 画像をカスタマイズ',
+    customizeThemeLabel: '背景テーマ',
+    customizeDisplayOptionsLabel: '表示オプション',
+    customizeShowIconsLabel: '所持しているエモートのアイコン一覧を載せる',
+    customizeCommentLabel: 'コメント（任意）',
+    customizeCommentPlaceholder: '例）プレイヤーネーム：〇〇（未入力の場合は通常の文言になります）',
+    customizeShareBtn: '📤🖼️ この設定でXへ画像を共有',
+
+    previewModalTitleSave: '🖼️ 画像を保存',
+    previewModalTitleSaveShare: '🖼️ 画像を保存してXへ投稿',
+    previewHintSave: '画像を長押し（PCの場合は右クリック）して「画像を保存」を選んでください',
+    previewHintSaveShare: '① 下の「ダウンロード」で画像を保存 → ② 「Xの投稿画面を開く」を押して、保存した画像を添付して投稿してください',
+    previewDownloadBtn: '⬇️ ダウンロード',
+    previewTwitterBtn: '📤 Xの投稿画面を開く',
+    previewImgAlt: '保存用の画像',
+
+    footerDisclaimer: 'このサイトはSky 星を紡ぐ子どもたちの非公式ファンサイトです。thatgamecompanyは一切関与していません。',
+    footerCreditLabel: '作成・ご意見:',
+    footerRequestForm: 'リクエストフォーム',
+    footerRefImageLabel: '参考・画像引用元:',
+    footerWikiEmoteJa: '感情表現 (Sky Wiki 日本語)',
+    footerWikiEmoteEn: 'Expressions (Sky Wiki 英語)',
+    footerInfoLink: '⚙️ 設定・更新情報・クレジット・プライバシーポリシー',
+
+    imageGenerating: '画像を生成中…',
+    imageSavedToast: '画像を保存しました！',
+    imageSharedToast: '共有しました！',
+    imageSaveFailed: '画像の保存に失敗しました',
+    toastNoEmotesRegistered: 'まずはエモートを登録してください',
+    exportNoOwnedEmotes: 'まだ所持しているエモートがありません',
+
+    exportCardBrand: '🎭 エモート所持率管理',
+    exportHeroLabel: 'エモート所持率',
+    exportHeroNumsTemplate: '所持中 {owned} ／ 総レベル数 {total}',
+    exportHeroSubTemplate: 'コンプリート済み {n} / {total} エモート',
+    exportCardDateTemplate: '{y}年{m}月{d}日作成',
+    tweetTextTemplate: 'エモート所持率は{pct}でした！\n（所持中 {owned} ／ 総レベル数 {total}）\nあなたは何%持ってる？✨\n\n{url}\n{hashtag}',
+
+    themeNameBlue: 'ブルー',
+    themeNameOrange: 'オレンジ',
+    themeNameGreen: 'グリーン',
+    themeNamePurple: 'パープル',
+    themeNamePink: 'ピンク',
+    themeNameDark: 'ダーク',
+  },
+  en: {
+    navTitle: '🎭 Emote Collection',
+    sidebarHamburger: '☰ Tools',
+    sidebarRelatedTools: '🔗 Related Tools',
+    sidebarClose: '×',
+    toolItem: '📁 Item Collection',
+    toolEmote: '🎭 Emote Collection',
+    toolShare: '📍 Creation Manager',
+    toolNomacan: '🕯️ Nomacan Calculator',
+    toolStarCandle: '🕯️ Star Candle Calculator',
+    toolCompanion: '✨ Spirit Companion Tool',
+    toolWings: '🪽 Wing Tracker',
+    toolDataTransfer: '🔄 Data Transfer',
+    sidebarHomeIcon: '📱 Home Screen Icon',
+    sidebarCustomizeIcon: '🎨 Customize Icon',
+    langToggleBtn: '日本語',
+
+    pageTitle: 'Emote Collection Tracker',
+
+    headerName: 'All Emotes',
+    headerCountTemplate: '{owned} / {total} levels owned',
+
+    controlLabelSearch: 'Search',
+    searchPlaceholder: '🔍 Filter by emote name...',
+    controlLabelFilter: 'Filter',
+    filterStatusAll: 'All ownership status',
+    filterStatusComplete: 'Complete only',
+    filterStatusPartial: 'Partially owned only',
+    filterStatusNone: 'Unowned only',
+    controlLabelArea: 'Area',
+    filterAreaAll: 'All areas',
+
+    shareSectionLabel: 'Share your completion rate',
+    shareTwitterBtn: '📤🖼️ Share image on X',
+    shareTwitterDesc: 'Turn your completion rate into an image and post it to X (the image is saved automatically too)',
+    shareCustomizeBtn: '🎨 Customize & share',
+    shareCustomizeDesc: 'Set your own background theme and comment before saving or sharing',
+
+    listSectionLabel: 'Emote List',
+    listCountTemplate: '{n} / {total}',
+    viewGridBtn: '🔳 Grid',
+    viewListBtn: '📋 List',
+    emptyMessage: 'No emotes match the current filter.',
+    emoteLevelCountTemplate: '{owned} / {total} levels owned',
+    emoteCompleteLabel: '✓ Complete',
+
+    genericCancel: 'Cancel',
+    pfCloseBtn: 'Close',
+    pfModalTitle: '🗂️ Profiles',
+    pfNewNamePlaceholder: 'e.g. Sub Account 1',
+    pfAddBtn: 'Add',
+    pfSwitchHint: 'Switching profiles swaps your owned-emote records to the selected profile\'s data (everything is stored locally in this browser).',
+    pfBackupOpenBtn: 'Backup / restore / erase data',
+    pfBarActiveSuffix: 'active (tap to switch)',
+    pfDashBtnTitle: 'Today / this week / this month',
+    pfAccountColorTitle: 'Account color',
+    pfResetColorTitle: 'Reset color to default',
+    pfRenameTitle: 'Rename',
+    pfRenameSaveBtn: 'Save',
+    pfCancelBtn: 'Cancel',
+    pfDeleteConfirmTemplate: 'Delete "{name}"? (This only removes it from the list — its saved data stays in this browser.)',
+    pfDeleteBtn: 'Delete',
+    pfDefaultName: 'Main',
+
+    currencySectionLabel: '💰 Owned Currency',
+    currencyToggleOpen: 'Open ▼',
+    currencyToggleClose: 'Close ▲',
+    currencyCandle: 'Candles',
+    currencyHeart: 'Hearts',
+    currencyAscendedCandle: 'Star Candles',
+    currencySeasonCandle: 'Season Candles',
+    currencyGiftPass: 'Gift Pass',
+
+    dashModalTitle: '🗓️ Today / This Week / This Month',
+    dashLoading: 'Loading…',
+    dashLoadFailed: 'Failed to load',
+    dashSectionDaily: 'Daily',
+    dashSectionToday: 'Today',
+    dashSectionWeek: 'This Week',
+    dashSectionMonth: 'This Month',
+    dashNextIn: 'Next in',
+    dashNextEventIn: 'Next in',
+    dashNoShardToday: 'No shard eruptions today',
+    dashRedShard: 'Red Shard',
+    dashBlackShard: 'Black Shard',
+    dashShardErupts: ' erupts',
+    dashShardLineTemplate: '{color} (<b>{realm} · {location}</b>) erupts: ',
+    dashGrandCandle: 'Grand Candle',
+    dashChangesIn: 'Changes in',
+    dashQuestSeasonCandle: 'Quest & Season Candle',
+    dashGeyser: 'Geyser',
+    dashBreadBaking: 'Bread Baking',
+    dashTurtleDarkness: 'Turtle Darkness',
+    dashCurrentlyActive: ' is currently active',
+    dashEndsIn: 'Ends in',
+    dashSeasonEndsInSuffix: ' ends in',
+    dashRevisitSpirit: 'Revisit Spirit',
+    dashRevisitHereNow: ' is here now',
+    dashRevisitReturnsIn: ' returns in',
+    dashNoCurrentSeasonEvent: 'No current seasons or events',
+    dashEyeOfEden: 'Eye of Eden',
+    dashWeeklyResetIn: 'Weekly reset in',
+    dashEverySundayPacific: 'Every Sunday 00:00 Pacific Time',
+    dashNextUpdate: 'Next Update',
+    dashSeasonLoadFailed: 'Could not load season info',
+    dashDayUnit: 'd',
+    labelSep: ': ',
+
+    realmPrairie: 'Prairie',
+    realmForest: 'Forest',
+    realmValley: 'Valley',
+    realmWasteland: 'Wasteland',
+    realmVault: 'Vault',
+
+    backupModalTitle: '💾 Backup / Restore / Erase Data',
+    backupHint: 'Back up, restore, or erase all locally-stored data for the taipak5000.github.io tool suite (item, wings, companion, spirit-catalog, etc.) at once. This covers all profiles together.',
+    backupExportBtn: '⬇️ Export data (save to file)',
+    backupImportBtn: '⬆️ Import from file',
+    backupWipeBtn: '🗑️ Erase all data',
+    backupExportSuccessTemplate: 'Exported ({n} keys).',
+    backupImportFileReadError: 'Failed to read file (not valid JSON).',
+    backupImportFileInvalid: 'This doesn\'t look like a file exported from this tool.',
+    backupImportConfirmTemplate: 'Import {n} keys? Currently stored data will be overwritten for matching keys (keys not present in the file are left as-is). Continue?',
+    backupImportExecuteBtn: 'Import',
+    backupImportSuccess: 'Imported. Reloading…',
+    backupWipeConfirmText: 'This will erase ALL locally stored data (profiles, owned items, favorites, spirit tree progress, etc.) across the whole tool suite. This cannot be undone. Exporting a backup first is recommended. Really erase everything?',
+    backupWipeExecuteBtn: 'Erase everything',
+    backupWipeSuccess: 'Erased. Reloading…',
+
+    iconModalTitle: '🎨 Customize Home Screen Icon',
+    iconInstructions: 'You can change the icon used when adding this site to your phone\'s home screen. Set this up before adding it — changing it afterward won\'t update an icon that\'s already been added (remove and re-add it if you want to change it later).',
+    iconEmojiModeBtn: '😀 Emoji',
+    iconImageModeBtn: '🖼️ Image',
+    iconEmojiLabel: 'Emoji',
+    iconBgColorLabel: 'Background Color',
+    iconFreeColorHint: '🎨 Or tap below to pick any color freely',
+    iconUploadImageLabel: 'Upload Image',
+    iconPreviewLabel: 'Preview',
+    iconResetBtn: 'Reset to Default',
+    iconSaveBtn: 'Save & Apply',
+    iconSaveStatusSelectImage: 'Please select an image',
+    iconSaveStatusFailed: 'Failed to save (storage may be full)',
+    iconSaveStatusSuccess: '✅ Saved. This will apply the next time you add this to your home screen',
+    iconSaveStatusReset: 'Reset to the default icon',
+
+    customizeModalTitle: '🎨 Customize Image',
+    customizeThemeLabel: 'Background Theme',
+    customizeDisplayOptionsLabel: 'Display Options',
+    customizeShowIconsLabel: 'Include a grid of your owned emote icons',
+    customizeCommentLabel: 'Comment (optional)',
+    customizeCommentPlaceholder: 'e.g. Player name: XX (leave blank to use the default text)',
+    customizeShareBtn: '📤🖼️ Share image on X with these settings',
+
+    previewModalTitleSave: '🖼️ Save Image',
+    previewModalTitleSaveShare: '🖼️ Save Image & Post to X',
+    previewHintSave: 'Press and hold the image (or right-click on PC) and choose "Save Image"',
+    previewHintSaveShare: '① Save the image with "Download" below → ② Tap "Open X post screen" and attach the saved image to your post',
+    previewDownloadBtn: '⬇️ Download',
+    previewTwitterBtn: '📤 Open X post screen',
+    previewImgAlt: 'Image to save',
+
+    footerDisclaimer: 'This is an unofficial fan site for Sky: Children of the Light. thatgamecompany is not involved in any way.',
+    footerCreditLabel: 'Created by / feedback:',
+    footerRequestForm: 'Request form',
+    footerRefImageLabel: 'References / image credits:',
+    footerWikiEmoteJa: 'Expressions (Sky Wiki Japanese)',
+    footerWikiEmoteEn: 'Expressions (Sky Wiki English)',
+    footerInfoLink: '⚙️ Settings / What\'s New / Credits / Privacy Policy',
+
+    imageGenerating: 'Generating image…',
+    imageSavedToast: 'Image saved!',
+    imageSharedToast: 'Shared!',
+    imageSaveFailed: 'Failed to save the image',
+    toastNoEmotesRegistered: 'No emote data is available yet',
+    exportNoOwnedEmotes: 'You don\'t own any emotes yet',
+
+    exportCardBrand: '🎭 Emote Collection',
+    exportHeroLabel: 'Emote Completion Rate',
+    exportHeroNumsTemplate: 'Owned {owned} / Total Levels {total}',
+    exportHeroSubTemplate: 'Complete {n} / {total} emotes',
+    exportCardDateTemplate: 'Created {m}/{d}/{y}',
+    tweetTextTemplate: 'My emote completion rate is {pct}!\n(Owned {owned} / Total Levels {total})\nHow much do you have? ✨\n\n{url}\n{hashtag}',
+
+    themeNameBlue: 'Blue',
+    themeNameOrange: 'Orange',
+    themeNameGreen: 'Green',
+    themeNamePurple: 'Purple',
+    themeNamePink: 'Pink',
+    themeNameDark: 'Dark',
+  }
+};
+
+function t(key, vars) {
+  let s = (I18N[LANG] && I18N[LANG][key] !== undefined) ? I18N[LANG][key] : I18N.ja[key];
+  if (s === undefined) return key;
+  if (vars) {
+    Object.keys(vars).forEach(k => { s = s.split('{' + k + '}').join(vars[k]); });
+  }
+  return s;
+}
+
+function escapeAttr(s) { return String(s).replace(/'/g, "\\'"); }
+
+function applyI18n() {
+  document.documentElement.lang = LANG;
+  const titleTag = document.getElementById('pageTitleTag');
+  if (titleTag) titleTag.textContent = t('pageTitle');
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.getAttribute('data-i18n-placeholder')); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.getAttribute('data-i18n-title')); });
+  document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.alt = t(el.getAttribute('data-i18n-alt')); });
+  const langBtn = document.getElementById('langToggleBtn');
+  if (langBtn) langBtn.textContent = t('langToggleBtn');
+}
+
+function toggleLang() {
+  LANG = LANG === 'ja' ? 'en' : 'ja';
+  localStorage.setItem(LANG_KEY, LANG);
+  applyI18n();
+  pfRenderBar();
+  populateLocationFilter();
+  renderList();
+  if (document.getElementById('pfModalOverlay').classList.contains('open')) { pfRenderModal(); pfRenderCurrency(); }
+  if (document.getElementById('dashModalOverlay').classList.contains('open') && pfDashCache) {
+    document.getElementById('dashBody').innerHTML = pfDashBuildHtml(pfDashCache);
+  }
+}
+
 /* ================================================================
    プロフィール（保存枠）管理: taipak5000.github.io 配下の各ツール共通
    ================================================================ */
@@ -820,14 +1263,28 @@ function escapeHtml(str) {
 // エモート名クリック時の検索リンク。付与精霊が判明していれば「精霊名 居場所 sky」で検索する。
 // ただし季節の案内人（AURORA・ムーミンの本など、通常の精霊と違い「居場所」という概念がない
 // キャラクター）が付与するものは「案内人名 sky」で検索する。精霊が不明な場合
-// （デフォルトエモートなど）は「エモート名 sky」で検索する
+// （デフォルトエモートなど）は「エモート名 sky」で検索する。
+// EN表示中は日本語の「居場所」を検索語に含めても有効なヒットが期待しにくいため、
+// nameEn/spiritEnとlocationを使った英語の検索語に切り替える。
 function emoteSearchUrl(e) {
   let q;
-  if (e.spirit && e.isGuide) q = `${e.spirit} sky`;
-  else if (e.spirit) q = `${e.spirit} 居場所 sky`;
-  else q = `${e.name} sky`;
+  if (LANG === 'en') {
+    if (e.spirit && e.isGuide) q = `${spiritDisplay(e)} sky`;
+    else if (e.spirit) q = `${spiritDisplay(e)} location sky`;
+    else q = `${e.nameEn} sky`;
+  } else {
+    if (e.spirit && e.isGuide) q = `${e.spirit} sky`;
+    else if (e.spirit) q = `${e.spirit} 居場所 sky`;
+    else q = `${e.name} sky`;
+  }
   return `https://www.google.com/search?q=${encodeURIComponent(q)}`;
 }
+
+// EMOTES_DATA表示用アクセサ: LANGに応じてどちらの表記を主表示にするか切り替える
+function emoteName(e) { return LANG === 'en' ? e.nameEn : e.name; }
+function emoteNameSecondary(e) { return LANG === 'en' ? e.name : e.nameEn; }
+function locationDisplay(e) { return LANG === 'en' ? (e.locationEn || e.location) : e.location; }
+function spiritDisplay(e) { return LANG === 'en' ? (e.spiritEn || e.spirit) : e.spirit; }
 
 let pfEditingId = null;
 let pfDeletingId = null;
@@ -840,11 +1297,11 @@ let pfDeletingId = null;
    新規キー（skyCurrencyExtra_v1）で管理する。
    ================================================================ */
 const PF_CURRENCY_FIELDS = [
-  { key: 'candle',         icon: '🕯️', label: 'キャンドル' },
-  { key: 'heart',          icon: '💗', label: 'ハート' },
-  { key: 'ascendedCandle', icon: '🕯️✨', label: '星のキャンドル' },
-  { key: 'seasonCandle',   icon: '🕯️🍂', label: 'シーズンキャンドル' },
-  { key: 'giftPass',       icon: '🎟️', label: 'ギフトパス' },
+  { key: 'candle',         icon: '🕯️', labelKey: 'currencyCandle' },
+  { key: 'heart',          icon: '💗', labelKey: 'currencyHeart' },
+  { key: 'ascendedCandle', icon: '🕯️✨', labelKey: 'currencyAscendedCandle' },
+  { key: 'seasonCandle',   icon: '🕯️🍂', labelKey: 'currencySeasonCandle' },
+  { key: 'giftPass',       icon: '🎟️', labelKey: 'currencyGiftPass' },
 ];
 function pfCompanionDataKey() {
   const id = getActiveProfileId();
@@ -900,7 +1357,7 @@ function pfRenderCurrency() {
   const c = pfLoadCurrency();
   body.innerHTML = PF_CURRENCY_FIELDS.map(f => `
     <div class="pf-currency-row">
-      <span class="pf-currency-label">${f.icon} ${f.label}</span>
+      <span class="pf-currency-label">${f.icon} ${t(f.labelKey)}</span>
       <input type="number" min="0" class="pf-currency-input" value="${c[f.key]}"
         onchange="pfSaveCurrencyField('${f.key}', this.value)">
     </div>`).join('');
@@ -916,7 +1373,7 @@ function pfSyncCurrencyToggleUI() {
   const body = document.getElementById('pfCurrencyBody');
   const label = document.getElementById('pfCurrencyToggleLabel');
   if (body) body.style.display = pfCurrencyOpen ? '' : 'none';
-  if (label) label.textContent = pfCurrencyOpen ? '閉じる ▲' : '開く ▼';
+  if (label) label.textContent = pfCurrencyOpen ? t('currencyToggleClose') : t('currencyToggleOpen');
 }
 
 function pfOpenModal() {
@@ -970,7 +1427,7 @@ function dmExport() {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
-  document.getElementById('dmStatus').textContent = `書き出しました（${Object.keys(dump).length}件のキー）。`;
+  document.getElementById('dmStatus').textContent = t('backupExportSuccessTemplate', { n: Object.keys(dump).length });
 }
 
 let dmPendingImport = null;
@@ -982,21 +1439,21 @@ function dmImportFileSelected(event) {
   reader.onload = () => {
     let parsed;
     try { parsed = JSON.parse(reader.result); } catch (e) {
-      document.getElementById('dmStatus').textContent = 'ファイルの読み込みに失敗しました（JSON形式ではありません）。';
+      document.getElementById('dmStatus').textContent = t('backupImportFileReadError');
       return;
     }
     const data = parsed && parsed.data && typeof parsed.data === 'object' ? parsed.data : null;
     if (!data) {
-      document.getElementById('dmStatus').textContent = 'このツールで書き出したファイルではないようです。';
+      document.getElementById('dmStatus').textContent = t('backupImportFileInvalid');
       return;
     }
     dmPendingImport = data;
     const count = Object.keys(data).length;
     document.getElementById('dmImportConfirmArea').innerHTML = `
       <div class="pf-row" style="flex-wrap: wrap;">
-        <span class="pf-row-confirm-text">${count}件のキーをインポートします。現在保存されているデータは上書きされます（インポートするファイルに無いキーはそのまま残ります）。よろしいですか？</span>
-        <button type="button" class="pf-icon-btn pf-row-btn-ok" onclick="dmConfirmImport()">インポート実行</button>
-        <button type="button" class="pf-icon-btn" onclick="dmCancelImport()">取消</button>
+        <span class="pf-row-confirm-text">${t('backupImportConfirmTemplate', { n: count })}</span>
+        <button type="button" class="pf-icon-btn pf-row-btn-ok" onclick="dmConfirmImport()">${t('backupImportExecuteBtn')}</button>
+        <button type="button" class="pf-icon-btn" onclick="dmCancelImport()">${t('pfCancelBtn')}</button>
       </div>`;
   };
   reader.readAsText(file);
@@ -1012,7 +1469,7 @@ function dmConfirmImport() {
   });
   dmPendingImport = null;
   document.getElementById('dmImportConfirmArea').innerHTML = '';
-  document.getElementById('dmStatus').textContent = 'インポートしました。ページを再読み込みします…';
+  document.getElementById('dmStatus').textContent = t('backupImportSuccess');
   setTimeout(() => location.reload(), 800);
 }
 
@@ -1020,22 +1477,28 @@ let dmWipeConfirming = false;
 function dmRenderWipeArea() {
   const area = document.getElementById('dmWipeArea');
   if (!dmWipeConfirming) {
-    area.innerHTML = `<button type="button" class="pf-icon-btn pf-row-btn-danger" style="width:100%; padding:8px;" onclick="dmStartWipe()">🗑️ 全データを削除</button>`;
+    area.innerHTML = `<button type="button" class="pf-icon-btn pf-row-btn-danger" style="width:100%; padding:8px;" onclick="dmStartWipe()">${t('backupWipeBtn')}</button>`;
     return;
   }
   area.innerHTML = `
     <div class="pf-row" style="flex-wrap: wrap;">
-      <span class="pf-row-confirm-text">すべてのプロフィール・所持アイテム・お気に入り・精霊ツリーの進捗など、このブラウザに保存されている全データを削除します。この操作は取り消せません。先にエクスポートしておくことをおすすめします。本当に削除しますか？</span>
-      <button type="button" class="pf-icon-btn pf-row-btn-danger" onclick="dmConfirmWipe()">完全に削除する</button>
-      <button type="button" class="pf-icon-btn" onclick="dmCancelWipe()">取消</button>
+      <span class="pf-row-confirm-text">${t('backupWipeConfirmText')}</span>
+      <button type="button" class="pf-icon-btn pf-row-btn-danger" onclick="dmConfirmWipe()">${t('backupWipeExecuteBtn')}</button>
+      <button type="button" class="pf-icon-btn" onclick="dmCancelWipe()">${t('pfCancelBtn')}</button>
     </div>`;
 }
 function dmStartWipe() { dmWipeConfirming = true; dmRenderWipeArea(); }
 function dmCancelWipe() { dmWipeConfirming = false; dmRenderWipeArea(); }
 function dmConfirmWipe() {
   localStorage.clear();
-  document.getElementById('dmStatus').textContent = '削除しました。ページを再読み込みします…';
+  document.getElementById('dmStatus').textContent = t('backupWipeSuccess');
   setTimeout(() => location.reload(), 800);
+}
+
+// 「メイン」プロフィールの初期名だけは表示時に翻訳する（ユーザーが改名した場合は
+// そのままの文字列を表示する。保存されているデータ自体は書き換えない）。
+function pfDisplayName(p) {
+  return (p.id === DEFAULT_PROFILE_ID && p.name === 'メイン') ? t('pfDefaultName') : p.name;
 }
 
 function pfRenderBar() {
@@ -1044,8 +1507,8 @@ function pfRenderBar() {
   const bar = document.getElementById('pfBar');
   if (!bar) return;
   bar.innerHTML = `
-    <span class="pf-bar-text" onclick="pfOpenModal()">🗂️ <b>${escapeHtml(profile.name)}</b> に切替中（タップで切替）</span>
-    <button type="button" class="pf-dash-btn" onclick="pfDashOpen()" title="今日・今週・今月ダッシュボード">🗓️</button>`;
+    <span class="pf-bar-text" onclick="pfOpenModal()">🗂️ <b>${escapeHtml(pfDisplayName(profile))}</b> ${t('pfBarActiveSuffix')}</span>
+    <button type="button" class="pf-dash-btn" onclick="pfDashOpen()" title="${escapeAttr(t('pfDashBtnTitle'))}">🗓️</button>`;
 }
 
 /* ================================================================
@@ -1078,15 +1541,20 @@ function pfDashNextEdenResetTarget() {
 // https://github.com/PlutoyDev/sky-shards （src/data/shard.ts）のアルゴリズムを
 // 忠実に移植したもの。月の日付・曜日だけから決定論的に計算できるため手動更新データは不要。
 const SHARD_REALM_JA = { prairie: '草原', forest: '雨林', valley: '峡谷', wasteland: '捨てられた地', vault: '書庫' };
+// realm名の表示は共通辞書 I18N の realmPrairie 等（canonical shard-realm訳）を使う。srLabel()参照。
+function srLabel(realmKey) {
+  const map = { prairie: 'realmPrairie', forest: 'realmForest', valley: 'realmValley', wasteland: 'realmWasteland', vault: 'realmVault' };
+  return t(map[realmKey]);
+}
 const SHARD_REALMS = ['prairie', 'forest', 'valley', 'wasteland', 'vault'];
 // 各出現グループごとの、レルム内の具体的な出現エリア名（9-bit.jpの闇の破片場所一覧と
-// PlutoyDev/sky-shardsのshardsInfo.mapsを突き合わせて確認したもの）
+// PlutoyDev/sky-shardsのshardsInfo.mapsを突き合わせて確認したもの）。値は { ja, en } ペア。
 const SHARD_LOCATIONS = [
-  { prairie: '蝶々の住処', forest: '小川', valley: 'スケートリンク', wasteland: '最初のエリア', vault: '星月夜の砂漠' },
-  { prairie: '神殿エリア', forest: '神殿前', valley: 'スケートリンク', wasteland: '戦場', vault: '星月夜の砂漠' },
-  { prairie: '洞窟', forest: '神殿奥', valley: '夢見の町', wasteland: '墓所', vault: '海月の入り江' },
-  { prairie: '鳥の巣', forest: 'ツリーハウス', valley: '夢見の町', wasteland: '座礁船', vault: '海月の入り江' },
-  { prairie: '楽園の島々', forest: '晴れ間', valley: '隠者の峠', wasteland: '忘れられた方舟', vault: '海月の入り江' },
+  { prairie: { ja: '蝶々の住処', en: 'Butterfly Fields' }, forest: { ja: '小川', en: 'Brook' }, valley: { ja: 'スケートリンク', en: 'Ice Rink' }, wasteland: { ja: '最初のエリア', en: 'First Area' }, vault: { ja: '星月夜の砂漠', en: 'Starlight Desert' } },
+  { prairie: { ja: '神殿エリア', en: 'Temple Area' }, forest: { ja: '神殿前', en: 'Temple Approach' }, valley: { ja: 'スケートリンク', en: 'Ice Rink' }, wasteland: { ja: '戦場', en: 'Battlefield' }, vault: { ja: '星月夜の砂漠', en: 'Starlight Desert' } },
+  { prairie: { ja: '洞窟', en: 'Caves' }, forest: { ja: '神殿奥', en: 'Behind the Temple' }, valley: { ja: '夢見の町', en: 'Village of Dreams' }, wasteland: { ja: '墓所', en: 'Graveyard' }, vault: { ja: '海月の入り江', en: 'Jellyfish Cove' } },
+  { prairie: { ja: '鳥の巣', en: 'Bird Nest' }, forest: { ja: 'ツリーハウス', en: 'Treehouse' }, valley: { ja: '夢見の町', en: 'Village of Dreams' }, wasteland: { ja: '座礁船', en: 'Shipwreck' }, vault: { ja: '海月の入り江', en: 'Jellyfish Cove' } },
+  { prairie: { ja: '楽園の島々', en: 'Sanctuary Islands' }, forest: { ja: '晴れ間', en: 'Clearing' }, valley: { ja: '隠者の峠', en: 'Hermit Valley' }, wasteland: { ja: '忘れられた方舟', en: 'Forgotten Ark' }, vault: { ja: '海月の入り江', en: 'Jellyfish Cove' } },
 ];
 const SHARD_GROUPS = [
   { noShardWkDay: [6, 0], intervalH: 8, offsetH: 1, offsetM: 50 },
@@ -1198,7 +1666,7 @@ function pfDashCountdown(target) {
   const hh = String(Math.floor((totalSec % 86400) / 3600)).padStart(2, '0');
   const mm = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
   const ss = String(totalSec % 60).padStart(2, '0');
-  return days > 0 ? `${days}日 ${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`;
+  return days > 0 ? `${days}${t('dashDayUnit')} ${hh}:${mm}:${ss}` : `${hh}:${mm}:${ss}`;
 }
 
 // 複数の未来時刻候補から一番近いものを選ぶ（全て過去なら null）
@@ -1249,68 +1717,70 @@ function pfDashBuildHtml(data) {
   const shard = pfDashShardInfo();
   if (shard.hasShard) {
     const icon = shard.isRed ? '🔴' : '⚫';
-    const colorLabel = shard.isRed ? '赤闇' : '黒闇';
-    const realmLabel = SHARD_REALM_JA[shard.realm];
-    const locationLabel = shard.location;
+    const colorLabel = shard.isRed ? t('dashRedShard') : t('dashBlackShard');
+    const realmLabel = srLabel(shard.realm);
+    const locationLabel = L(shard.location);
     const now = new Date();
     const times = shard.occurrences.map(occ => {
       const past = occ.getTime() <= now.getTime();
       return `<span class="dash-shard-time${past ? ' past' : ''}">${pfDashFormatShardTime(occ)}</span>`;
     }).join(' / ');
     const soon = pfDashSoonestFuture(shard.occurrences) || pfDashNextShardTime();
-    const countdownHtml = soon ? `<span class="dash-countdown">次まで ${pfDashCountdown(soon)}</span>` : '';
-    dailyRows.push(pfDashRow(icon, `${colorLabel}（<b>${realmLabel}・${locationLabel}</b>）が出現：<span class="dash-shard-times">${times}</span>${countdownHtml}`));
+    const countdownHtml = soon ? `<span class="dash-countdown">${t('dashNextIn')} ${pfDashCountdown(soon)}</span>` : '';
+    dailyRows.push(pfDashRow(icon, t('dashShardLineTemplate', { color: colorLabel, realm: realmLabel, location: locationLabel }) + `<span class="dash-shard-times">${times}</span>${countdownHtml}`));
   } else {
     const nextShard = pfDashNextShardTime();
-    const nextHtml = nextShard ? `<span class="dash-countdown">次まで ${pfDashCountdown(nextShard)}</span>` : '';
-    dailyRows.push(pfDashRow('🌑', `本日は闇の破片の出現はありません${nextHtml}`));
+    const nextHtml = nextShard ? `<span class="dash-countdown">${t('dashNextIn')} ${pfDashCountdown(nextShard)}</span>` : '';
+    dailyRows.push(pfDashRow('🌑', `${t('dashNoShardToday')}${nextHtml}`));
   }
   const candleRealm = pfDashGrandCandleRealm();
-  dailyRows.push(pfDashRow('🕯️', `大キャンドル：<b>${SHARD_REALM_JA[candleRealm]}</b><span class="dash-countdown">次の変更まで ${pfDashCountdown(pfDashNextPacificMidnight())}</span>`));
+  dailyRows.push(pfDashRow('🕯️', `${t('dashGrandCandle')}${t('labelSep')}<b>${srLabel(candleRealm)}</b><span class="dash-countdown">${t('dashChangesIn')} ${pfDashCountdown(pfDashNextPacificMidnight())}</span>`));
   const questCandleRealm = pfDashGrandCandleRealm(-1);
-  dailyRows.push(pfDashRow('📜', `クエスト・シーズンキャンドル：<b>${SHARD_REALM_JA[questCandleRealm]}</b><span class="dash-countdown">次の変更まで ${pfDashCountdown(pfDashNextPacificMidnight())}</span>`));
-  dailyRows.push(pfDashRow('🌋', `ウニ焼き<span class="dash-countdown">次回まで ${pfDashCountdown(pfDashNextEvenHourEvent(5))}</span>`));
-  dailyRows.push(pfDashRow('🍞', `パン焼き<span class="dash-countdown">次回まで ${pfDashCountdown(pfDashNextEvenHourEvent(35))}</span>`));
-  dailyRows.push(pfDashRow('🐢', `亀闇<span class="dash-countdown">次回まで ${pfDashCountdown(pfDashNextEvenHourEvent(50))}</span>`));
+  dailyRows.push(pfDashRow('📜', `${t('dashQuestSeasonCandle')}${t('labelSep')}<b>${srLabel(questCandleRealm)}</b><span class="dash-countdown">${t('dashChangesIn')} ${pfDashCountdown(pfDashNextPacificMidnight())}</span>`));
+  dailyRows.push(pfDashRow('🌋', `${t('dashGeyser')}<span class="dash-countdown">${t('dashNextEventIn')} ${pfDashCountdown(pfDashNextEvenHourEvent(5))}</span>`));
+  dailyRows.push(pfDashRow('🍞', `${t('dashBreadBaking')}<span class="dash-countdown">${t('dashNextEventIn')} ${pfDashCountdown(pfDashNextEvenHourEvent(35))}</span>`));
+  dailyRows.push(pfDashRow('🐢', `${t('dashTurtleDarkness')}<span class="dash-countdown">${t('dashNextEventIn')} ${pfDashCountdown(pfDashNextEvenHourEvent(50))}</span>`));
   const dailyHtml = dailyRows.join('');
 
+  // 注: data.season.name / ev.name / data.revisit.name は item(tai-item)側のindex.htmlから
+  // fetchして取得した日本語のみのデータで、このリポジトリの範囲外のため翻訳していない。
   const todayRows = [];
   if (data.season && data.season.name && data.season.endDate && new Date() < new Date(data.season.endDate)) {
-    todayRows.push(pfDashRow('🌟', `<b>${escapeHtml(data.season.name)}</b> が開催中`));
+    todayRows.push(pfDashRow('🌟', `<b>${escapeHtml(data.season.name)}</b>${t('dashCurrentlyActive')}`));
   }
   pfDashActiveScheduledEvents(data.eventSchedule).forEach(ev => {
-    todayRows.push(pfDashRow('🌟', `<b>${escapeHtml(ev.name)}</b> が開催中<span class="dash-countdown">終了まで ${pfDashCountdown(new Date(ev.end))}</span>`));
+    todayRows.push(pfDashRow('🌟', `<b>${escapeHtml(ev.name)}</b>${t('dashCurrentlyActive')}<span class="dash-countdown">${t('dashEndsIn')} ${pfDashCountdown(new Date(ev.end))}</span>`));
   });
   const rv = pfDashRevisitStatus(data.revisit);
   if (rv && data.revisit) {
     const revisitLabel = rv.active
-      ? `再訪精霊 「<b>${escapeHtml(data.revisit.name)}</b>」が来訪中`
-      : `再訪精霊 「<b>${escapeHtml(data.revisit.name)}</b>」の次回来訪まで`;
+      ? `${t('dashRevisitSpirit')} 「<b>${escapeHtml(data.revisit.name)}</b>」${t('dashRevisitHereNow')}`
+      : `${t('dashRevisitSpirit')} 「<b>${escapeHtml(data.revisit.name)}</b>」${t('dashRevisitReturnsIn')}`;
     todayRows.push(pfDashRow('🕊️', `${revisitLabel}<span class="dash-countdown">${pfDashCountdown(rv.target)}</span>`));
   }
-  const todayHtml = todayRows.length ? todayRows.join('') : `<div class="dash-empty">現在開催中の季節・イベントはありません</div>`;
+  const todayHtml = todayRows.length ? todayRows.join('') : `<div class="dash-empty">${t('dashNoCurrentSeasonEvent')}</div>`;
 
-  let weekHtml = pfDashRow('🌩️', `原罪：週間リセットまで<span class="dash-countdown">${pfDashCountdown(pfDashNextEdenResetTarget())}</span><span class="dash-note">毎週日曜0時・太平洋時間</span>`);
+  let weekHtml = pfDashRow('🌩️', `${t('dashEyeOfEden')}${t('labelSep')}${t('dashWeeklyResetIn')}<span class="dash-countdown">${pfDashCountdown(pfDashNextEdenResetTarget())}</span><span class="dash-note">${t('dashEverySundayPacific')}</span>`);
   if (data.nextUpdate && data.nextUpdate.date) {
     const updateTarget = new Date(data.nextUpdate.date);
     if (new Date() < updateTarget) {
-      weekHtml += pfDashRow('🔧', `次回アップデート予定<span class="dash-countdown">${pfDashCountdown(updateTarget)}</span>`);
+      weekHtml += pfDashRow('🔧', `${t('dashNextUpdate')}<span class="dash-countdown">${pfDashCountdown(updateTarget)}</span>`);
     }
   }
 
   let monthHtml;
   if (data.season && data.season.endDate) {
     const end = new Date(data.season.endDate);
-    monthHtml = pfDashRow('🎨', `「<b>${escapeHtml(data.season.name)}</b>」終了まで<span class="dash-countdown">${pfDashCountdown(end)}</span>`);
+    monthHtml = pfDashRow('🎨', `「<b>${escapeHtml(data.season.name)}</b>」${t('dashSeasonEndsInSuffix')}<span class="dash-countdown">${pfDashCountdown(end)}</span>`);
   } else {
-    monthHtml = `<div class="dash-empty">シーズン情報が取得できませんでした</div>`;
+    monthHtml = `<div class="dash-empty">${t('dashSeasonLoadFailed')}</div>`;
   }
 
   return `
-    <div class="dash-section"><p class="dash-section-label">デイリー</p>${dailyHtml}</div>
-    <div class="dash-section"><p class="dash-section-label">今日</p>${todayHtml}</div>
-    <div class="dash-section"><p class="dash-section-label">今週</p>${weekHtml}</div>
-    <div class="dash-section"><p class="dash-section-label">今月</p>${monthHtml}</div>`;
+    <div class="dash-section"><p class="dash-section-label">${t('dashSectionDaily')}</p>${dailyHtml}</div>
+    <div class="dash-section"><p class="dash-section-label">${t('dashSectionToday')}</p>${todayHtml}</div>
+    <div class="dash-section"><p class="dash-section-label">${t('dashSectionWeek')}</p>${weekHtml}</div>
+    <div class="dash-section"><p class="dash-section-label">${t('dashSectionMonth')}</p>${monthHtml}</div>`;
 }
 let pfDashCache = null;
 let pfDashLoading = null;
@@ -1358,27 +1828,27 @@ function pfRenderModal() {
         <div class="pf-row" style="flex-wrap: wrap;">
           <input type="text" class="pf-row-input" id="pfEditInput" value="${nameEsc}" maxlength="30"
             onkeydown="if(event.key==='Enter') pfConfirmRenameInline('${p.id}'); if(event.key==='Escape') pfCancelRowState();">
-          <button type="button" class="pf-icon-btn pf-row-btn-ok" onclick="pfConfirmRenameInline('${p.id}')">保存</button>
-          <button type="button" class="pf-icon-btn" onclick="pfCancelRowState()">取消</button>
+          <button type="button" class="pf-icon-btn pf-row-btn-ok" onclick="pfConfirmRenameInline('${p.id}')">${t('pfRenameSaveBtn')}</button>
+          <button type="button" class="pf-icon-btn" onclick="pfCancelRowState()">${t('pfCancelBtn')}</button>
         </div>`;
     }
     if (pfDeletingId === p.id) {
       return `
         <div class="pf-row" style="flex-wrap: wrap;">
-          <span class="pf-row-confirm-text">「${escapeHtml(p.name)}」を削除しますか？（一覧からの削除のみで、保存済みデータはブラウザ内に残ります）</span>
-          <button type="button" class="pf-icon-btn pf-row-btn-danger" onclick="pfConfirmDeleteInline('${p.id}')">削除</button>
-          <button type="button" class="pf-icon-btn" onclick="pfCancelRowState()">取消</button>
+          <span class="pf-row-confirm-text">${t('pfDeleteConfirmTemplate', { name: escapeHtml(pfDisplayName(p)) })}</span>
+          <button type="button" class="pf-icon-btn pf-row-btn-danger" onclick="pfConfirmDeleteInline('${p.id}')">${t('pfDeleteBtn')}</button>
+          <button type="button" class="pf-icon-btn" onclick="pfCancelRowState()">${t('pfCancelBtn')}</button>
         </div>`;
     }
     const colorVal = pfIsSafeColor(p.color) ? p.color : '#FF9500';
     return `
       <div class="pf-row ${isActive ? 'active' : ''}">
-        <input type="color" class="pf-color-input" value="${colorVal}" title="アカウントカラー"
+        <input type="color" class="pf-color-input" value="${colorVal}" title="${escapeAttr(t('pfAccountColorTitle'))}"
           onchange="pfSetProfileColor('${p.id}', this.value)">
-        <span class="pf-row-name" onclick="switchProfile('${p.id}')">${isActive ? '✅ ' : ''}${escapeHtml(p.name)}</span>
-        ${p.color ? `<button type="button" class="pf-icon-btn pf-color-clear-btn" title="カラーを初期値に戻す" onclick="pfClearProfileColor('${p.id}')">↺</button>` : ''}
-        <button type="button" class="pf-icon-btn" title="名前を変更" onclick="pfStartRename('${p.id}')">✏️</button>
-        ${list.length > 1 ? `<button type="button" class="pf-icon-btn" title="削除" onclick="pfStartDelete('${p.id}')">🗑️</button>` : ''}
+        <span class="pf-row-name" onclick="switchProfile('${p.id}')">${isActive ? '✅ ' : ''}${escapeHtml(pfDisplayName(p))}</span>
+        ${p.color ? `<button type="button" class="pf-icon-btn pf-color-clear-btn" title="${escapeAttr(t('pfResetColorTitle'))}" onclick="pfClearProfileColor('${p.id}')">↺</button>` : ''}
+        <button type="button" class="pf-icon-btn" title="${escapeAttr(t('pfRenameTitle'))}" onclick="pfStartRename('${p.id}')">✏️</button>
+        ${list.length > 1 ? `<button type="button" class="pf-icon-btn" title="${escapeAttr(t('pfDeleteBtn'))}" onclick="pfStartDelete('${p.id}')">🗑️</button>` : ''}
       </div>`;
   }).join('');
 
@@ -1425,130 +1895,135 @@ function closeSidebarMobile() {
    location は入手できるエリア名（恒常精霊の場合は地方内のエリア名、
    季節精霊の場合はそのシーズン特有のエリア名）です。正式な「シーズン名」
    （例：想いを編む季節）そのものではなく、Sky Wikiのエリア表記をそのまま
-   使っています（精霊名までは今回反映できていません）。
+   使っています。
+   locationEn / spiritEn: UI言語切替（ja/en）用の英語表記。恒常精霊・季節精霊名は
+   他サイト（wings等）のI18N辞書と対応が取れるものは表記をそろえて再利用した。
+   一部（放浪カーニバル・星々の展示など、JA側も「（仮訳）」付きの箇所や、
+   雨林の開拓地／草原連峰／君憶う保存庫などSky Wikiの英語表記を直接確認できなかった
+   エリア名）は文脈からの推定訳のため、確認が取れ次第修正してください。
    ================================================================ */
 const EMOTES_DATA = [
-  { id: 'emote_001', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/4/4e/Emote-basic_sit.png/revision/latest/scale-to-width-down/51', name: '座る', nameEn: 'Sit', maxLevel: 1, location: 'デフォルト', spirit: null },
-  { id: 'emote_002', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/5/55/PointingCandlemaker-1.png/revision/latest/scale-to-width-down/51', name: '指さし', nameEn: 'Point', maxLevel: 4, location: '孤島', spirit: '指差すキャンドル職人' },
-  { id: 'emote_003', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/d8/UsheringStargazer-1.png/revision/latest/scale-to-width-down/51', name: 'おいで', nameEn: 'Come', maxLevel: 4, location: '孤島', spirit: '先導する星読み' },
-  { id: 'emote_004', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/27/RejectingVoyager-1.png/revision/latest/scale-to-width-down/51', name: '固辞', nameEn: 'No Thanks', maxLevel: 4, location: '孤島', spirit: '固辞する航行者' },
-  { id: 'emote_005', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/de/Emote-curtsy.png/revision/latest/scale-to-width-down/51', name: 'ようこそ', nameEn: 'Welcome', maxLevel: 4, location: '孤島', spirit: '一座の進行役' },
-  { id: 'emote_006', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/7f/Head_nod_white_on_black.png/revision/latest/scale-to-width-down/51', name: 'うなずく', nameEn: 'Nod', maxLevel: 4, location: '忘れられた方舟', spirit: 'うなずく壁画師' },
-  { id: 'emote_007', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/d9/Assembly-scolding-emote.png/revision/latest/scale-to-width-down/51', name: 'チッチッチ', nameEn: 'Scold', maxLevel: 4, location: '雨林の開拓地', spirit: 'したり顔の生徒' },
-  { id: 'emote_008', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/0d/ButterflyCharmer-1.png/revision/latest/scale-to-width-down/51', name: '蝶々', nameEn: 'Butterfly', maxLevel: 4, location: '蝶々の住処', spirit: '蝶々使い' },
-  { id: 'emote_009', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/25/ApplaudingBellmaker-1.png/revision/latest/scale-to-width-down/51', name: '拍手', nameEn: 'Clap', maxLevel: 4, location: '草原の村', spirit: '賞賛する鐘の造り手' },
-  { id: 'emote_010', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/0d/WavingBellmaker-1.png/revision/latest/scale-to-width-down/51', name: '手を振る', nameEn: 'Wave', maxLevel: 6, location: '草原の村', spirit: '手を振る鐘の造り手' },
-  { id: 'emote_011', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/4/4e/LaughingLightCatcher-1.png/revision/latest/scale-to-width-down/51', name: '笑う', nameEn: 'Laugh', maxLevel: 4, location: '草原の村', spirit: '笑う光採取者' },
-  { id: 'emote_012', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/bb/SlumberingShipwright-1.png/revision/latest/scale-to-width-down/51', name: 'あくび', nameEn: 'Yawn', maxLevel: 4, location: '草原の村', spirit: '寝不足の造舟師' },
-  { id: 'emote_013', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/6f/ExhaustedDockWorker-1.png/revision/latest/scale-to-width-down/51', name: '汗拭き', nameEn: 'Wipe Brow', maxLevel: 4, location: '草原の洞窟', spirit: '疲弊した荷積み人' },
-  { id: 'emote_014', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b0/CeremonialWorshiper-1.png/revision/latest/scale-to-width-down/51', name: '火を掲げる', nameEn: 'Teamwork', maxLevel: 1, location: '8人エレベーター', spirit: '式典の礼拝者' },
-  { id: 'emote_015', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/6d/Emote-blow_kisses.png/revision/latest/scale-to-width-down/51', name: '投げキッス', nameEn: 'Blow Kiss', maxLevel: 4, location: '雨林の墓場', spirit: 'うっとりするような旅役者' },
-  { id: 'emote_016', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f8/SOS_grateful.png/revision/latest/scale-to-width-down/51', name: '感謝', nameEn: 'Grateful', maxLevel: 4, location: '楽園の島々', spirit: '感謝する貝殻収集家' },
-  { id: 'emote_017', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c2/SOS_Chill.png/revision/latest/scale-to-width-down/51', name: '腹つづみ', nameEn: 'Belly Scratch', maxLevel: 4, location: '楽園の島々', spirit: 'くつろぐ日光浴者' },
-  { id: 'emote_018', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/1/10/Assembly-chuckling-emote.png/revision/latest/scale-to-width-down/51', name: '含み笑い', nameEn: 'Chuckle', maxLevel: 4, location: '雨林の墓場', spirit: '含み笑いのスカウト' },
-  { id: 'emote_019', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/3/35/ShiveringTrailblazer-1.png/revision/latest/scale-to-width-down/51', name: '凍える', nameEn: 'Shiver', maxLevel: 4, location: '雨林の開拓地', spirit: '凍える先駆者' },
-  { id: 'emote_020', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/2a/HideNSeekPioneer-1.png/revision/latest/scale-to-width-down/51', name: 'かくれんぼ', nameEn: 'Hide and Seek', maxLevel: 1, location: '雨林の小川', spirit: 'かくれんぼ提唱者' },
-  { id: 'emote_021', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f7/PoutyPorter-1.png/revision/latest/scale-to-width-down/51', name: '怒る', nameEn: 'Angry', maxLevel: 4, location: '雨林の小川', spirit: '怒れる運び人' },
-  { id: 'emote_022', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/6f/BlushingProspector-1.png/revision/latest/scale-to-width-down/51', name: '恥じらう', nameEn: 'Shy', maxLevel: 4, location: '雨林の墓場', spirit: '恥じらう探鉱者' },
-  { id: 'emote_023', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/7e/DismayedHunter-1.png/revision/latest/scale-to-width-down/51', name: 'ショック', nameEn: 'Shocked', maxLevel: 4, location: '雨林の墓場', spirit: 'うろたえる狩人' },
-  { id: 'emote_024', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/23/ApologeticLumberjack-1.png/revision/latest/scale-to-width-down/51', name: '謝る', nameEn: 'Apologize', maxLevel: 4, location: '雨林の墓場', spirit: '反省する木こり' },
-  { id: 'emote_025', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/9/9c/TearfulLightMiner-1.png/revision/latest/scale-to-width-down/51', name: '泣く', nameEn: 'Crying', maxLevel: 6, location: '雨林の墓場', spirit: '涙ぐむ光坑夫' },
-  { id: 'emote_026', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/3/3e/Mimi-4117_02_provoking_performer_emote.png/revision/latest/scale-to-width-down/51', name: '歌舞伎風', nameEn: 'Kabuki', maxLevel: 4, location: '雨林の小川', spirit: '挑戦的な表現者' },
-  { id: 'emote_027', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b3/Shrug_white_on_black.png/revision/latest/scale-to-width-down/51', name: '肩をすくめる', nameEn: 'Shrug', maxLevel: 4, location: '忘れられた方舟', spirit: '無頓着な錬金術師' },
-  { id: 'emote_028', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/e/e3/SoS_grouch.png/revision/latest/scale-to-width-down/51', name: 'ふきげん', nameEn: 'Grumpy', maxLevel: 4, location: '楽園の島々', spirit: 'ハイキングする気むずかし屋' },
-  { id: 'emote_029', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/cb/Season_of_Dreams_-_Peeking_postman.png/revision/latest/scale-to-width-down/51', name: 'そっと覗く', nameEn: 'Peek', maxLevel: 4, location: '夢見の町', spirit: 'そっと覗く郵便屋' },
-  { id: 'emote_030', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/63/Assembly-Scaredy-emote.png/revision/latest/scale-to-width-down/51', name: 'ひゃー', nameEn: 'Eww', maxLevel: 4, location: '雨林の小川', spirit: '臆病な見習い士官' },
-  { id: 'emote_031', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/7b/Assembly-Facepalm-emote.png/revision/latest/scale-to-width-down/51', name: '顔を覆う', nameEn: 'Facepalm', maxLevel: 4, location: '雨林の開拓地', spirit: 'とまどう植物学者' },
-  { id: 'emote_032', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/09/HandstandingThrillseeker-1.png/revision/latest/scale-to-width-down/51', name: '逆立ち', nameEn: 'Handstand', maxLevel: 4, location: '城塞都市', spirit: '逆立ちする怖いもの知らず' },
-  { id: 'emote_033', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/75/BackflippingChampion-1.png/revision/latest/scale-to-width-down/51', name: '宙返り', nameEn: 'Backflip', maxLevel: 4, location: '城塞都市', spirit: '宙返りをする優勝者' },
-  { id: 'emote_034', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b2/BowingMedalist-1.png/revision/latest/scale-to-width-down/51', name: 'お辞儀', nameEn: 'Bow', maxLevel: 4, location: '円形劇場', spirit: 'お辞儀をするメダリスト' },
-  { id: 'emote_035', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/df/CheerfulSpectator-1.png/revision/latest/scale-to-width-down/51', name: '応援', nameEn: 'Cheer', maxLevel: 4, location: '円形劇場', spirit: '応援する観客' },
-  { id: 'emote_036', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/67/Mimi-4117_02_leaping_dancer_emote.png/revision/latest/scale-to-width-down/51', name: 'わーい', nameEn: 'Leap', maxLevel: 4, location: 'アイスリンク', spirit: '飛び跳ねる舞踏家' },
-  { id: 'emote_037', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/d0/Mimi-4117_03_twirling_champion_emote.png/revision/latest/scale-to-width-down/51', name: 'トリプルアクセル', nameEn: 'Triple Axel', maxLevel: 4, location: 'アイスリンク', spirit: 'くるりと舞う優勝者' },
-  { id: 'emote_038', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b3/Belonging_confetti.png/revision/latest/scale-to-width-down/51', name: 'おめでとう', nameEn: 'Confetti', maxLevel: 4, location: '蝶々の住処', spirit: '紙ふぶき好きのいとこ' },
-  { id: 'emote_039', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/05/Belonging_dancing.png/revision/latest/scale-to-width-down/51', name: 'ブギーダンス', nameEn: 'Boogie Dance', maxLevel: 4, location: '孤島', spirit: '音と舞う幼子' },
-  { id: 'emote_040', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/0c/Emote-dance.png/revision/latest/scale-to-width-down/51', name: 'スピンダンス', nameEn: 'Spin Dance', maxLevel: 4, location: '鳥の塔', spirit: '祝祭の旋舞家' },
-  { id: 'emote_041', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/af/Emote-juggle.png/revision/latest/scale-to-width-down/51', name: 'ジャグリング', nameEn: 'Juggle', maxLevel: 4, location: 'アイスリンク', spirit: '一座の曲芸師' },
-  { id: 'emote_042', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a0/Crab_walk_white_on_black.png/revision/latest/scale-to-width-down/51', name: '蟹歩き', nameEn: 'Crab Walk', maxLevel: 4, location: '忘れられた方舟', spirit: '蟹歩きの名人' },
-  { id: 'emote_043', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/3/37/SOS_rally.png/revision/latest/scale-to-width-down/51', name: 'ガッツ！', nameEn: 'Rally Cheer', maxLevel: 4, location: '楽園の島々', spirit: '奮い立つ怖いもの知らず' },
-  { id: 'emote_044', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/05/Season_of_Dreams_-_Spinning_mentor.png/revision/latest/scale-to-width-down/51', name: '旋舞スピン', nameEn: 'Spin Trick', maxLevel: 4, location: '夢見の町', spirit: '旋舞の師匠' },
-  { id: 'emote_045', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/26/Season_of_Dreams_-_Dancing_performer.png/revision/latest/scale-to-width-down/51', name: 'ショーダンス', nameEn: 'Show Dance', maxLevel: 4, location: '夢見の町', spirit: '舞い踊る表現者' },
-  { id: 'emote_046', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f9/FrightenedRefugee-1.png/revision/latest/scale-to-width-down/51', name: '身をかがめる', nameEn: 'Duck', maxLevel: 4, location: '倒壊した祠', spirit: '怯える難民' },
-  { id: 'emote_047', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/8/87/FaintingWarrior-1.png/revision/latest/scale-to-width-down/51', name: '気絶', nameEn: 'Faint', maxLevel: 4, location: '倒壊した祠', spirit: '昏倒する戦士' },
-  { id: 'emote_048', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/2a/Emote-respect.png/revision/latest/scale-to-width-down/51', name: 'リスペクト', nameEn: 'Respect', maxLevel: 4, location: '墓所', spirit: '敬意を表す楽師' },
-  { id: 'emote_049', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/fa/LookoutScout-1.png/revision/latest/scale-to-width-down/51', name: '見回す', nameEn: 'Look Around', maxLevel: 4, location: '戦場', spirit: '警戒する斥候' },
-  { id: 'emote_050', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/2b/SalutingCaptain-1.png/revision/latest/scale-to-width-down/51', name: '敬礼', nameEn: 'Salute', maxLevel: 4, location: '座礁船', spirit: '敬礼する隊長' },
-  { id: 'emote_051', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/db/Mimi-4117_02_saluting_protector_emote.png/revision/latest/scale-to-width-down/51', name: '了解！', nameEn: 'Acknowledge', maxLevel: 4, location: '暗黒竜1匹エリア', spirit: '敬礼する守護者' },
-  { id: 'emote_052', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/9/9a/Mimi-4117_02_greeting_shaman_emote.png/revision/latest/scale-to-width-down/51', name: 'カンフー', nameEn: 'Kung Fu', maxLevel: 4, location: '書庫の4階', spirit: '礼を尽くす祈祷師' },
-  { id: 'emote_053', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/e/ef/Belonging_crawl.png/revision/latest/scale-to-width-down/51', name: '行かないで', nameEn: "Don't Go!", maxLevel: 4, location: '墓所', spirit: '訴えかける親' },
-  { id: 'emote_054', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/aa/Boo_white_on_black.png/revision/latest/scale-to-width-down/51', name: 'ばあ！！', nameEn: 'Boo', maxLevel: 4, location: '忘れられた方舟', spirit: 'こけおどしの農家' },
-  { id: 'emote_055', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/8/8d/SoP_dust_off.png/revision/latest/scale-to-width-down/51', name: 'ほこり払い', nameEn: 'Dust Off', maxLevel: 4, location: '預言者の石窟', spirit: '地の預言者' },
-  { id: 'emote_056', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/cf/SoP_chest_pound.png/revision/latest/scale-to-width-down/51', name: '胸をたたく', nameEn: 'Chest Pound', maxLevel: 4, location: '預言者の石窟', spirit: '火の預言者' },
-  { id: 'emote_057', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/3/31/Assembly-march-emote.png/revision/latest/scale-to-width-down/51', name: '行進', nameEn: 'Marching', maxLevel: 4, location: '雨林の小川', spirit: '行進する冒険家' },
-  { id: 'emote_058', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f2/LevitatingAdept-1.png/revision/latest/scale-to-width-down/51', name: '念動力', nameEn: 'Telekinesis', maxLevel: 4, location: '書庫の2階', spirit: '念動力の使い手' },
-  { id: 'emote_059', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a5/Meditating-Monastic-1.png/revision/latest/scale-to-width-down/51', name: '浮遊', nameEn: 'Float', maxLevel: 4, location: '書庫の4階', spirit: '瞑想する修道士' },
-  { id: 'emote_060', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/75/PrayingAcolyte-1.png/revision/latest/scale-to-width-down/51', name: '祈る', nameEn: 'Pray', maxLevel: 4, location: '書庫の1階', spirit: '祈る侍者' },
-  { id: 'emote_061', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/8/82/Mimi-4117_02_stretching_guru_emote.png/revision/latest/scale-to-width-down/51', name: '太陽礼拝', nameEn: 'Yoga', maxLevel: 4, location: '草原の洞窟', spirit: '屈伸する導師' },
-  { id: 'emote_062', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/8/88/Mimi-4117_03_shushing_light_scholar_emote.png/revision/latest/scale-to-width-down/51', name: 'しーっ', nameEn: 'Shush', maxLevel: 4, location: '書庫の4階', spirit: '静けさを望む光学者' },
-  { id: 'emote_063', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/fd/Belonging_sparkler.png/revision/latest/scale-to-width-down/51', name: 'スパークル', nameEn: 'Sparkler', maxLevel: 4, location: '峡谷の神殿', spirit: '煌きを放つ親' },
-  { id: 'emote_064', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/ad/Emote-thinking.png/revision/latest/scale-to-width-down/51', name: '考え中', nameEn: 'Thinking', maxLevel: 4, location: '書庫の1階', spirit: '思慮深き座長' },
-  { id: 'emote_065', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/1/17/Fall_asleep_white_on_black.png/revision/latest/scale-to-width-down/51', name: '居眠り', nameEn: 'Doze', maxLevel: 4, location: '忘れられた方舟', spirit: '居眠りする大工' },
-  { id: 'emote_066', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/5/54/SoP_balance.png/revision/latest/scale-to-width-down/51', name: 'バランス', nameEn: 'Balance', maxLevel: 4, location: '預言者の石窟', spirit: '風の預言者' },
-  { id: 'emote_067', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/9/9c/SoP_deep_breath.png/revision/latest/scale-to-width-down/51', name: '深呼吸', nameEn: 'Deep Breath', maxLevel: 4, location: '預言者の石窟', spirit: '水の預言者' },
-  { id: 'emote_068', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c0/Assembly-Daydream-emote.png/revision/latest/scale-to-width-down/51', name: 'しゃぼん玉', nameEn: 'Bubbles', maxLevel: 4, location: '雨林の墓場', spirit: '夢見がちな森の民' },
-  { id: 'emote_069', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/5/58/SOTLP-Beckoning-Ruler.png/revision/latest/scale-to-width-down/51', name: '手招き', nameEn: 'Beckon', maxLevel: 4, location: '星月夜の砂漠', spirit: '手招く支配者' },
-  { id: 'emote_070', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f9/SOTLP-Gloating-Narcissist.png/revision/latest/scale-to-width-down/51', name: 'ご満悦', nameEn: 'Gloat', maxLevel: 4, location: '星月夜の砂漠', spirit: 'ご満悦のうぬぼれ屋' },
-  { id: 'emote_071', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/d8/SOTLP-Stretching-Lamplighter.png/revision/latest/scale-to-width-down/51', name: 'ストレッチ', nameEn: 'Stretch', maxLevel: 4, location: '星月夜の砂漠', spirit: '体をほぐす点燈夫' },
-  { id: 'emote_072', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/9/9f/SOTLP-Slouching-Soldier.png/revision/latest/scale-to-width-down/51', name: 'うなだれる', nameEn: 'Slouch', maxLevel: 4, location: '星月夜の砂漠', spirit: 'うなだれる戦士' },
-  { id: 'emote_073', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/5/58/SOTLP-Sneezing-Geographer.png/revision/latest/scale-to-width-down/51', name: 'くしゃみ', nameEn: 'Sneeze', maxLevel: 4, location: '星月夜の砂漠', spirit: 'くしゃみする地理学者' },
-  { id: 'emote_074', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f9/SOTLP-Star-Collector.png/revision/latest/scale-to-width-down/51', name: 'しめしめ', nameEn: 'Hand-Rub', maxLevel: 4, location: '星月夜の砂漠', spirit: '星の収集家' },
-  { id: 'emote_075', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/ad/Season_of_Flight_-_voila_icon.png/revision/latest/scale-to-width-down/51', name: 'ジャジャーン', nameEn: 'Voilà', maxLevel: 4, location: '風の街道', spirit: '腕利きの工匠' },
-  { id: 'emote_076', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/3/3e/Season_of_Flight_-_Lively_Navigator_icon.png/revision/latest/scale-to-width-down/51', name: '誘導', nameEn: 'Navigate', maxLevel: 4, location: '風の街道', spirit: '快活な誘導手' },
-  { id: 'emote_077', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/e/e8/SOA-Ceasing-Commodore-emote.png/revision/latest/scale-to-width-down/51', name: '落ち着いて', nameEn: 'Calm Down', maxLevel: 4, location: '秘宝の環礁', spirit: '動じない提督' },
-  { id: 'emote_078', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/65/SOA-Cackling-Cannoneer-emote.png/revision/latest/scale-to-width-down/51', name: '邪悪な笑い', nameEn: 'Evil Laugh', maxLevel: 4, location: '秘宝の環礁', spirit: '豪快に笑う砲手' },
-  { id: 'emote_079', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b7/SOA-Bumbling-Boatswain-emote.png/revision/latest/scale-to-width-down/51', name: '痛い！', nameEn: 'Ouch', maxLevel: 4, location: '秘宝の環礁', spirit: 'おっちょこちょいな水夫長' },
-  { id: 'emote_080', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/1/1a/SOA-Anxious-Angler-emote.png/revision/latest/scale-to-width-down/51', name: '不安', nameEn: 'Anxious', maxLevel: 4, location: '秘宝の環礁', spirit: '繊細な漁師' },
-  { id: 'emote_081', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/0d/Morybel-0146-SoPerformance_-_Mellow_Musician-icon.png/revision/latest/scale-to-width-down/51', name: 'ヘッドバンギング', nameEn: 'Headbob', maxLevel: 4, location: '夢見の劇場', spirit: 'のんびり屋の音楽家' },
-  { id: 'emote_082', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/3/3e/SoPerformance_-_Forgetful_Storyteller-emote-icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'うわー！', nameEn: 'Awww', maxLevel: 4, location: '夢見の劇場', spirit: '忘れっぽい劇作家' },
-  { id: 'emote_083', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b0/SoAurora-Running-Wayfarer-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '光を振る', nameEn: 'Waving Light', maxLevel: 4, location: '円形劇場', spirit: '駆けゆく旅人' },
-  { id: 'emote_084', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c1/SoAurora-Mindful-Miner-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '持ち上げる', nameEn: 'Raise the Roof', maxLevel: 4, location: '円形劇場', spirit: '覚醒の採掘者' },
-  { id: 'emote_085', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/61/SoAurora-Warrior-of-Love-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'クルクル', nameEn: 'Twirl', maxLevel: 4, location: '円形劇場', spirit: '慈愛の戦士' },
-  { id: 'emote_086', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f1/SoAurora-Seed-of-Hope-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '手拍子', nameEn: 'Rhythmic Clap', maxLevel: 4, location: '円形劇場', spirit: '希望の君' },
-  { id: 'emote_087', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b3/SoAurora-Ultimate-Expression-Dance-2-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '指揮', nameEn: 'Conduct', maxLevel: 4, location: '円形劇場', spirit: 'AURORA', isGuide: true },
-  { id: 'emote_088', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/9/9b/SoAurora-Ultimate-Expression-Dance-1-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'サイレント拍手', nameEn: 'Silent Clap', maxLevel: 4, location: '円形劇場', spirit: 'AURORA', isGuide: true },
-  { id: 'emote_089', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a6/SoAurora-Ultimate-Expression-Dance-3-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'スキップ', nameEn: 'Skipping', maxLevel: 4, location: '円形劇場', spirit: 'AURORA', isGuide: true },
-  { id: 'emote_090', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/66/SoRemembrance-Pleading-Child-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '懇願', nameEn: 'Pleading', maxLevel: 4, location: '君憶う保存庫', spirit: '懇願する幼子' },
-  { id: 'emote_091', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/1/1c/SoRemembrance-Tiptoeing-Tea-Brewer-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'ぬき足', nameEn: 'Tiptoeing', maxLevel: 4, location: '君憶う保存庫', spirit: 'ぬき足の茶人' },
-  { id: 'emote_092', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a0/SoRemembrance-Bereft-Veteran-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '嘆く', nameEn: 'Grieving', maxLevel: 4, location: '君憶う保存庫', spirit: '喪失の初老' },
-  { id: 'emote_093', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/8/8c/Passage-Oddball-Outcast-Emote-icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'フットバック', nameEn: 'Hacky Sack', maxLevel: 4, location: '孤島', spirit: '風変わりなひとり好き' },
-  { id: 'emote_094', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/8/87/Passage-Tumbling-Troublemaker-Emote-icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'でんぐり返し', nameEn: 'Somersault', maxLevel: 4, location: '孤島', spirit: 'ぐるぐる回るいたずらっ子' },
-  { id: 'emote_095', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c0/Passage-Melancholy-Mope-Emote-icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'とぼとぼ歩き', nameEn: 'Moping', maxLevel: 4, location: '孤島', spirit: '物憂げなとぼとぼ歩き' },
-  { id: 'emote_096', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c2/Passage-Overactive-Overachiever-Emote-icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '懸垂', nameEn: 'Pull-up', maxLevel: 4, location: '孤島', spirit: '活発すぎる頑張り屋' },
-  { id: 'emote_097', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/78/Jolly-Geologist-Emote-icon-Credit-Morybel.png/revision/latest/scale-to-width-down/51', name: '上機嫌', nameEn: 'Jolly Dance', maxLevel: 4, location: '草原連峰', spirit: '上機嫌な地質学者' },
-  { id: 'emote_098', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/72/Ascetic-Monk-Emote-icon-Credit-Morybel.png/revision/latest/scale-to-width-down/51', name: '目隠しバランスポーズ', nameEn: 'Blindfold Balance Pose', maxLevel: 4, location: '草原連峰', spirit: '節制の修行者' },
-  { id: 'emote_099', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/79/AURORA-Cure-for-Me-expression-icon-Credit-Morybel.png/revision/latest/scale-to-width-down/51', name: 'キュア・フォー・ミー', nameEn: 'Cure for Me Dance', maxLevel: 2, location: '円形劇場', spirit: 'AURORA', isGuide: true },
-  { id: 'emote_100', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/e/e5/Herb-Gatherer-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '口笛', nameEn: 'Whistle', maxLevel: 4, location: '三日月オアシス', spirit: '薬草採集人' },
-  { id: 'emote_101', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/6c/Hunter-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '手足を曲げる', nameEn: 'Flex', maxLevel: 4, location: '三日月オアシス', spirit: '狩人' },
-  { id: 'emote_102', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/07/Princess-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '浮遊スピン', nameEn: 'Float Spin', maxLevel: 4, location: '三日月オアシス', spirit: '王女' },
-  { id: 'emote_103', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/73/The-Moomin-Storybook-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '本を読む', nameEn: 'Read', maxLevel: 4, location: 'ムーミン谷', spirit: 'ムーミンの本', isGuide: true },
-  { id: 'emote_104', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b2/Radiance-Leaping-Dancer-Cartwheel-expression-icon.png/revision/latest/scale-to-width-down/51', name: '側転', nameEn: 'Cartwheel', maxLevel: 4, location: '花鳥郷', spirit: '光に染まる飛び跳ねる舞踏家' },
-  { id: 'emote_105', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a8/Radiance-Greeting-Shaman-Expression-icon.png/revision/latest/scale-to-width-down/51', name: 'ハートジェスチャー', nameEn: 'Heart Gesture', maxLevel: 4, location: '花鳥郷', spirit: '光に染まる礼を尽くす祈祷師' },
-  { id: 'emote_106', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c6/Radiance-Provoking-Performer-Expression-icon.png/revision/latest/scale-to-width-down/51', name: 'アップダンス', nameEn: 'Hype Dance', maxLevel: 4, location: '花鳥郷', spirit: '光に染まる挑戦的な表現者' },
-  { id: 'emote_107', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/2e/Blue-Bird-Guide-ultimate-expression.png/revision/latest/scale-to-width-down/51', name: '咳き込む', nameEn: 'Cough', maxLevel: 4, location: '青い鳥劇場', spirit: '青い鳥の案内人', isGuide: true },
-  { id: 'emote_108', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/e/e3/Royal-Hairtousle-Teen-emote-icon.png/revision/latest/scale-to-width-down/51', name: '驚き', nameEn: 'Surprised', maxLevel: 4, location: '青い鳥劇場', spirit: '高貴なぽんぽんする若者' },
-  { id: 'emote_109', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/62/Migrating-Manta-Whisperer-emote-icon.png/revision/latest/scale-to-width-down/51', name: 'レースフラッグ', nameEn: 'Flag Signal', maxLevel: 4, location: '風の街道', spirit: '渡りのマンタの語り部' },
-  { id: 'emote_110', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/fb/Migrating-Bird-Whisperer-emote-icon.png/revision/latest/scale-to-width-down/51', name: '飛行ごっこ', nameEn: 'Flight Run', maxLevel: 4, location: '風の街道', spirit: '渡りの鳥の語り部' },
-  { id: 'emote_111', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c4/Migrating-Jelly-Whisperer-emote-icon.png/revision/latest/scale-to-width-down/51', name: '海月ダンス', nameEn: 'Jellyfish Dance', maxLevel: 4, location: '風の街道', spirit: '渡りの海月の語り部' },
-  { id: 'emote_112', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/bd/Migrating-Butterfly-Charmer-emote-icon.png/revision/latest/scale-to-width-down/51', name: 'くらくら', nameEn: 'Dizzy', maxLevel: 4, location: '風の街道', spirit: '渡りの蝶々使い' },
-  { id: 'emote_113', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/23/Lightmending-Pioneer-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '小さく拍手', nameEn: 'Cute Clap', maxLevel: 4, location: '壊れし燈の保管庫', spirit: '光修繕する開拓者' },
-  { id: 'emote_114', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a3/Carnival-Stunt-Actor-Emote-icon.png/revision/latest/scale-to-width-down/51', name: 'いいね', nameEn: 'Approve', maxLevel: 4, location: '放浪カーニバル（仮訳）', spirit: 'カーニバルの旅役者' },
-  { id: 'emote_115', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/be/Carnival-Athletic-Dancer-Emote-icon.png/revision/latest/scale-to-width-down/51', name: 'ブレイクダンス', nameEn: 'Break Dance', maxLevel: 4, location: '放浪カーニバル（仮訳）', spirit: 'カーニバルの旋舞家' },
-  { id: 'emote_116', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/5/54/Carnival-Juggler-Emote-icon.png/revision/latest/scale-to-width-down/51', name: 'ボール回し', nameEn: 'Ball Spin Trick', maxLevel: 4, location: '放浪カーニバル（仮訳）', spirit: 'カーニバルの曲芸師' },
-  { id: 'emote_117', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/22/Carnival-Puzzle-Director-Emote-icon.png/revision/latest/scale-to-width-down/51', name: 'メモする', nameEn: 'Take Notes', maxLevel: 4, location: '放浪カーニバル（仮訳）', spirit: 'カーニバルの謎解き座長' },
-  { id: 'emote_118', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/cb/Dear-Van-Gogh-Dutch-Memory-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '落胆', nameEn: 'Frustration', maxLevel: 4, location: '星々の展示（仮訳）', spirit: 'オランダの思い出' },
-  { id: 'emote_119', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b8/Dear-Van-Gogh-Joyful-Memory-Emote-icon.png/revision/latest/scale-to-width-down/51', name: 'ゆっくり歩く', nameEn: 'Slow Walk', maxLevel: 4, location: '星々の展示（仮訳）', spirit: '歓喜の思い出' },
-  { id: 'emote_120', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/fc/Dear-Van-Gogh-Rustic-Memory-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '浴びる', nameEn: 'Bask', maxLevel: 4, location: '星々の展示（仮訳）', spirit: '素朴な思い出' },
-  { id: 'emote_121', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/1/1c/Dear-Van-Gogh-Artistic-Memory-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '描く', nameEn: 'Draw', maxLevel: 4, location: '星々の展示（仮訳）', spirit: '画家の思い出' },
+  { id: 'emote_001', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/4/4e/Emote-basic_sit.png/revision/latest/scale-to-width-down/51', name: '座る', nameEn: 'Sit', maxLevel: 1, location: 'デフォルト', locationEn: 'Default', spirit: null, spiritEn: null },
+  { id: 'emote_002', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/5/55/PointingCandlemaker-1.png/revision/latest/scale-to-width-down/51', name: '指さし', nameEn: 'Point', maxLevel: 4, location: '孤島', locationEn: 'Isle of Dawn', spirit: '指差すキャンドル職人', spiritEn: 'Pointing Candlemaker' },
+  { id: 'emote_003', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/d8/UsheringStargazer-1.png/revision/latest/scale-to-width-down/51', name: 'おいで', nameEn: 'Come', maxLevel: 4, location: '孤島', locationEn: 'Isle of Dawn', spirit: '先導する星読み', spiritEn: 'Ushering Stargazer' },
+  { id: 'emote_004', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/27/RejectingVoyager-1.png/revision/latest/scale-to-width-down/51', name: '固辞', nameEn: 'No Thanks', maxLevel: 4, location: '孤島', locationEn: 'Isle of Dawn', spirit: '固辞する航行者', spiritEn: 'Rejecting Voyager' },
+  { id: 'emote_005', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/de/Emote-curtsy.png/revision/latest/scale-to-width-down/51', name: 'ようこそ', nameEn: 'Welcome', maxLevel: 4, location: '孤島', locationEn: 'Isle of Dawn', spirit: '一座の進行役', spiritEn: 'Troupe Greeter' },
+  { id: 'emote_006', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/7f/Head_nod_white_on_black.png/revision/latest/scale-to-width-down/51', name: 'うなずく', nameEn: 'Nod', maxLevel: 4, location: '忘れられた方舟', locationEn: 'Forgotten Ark', spirit: 'うなずく壁画師', spiritEn: 'Nodding Muralist' },
+  { id: 'emote_007', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/d9/Assembly-scolding-emote.png/revision/latest/scale-to-width-down/51', name: 'チッチッチ', nameEn: 'Scold', maxLevel: 4, location: '雨林の開拓地', locationEn: 'Elevated Clearing', spirit: 'したり顔の生徒', spiritEn: 'Scolding Student' },
+  { id: 'emote_008', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/0d/ButterflyCharmer-1.png/revision/latest/scale-to-width-down/51', name: '蝶々', nameEn: 'Butterfly', maxLevel: 4, location: '蝶々の住処', locationEn: 'Butterfly Fields', spirit: '蝶々使い', spiritEn: 'Butterfly Charmer' },
+  { id: 'emote_009', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/25/ApplaudingBellmaker-1.png/revision/latest/scale-to-width-down/51', name: '拍手', nameEn: 'Clap', maxLevel: 4, location: '草原の村', locationEn: 'Prairie Village', spirit: '賞賛する鐘の造り手', spiritEn: 'Applauding Bellmaker' },
+  { id: 'emote_010', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/0d/WavingBellmaker-1.png/revision/latest/scale-to-width-down/51', name: '手を振る', nameEn: 'Wave', maxLevel: 6, location: '草原の村', locationEn: 'Prairie Village', spirit: '手を振る鐘の造り手', spiritEn: 'Waving Bellmaker' },
+  { id: 'emote_011', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/4/4e/LaughingLightCatcher-1.png/revision/latest/scale-to-width-down/51', name: '笑う', nameEn: 'Laugh', maxLevel: 4, location: '草原の村', locationEn: 'Prairie Village', spirit: '笑う光採取者', spiritEn: 'Laughing Light Catcher' },
+  { id: 'emote_012', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/bb/SlumberingShipwright-1.png/revision/latest/scale-to-width-down/51', name: 'あくび', nameEn: 'Yawn', maxLevel: 4, location: '草原の村', locationEn: 'Prairie Village', spirit: '寝不足の造舟師', spiritEn: 'Sleepy Shipwright' },
+  { id: 'emote_013', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/6f/ExhaustedDockWorker-1.png/revision/latest/scale-to-width-down/51', name: '汗拭き', nameEn: 'Wipe Brow', maxLevel: 4, location: '草原の洞窟', locationEn: 'Prairie Caves', spirit: '疲弊した荷積み人', spiritEn: 'Exhausted Dock Worker' },
+  { id: 'emote_014', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b0/CeremonialWorshiper-1.png/revision/latest/scale-to-width-down/51', name: '火を掲げる', nameEn: 'Teamwork', maxLevel: 1, location: '8人エレベーター', locationEn: '8-Player Elevator', spirit: '式典の礼拝者', spiritEn: 'Ceremonial Worshiper' },
+  { id: 'emote_015', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/6d/Emote-blow_kisses.png/revision/latest/scale-to-width-down/51', name: '投げキッス', nameEn: 'Blow Kiss', maxLevel: 4, location: '雨林の墓場', locationEn: 'Forest Graveyard', spirit: 'うっとりするような旅役者', spiritEn: 'Admiring Actor' },
+  { id: 'emote_016', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f8/SOS_grateful.png/revision/latest/scale-to-width-down/51', name: '感謝', nameEn: 'Grateful', maxLevel: 4, location: '楽園の島々', locationEn: 'Sanctuary Islands', spirit: '感謝する貝殻収集家', spiritEn: 'Grateful Shell Collector' },
+  { id: 'emote_017', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c2/SOS_Chill.png/revision/latest/scale-to-width-down/51', name: '腹つづみ', nameEn: 'Belly Scratch', maxLevel: 4, location: '楽園の島々', locationEn: 'Sanctuary Islands', spirit: 'くつろぐ日光浴者', spiritEn: 'Chill Sunbather' },
+  { id: 'emote_018', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/1/10/Assembly-chuckling-emote.png/revision/latest/scale-to-width-down/51', name: '含み笑い', nameEn: 'Chuckle', maxLevel: 4, location: '雨林の墓場', locationEn: 'Forest Graveyard', spirit: '含み笑いのスカウト', spiritEn: 'Chuckling Scout' },
+  { id: 'emote_019', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/3/35/ShiveringTrailblazer-1.png/revision/latest/scale-to-width-down/51', name: '凍える', nameEn: 'Shiver', maxLevel: 4, location: '雨林の開拓地', locationEn: 'Elevated Clearing', spirit: '凍える先駆者', spiritEn: 'Shivering Trailblazer' },
+  { id: 'emote_020', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/2a/HideNSeekPioneer-1.png/revision/latest/scale-to-width-down/51', name: 'かくれんぼ', nameEn: 'Hide and Seek', maxLevel: 1, location: '雨林の小川', locationEn: 'Forest Brook', spirit: 'かくれんぼ提唱者', spiritEn: 'Hide\'n\'Seek Pioneer' },
+  { id: 'emote_021', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f7/PoutyPorter-1.png/revision/latest/scale-to-width-down/51', name: '怒る', nameEn: 'Angry', maxLevel: 4, location: '雨林の小川', locationEn: 'Forest Brook', spirit: '怒れる運び人', spiritEn: 'Pouty Porter' },
+  { id: 'emote_022', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/6f/BlushingProspector-1.png/revision/latest/scale-to-width-down/51', name: '恥じらう', nameEn: 'Shy', maxLevel: 4, location: '雨林の墓場', locationEn: 'Forest Graveyard', spirit: '恥じらう探鉱者', spiritEn: 'Blushing Prospector' },
+  { id: 'emote_023', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/7e/DismayedHunter-1.png/revision/latest/scale-to-width-down/51', name: 'ショック', nameEn: 'Shocked', maxLevel: 4, location: '雨林の墓場', locationEn: 'Forest Graveyard', spirit: 'うろたえる狩人', spiritEn: 'Dismayed Hunter' },
+  { id: 'emote_024', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/23/ApologeticLumberjack-1.png/revision/latest/scale-to-width-down/51', name: '謝る', nameEn: 'Apologize', maxLevel: 4, location: '雨林の墓場', locationEn: 'Forest Graveyard', spirit: '反省する木こり', spiritEn: 'Apologetic Lumberjack' },
+  { id: 'emote_025', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/9/9c/TearfulLightMiner-1.png/revision/latest/scale-to-width-down/51', name: '泣く', nameEn: 'Crying', maxLevel: 6, location: '雨林の墓場', locationEn: 'Forest Graveyard', spirit: '涙ぐむ光坑夫', spiritEn: 'Tearful Light Miner' },
+  { id: 'emote_026', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/3/3e/Mimi-4117_02_provoking_performer_emote.png/revision/latest/scale-to-width-down/51', name: '歌舞伎風', nameEn: 'Kabuki', maxLevel: 4, location: '雨林の小川', locationEn: 'Forest Brook', spirit: '挑戦的な表現者', spiritEn: 'Provoking Performer' },
+  { id: 'emote_027', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b3/Shrug_white_on_black.png/revision/latest/scale-to-width-down/51', name: '肩をすくめる', nameEn: 'Shrug', maxLevel: 4, location: '忘れられた方舟', locationEn: 'Forgotten Ark', spirit: '無頓着な錬金術師', spiritEn: 'Indifferent Alchemist' },
+  { id: 'emote_028', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/e/e3/SoS_grouch.png/revision/latest/scale-to-width-down/51', name: 'ふきげん', nameEn: 'Grumpy', maxLevel: 4, location: '楽園の島々', locationEn: 'Sanctuary Islands', spirit: 'ハイキングする気むずかし屋', spiritEn: 'Hiking Grouch' },
+  { id: 'emote_029', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/cb/Season_of_Dreams_-_Peeking_postman.png/revision/latest/scale-to-width-down/51', name: 'そっと覗く', nameEn: 'Peek', maxLevel: 4, location: '夢見の町', locationEn: 'Village of Dreams', spirit: 'そっと覗く郵便屋', spiritEn: 'Peeking Postman' },
+  { id: 'emote_030', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/63/Assembly-Scaredy-emote.png/revision/latest/scale-to-width-down/51', name: 'ひゃー', nameEn: 'Eww', maxLevel: 4, location: '雨林の小川', locationEn: 'Forest Brook', spirit: '臆病な見習い士官', spiritEn: 'Scaredy Cadet' },
+  { id: 'emote_031', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/7b/Assembly-Facepalm-emote.png/revision/latest/scale-to-width-down/51', name: '顔を覆う', nameEn: 'Facepalm', maxLevel: 4, location: '雨林の開拓地', locationEn: 'Elevated Clearing', spirit: 'とまどう植物学者', spiritEn: 'Baffled Botanist' },
+  { id: 'emote_032', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/09/HandstandingThrillseeker-1.png/revision/latest/scale-to-width-down/51', name: '逆立ち', nameEn: 'Handstand', maxLevel: 4, location: '城塞都市', locationEn: 'Citadel', spirit: '逆立ちする怖いもの知らず', spiritEn: 'Handstanding Daredevil' },
+  { id: 'emote_033', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/75/BackflippingChampion-1.png/revision/latest/scale-to-width-down/51', name: '宙返り', nameEn: 'Backflip', maxLevel: 4, location: '城塞都市', locationEn: 'Citadel', spirit: '宙返りをする優勝者', spiritEn: 'Backflipping Champion' },
+  { id: 'emote_034', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b2/BowingMedalist-1.png/revision/latest/scale-to-width-down/51', name: 'お辞儀', nameEn: 'Bow', maxLevel: 4, location: '円形劇場', locationEn: 'Amphitheater', spirit: 'お辞儀をするメダリスト', spiritEn: 'Bowing Medalist' },
+  { id: 'emote_035', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/df/CheerfulSpectator-1.png/revision/latest/scale-to-width-down/51', name: '応援', nameEn: 'Cheer', maxLevel: 4, location: '円形劇場', locationEn: 'Amphitheater', spirit: '応援する観客', spiritEn: 'Cheerful Spectator' },
+  { id: 'emote_036', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/67/Mimi-4117_02_leaping_dancer_emote.png/revision/latest/scale-to-width-down/51', name: 'わーい', nameEn: 'Leap', maxLevel: 4, location: 'アイスリンク', locationEn: 'Ice Rink', spirit: '飛び跳ねる舞踏家', spiritEn: 'Leaping Dancer' },
+  { id: 'emote_037', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/d0/Mimi-4117_03_twirling_champion_emote.png/revision/latest/scale-to-width-down/51', name: 'トリプルアクセル', nameEn: 'Triple Axel', maxLevel: 4, location: 'アイスリンク', locationEn: 'Ice Rink', spirit: 'くるりと舞う優勝者', spiritEn: 'Twirling Champion' },
+  { id: 'emote_038', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b3/Belonging_confetti.png/revision/latest/scale-to-width-down/51', name: 'おめでとう', nameEn: 'Confetti', maxLevel: 4, location: '蝶々の住処', locationEn: 'Butterfly Fields', spirit: '紙ふぶき好きのいとこ', spiritEn: 'Confetti Cousin' },
+  { id: 'emote_039', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/05/Belonging_dancing.png/revision/latest/scale-to-width-down/51', name: 'ブギーダンス', nameEn: 'Boogie Dance', maxLevel: 4, location: '孤島', locationEn: 'Isle of Dawn', spirit: '音と舞う幼子', spiritEn: 'Boogie Kid' },
+  { id: 'emote_040', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/0c/Emote-dance.png/revision/latest/scale-to-width-down/51', name: 'スピンダンス', nameEn: 'Spin Dance', maxLevel: 4, location: '鳥の塔', locationEn: 'Bird Tower', spirit: '祝祭の旋舞家', spiritEn: 'Festival Whirling Dancer' },
+  { id: 'emote_041', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/af/Emote-juggle.png/revision/latest/scale-to-width-down/51', name: 'ジャグリング', nameEn: 'Juggle', maxLevel: 4, location: 'アイスリンク', locationEn: 'Ice Rink', spirit: '一座の曲芸師', spiritEn: 'Troupe Juggler' },
+  { id: 'emote_042', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a0/Crab_walk_white_on_black.png/revision/latest/scale-to-width-down/51', name: '蟹歩き', nameEn: 'Crab Walk', maxLevel: 4, location: '忘れられた方舟', locationEn: 'Forgotten Ark', spirit: '蟹歩きの名人', spiritEn: 'Crab Walker' },
+  { id: 'emote_043', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/3/37/SOS_rally.png/revision/latest/scale-to-width-down/51', name: 'ガッツ！', nameEn: 'Rally Cheer', maxLevel: 4, location: '楽園の島々', locationEn: 'Sanctuary Islands', spirit: '奮い立つ怖いもの知らず', spiritEn: 'Rallying Daredevil' },
+  { id: 'emote_044', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/05/Season_of_Dreams_-_Spinning_mentor.png/revision/latest/scale-to-width-down/51', name: '旋舞スピン', nameEn: 'Spin Trick', maxLevel: 4, location: '夢見の町', locationEn: 'Village of Dreams', spirit: '旋舞の師匠', spiritEn: 'Whirling Dance Master' },
+  { id: 'emote_045', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/26/Season_of_Dreams_-_Dancing_performer.png/revision/latest/scale-to-width-down/51', name: 'ショーダンス', nameEn: 'Show Dance', maxLevel: 4, location: '夢見の町', locationEn: 'Village of Dreams', spirit: '舞い踊る表現者', spiritEn: 'Dancing Performer' },
+  { id: 'emote_046', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f9/FrightenedRefugee-1.png/revision/latest/scale-to-width-down/51', name: '身をかがめる', nameEn: 'Duck', maxLevel: 4, location: '倒壊した祠', locationEn: 'Collapsed Shrine', spirit: '怯える難民', spiritEn: 'Frightened Refugee' },
+  { id: 'emote_047', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/8/87/FaintingWarrior-1.png/revision/latest/scale-to-width-down/51', name: '気絶', nameEn: 'Faint', maxLevel: 4, location: '倒壊した祠', locationEn: 'Collapsed Shrine', spirit: '昏倒する戦士', spiritEn: 'Fainting Warrior' },
+  { id: 'emote_048', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/2a/Emote-respect.png/revision/latest/scale-to-width-down/51', name: 'リスペクト', nameEn: 'Respect', maxLevel: 4, location: '墓所', locationEn: 'Graveyard', spirit: '敬意を表す楽師', spiritEn: 'Respectful Pianist' },
+  { id: 'emote_049', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/fa/LookoutScout-1.png/revision/latest/scale-to-width-down/51', name: '見回す', nameEn: 'Look Around', maxLevel: 4, location: '戦場', locationEn: 'Battlefield', spirit: '警戒する斥候', spiritEn: 'Lookout Scout' },
+  { id: 'emote_050', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/2b/SalutingCaptain-1.png/revision/latest/scale-to-width-down/51', name: '敬礼', nameEn: 'Salute', maxLevel: 4, location: '座礁船', locationEn: 'Shipwreck', spirit: '敬礼する隊長', spiritEn: 'Saluting Captain' },
+  { id: 'emote_051', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/db/Mimi-4117_02_saluting_protector_emote.png/revision/latest/scale-to-width-down/51', name: '了解！', nameEn: 'Acknowledge', maxLevel: 4, location: '暗黒竜1匹エリア', locationEn: 'Dark Dragon Area', spirit: '敬礼する守護者', spiritEn: 'Saluting Protector' },
+  { id: 'emote_052', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/9/9a/Mimi-4117_02_greeting_shaman_emote.png/revision/latest/scale-to-width-down/51', name: 'カンフー', nameEn: 'Kung Fu', maxLevel: 4, location: '書庫の4階', locationEn: 'Vault Floor 4', spirit: '礼を尽くす祈祷師', spiritEn: 'Greeting Shaman' },
+  { id: 'emote_053', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/e/ef/Belonging_crawl.png/revision/latest/scale-to-width-down/51', name: '行かないで', nameEn: "Don't Go!", maxLevel: 4, location: '墓所', locationEn: 'Graveyard', spirit: '訴えかける親', spiritEn: 'Pleaful Parent' },
+  { id: 'emote_054', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/aa/Boo_white_on_black.png/revision/latest/scale-to-width-down/51', name: 'ばあ！！', nameEn: 'Boo', maxLevel: 4, location: '忘れられた方舟', locationEn: 'Forgotten Ark', spirit: 'こけおどしの農家', spiritEn: 'Scarecrow Farmer' },
+  { id: 'emote_055', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/8/8d/SoP_dust_off.png/revision/latest/scale-to-width-down/51', name: 'ほこり払い', nameEn: 'Dust Off', maxLevel: 4, location: '預言者の石窟', locationEn: 'Cave of Prophecies', spirit: '地の預言者', spiritEn: 'Prophet of Earth' },
+  { id: 'emote_056', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/cf/SoP_chest_pound.png/revision/latest/scale-to-width-down/51', name: '胸をたたく', nameEn: 'Chest Pound', maxLevel: 4, location: '預言者の石窟', locationEn: 'Cave of Prophecies', spirit: '火の預言者', spiritEn: 'Prophet of Fire' },
+  { id: 'emote_057', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/3/31/Assembly-march-emote.png/revision/latest/scale-to-width-down/51', name: '行進', nameEn: 'Marching', maxLevel: 4, location: '雨林の小川', locationEn: 'Forest Brook', spirit: '行進する冒険家', spiritEn: 'Marching Adventurer' },
+  { id: 'emote_058', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f2/LevitatingAdept-1.png/revision/latest/scale-to-width-down/51', name: '念動力', nameEn: 'Telekinesis', maxLevel: 4, location: '書庫の2階', locationEn: 'Vault Floor 2', spirit: '念動力の使い手', spiritEn: 'Levitating Adept' },
+  { id: 'emote_059', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a5/Meditating-Monastic-1.png/revision/latest/scale-to-width-down/51', name: '浮遊', nameEn: 'Float', maxLevel: 4, location: '書庫の4階', locationEn: 'Vault Floor 4', spirit: '瞑想する修道士', spiritEn: 'Meditating Monastic' },
+  { id: 'emote_060', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/75/PrayingAcolyte-1.png/revision/latest/scale-to-width-down/51', name: '祈る', nameEn: 'Pray', maxLevel: 4, location: '書庫の1階', locationEn: 'Vault Floor 1', spirit: '祈る侍者', spiritEn: 'Praying Acolyte' },
+  { id: 'emote_061', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/8/82/Mimi-4117_02_stretching_guru_emote.png/revision/latest/scale-to-width-down/51', name: '太陽礼拝', nameEn: 'Yoga', maxLevel: 4, location: '草原の洞窟', locationEn: 'Prairie Caves', spirit: '屈伸する導師', spiritEn: 'Stretching Guru' },
+  { id: 'emote_062', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/8/88/Mimi-4117_03_shushing_light_scholar_emote.png/revision/latest/scale-to-width-down/51', name: 'しーっ', nameEn: 'Shush', maxLevel: 4, location: '書庫の4階', locationEn: 'Vault Floor 4', spirit: '静けさを望む光学者', spiritEn: 'Shushing Light Scholar' },
+  { id: 'emote_063', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/fd/Belonging_sparkler.png/revision/latest/scale-to-width-down/51', name: 'スパークル', nameEn: 'Sparkler', maxLevel: 4, location: '峡谷の神殿', locationEn: 'Valley Temple', spirit: '煌きを放つ親', spiritEn: 'Sparkler Parent' },
+  { id: 'emote_064', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/ad/Emote-thinking.png/revision/latest/scale-to-width-down/51', name: '考え中', nameEn: 'Thinking', maxLevel: 4, location: '書庫の1階', locationEn: 'Vault Floor 1', spirit: '思慮深き座長', spiritEn: 'Thoughtful Director' },
+  { id: 'emote_065', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/1/17/Fall_asleep_white_on_black.png/revision/latest/scale-to-width-down/51', name: '居眠り', nameEn: 'Doze', maxLevel: 4, location: '忘れられた方舟', locationEn: 'Forgotten Ark', spirit: '居眠りする大工', spiritEn: 'Snoozing Carpenter' },
+  { id: 'emote_066', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/5/54/SoP_balance.png/revision/latest/scale-to-width-down/51', name: 'バランス', nameEn: 'Balance', maxLevel: 4, location: '預言者の石窟', locationEn: 'Cave of Prophecies', spirit: '風の預言者', spiritEn: 'Prophet of Air' },
+  { id: 'emote_067', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/9/9c/SoP_deep_breath.png/revision/latest/scale-to-width-down/51', name: '深呼吸', nameEn: 'Deep Breath', maxLevel: 4, location: '預言者の石窟', locationEn: 'Cave of Prophecies', spirit: '水の預言者', spiritEn: 'Prophet of Water' },
+  { id: 'emote_068', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c0/Assembly-Daydream-emote.png/revision/latest/scale-to-width-down/51', name: 'しゃぼん玉', nameEn: 'Bubbles', maxLevel: 4, location: '雨林の墓場', locationEn: 'Forest Graveyard', spirit: '夢見がちな森の民', spiritEn: 'Daydream Forester' },
+  { id: 'emote_069', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/5/58/SOTLP-Beckoning-Ruler.png/revision/latest/scale-to-width-down/51', name: '手招き', nameEn: 'Beckon', maxLevel: 4, location: '星月夜の砂漠', locationEn: 'Starlight Desert', spirit: '手招く支配者', spiritEn: 'Beckoning Ruler' },
+  { id: 'emote_070', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f9/SOTLP-Gloating-Narcissist.png/revision/latest/scale-to-width-down/51', name: 'ご満悦', nameEn: 'Gloat', maxLevel: 4, location: '星月夜の砂漠', locationEn: 'Starlight Desert', spirit: 'ご満悦のうぬぼれ屋', spiritEn: 'Gloating Narcissist' },
+  { id: 'emote_071', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/d/d8/SOTLP-Stretching-Lamplighter.png/revision/latest/scale-to-width-down/51', name: 'ストレッチ', nameEn: 'Stretch', maxLevel: 4, location: '星月夜の砂漠', locationEn: 'Starlight Desert', spirit: '体をほぐす点燈夫', spiritEn: 'Stretching Lamplighter' },
+  { id: 'emote_072', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/9/9f/SOTLP-Slouching-Soldier.png/revision/latest/scale-to-width-down/51', name: 'うなだれる', nameEn: 'Slouch', maxLevel: 4, location: '星月夜の砂漠', locationEn: 'Starlight Desert', spirit: 'うなだれる戦士', spiritEn: 'Slouching Soldier' },
+  { id: 'emote_073', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/5/58/SOTLP-Sneezing-Geographer.png/revision/latest/scale-to-width-down/51', name: 'くしゃみ', nameEn: 'Sneeze', maxLevel: 4, location: '星月夜の砂漠', locationEn: 'Starlight Desert', spirit: 'くしゃみする地理学者', spiritEn: 'Sneezing Geographer' },
+  { id: 'emote_074', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f9/SOTLP-Star-Collector.png/revision/latest/scale-to-width-down/51', name: 'しめしめ', nameEn: 'Hand-Rub', maxLevel: 4, location: '星月夜の砂漠', locationEn: 'Starlight Desert', spirit: '星の収集家', spiritEn: 'Star Collector' },
+  { id: 'emote_075', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/ad/Season_of_Flight_-_voila_icon.png/revision/latest/scale-to-width-down/51', name: 'ジャジャーン', nameEn: 'Voilà', maxLevel: 4, location: '風の街道', locationEn: 'Wind Paths', spirit: '腕利きの工匠', spiritEn: 'Skilled Craftsman' },
+  { id: 'emote_076', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/3/3e/Season_of_Flight_-_Lively_Navigator_icon.png/revision/latest/scale-to-width-down/51', name: '誘導', nameEn: 'Navigate', maxLevel: 4, location: '風の街道', locationEn: 'Wind Paths', spirit: '快活な誘導手', spiritEn: 'Lively Navigator' },
+  { id: 'emote_077', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/e/e8/SOA-Ceasing-Commodore-emote.png/revision/latest/scale-to-width-down/51', name: '落ち着いて', nameEn: 'Calm Down', maxLevel: 4, location: '秘宝の環礁', locationEn: 'Treasure Reef', spirit: '動じない提督', spiritEn: 'Unfazed Admiral' },
+  { id: 'emote_078', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/65/SOA-Cackling-Cannoneer-emote.png/revision/latest/scale-to-width-down/51', name: '邪悪な笑い', nameEn: 'Evil Laugh', maxLevel: 4, location: '秘宝の環礁', locationEn: 'Treasure Reef', spirit: '豪快に笑う砲手', spiritEn: 'Boisterous Gunner' },
+  { id: 'emote_079', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b7/SOA-Bumbling-Boatswain-emote.png/revision/latest/scale-to-width-down/51', name: '痛い！', nameEn: 'Ouch', maxLevel: 4, location: '秘宝の環礁', locationEn: 'Treasure Reef', spirit: 'おっちょこちょいな水夫長', spiritEn: 'Clumsy Boatswain' },
+  { id: 'emote_080', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/1/1a/SOA-Anxious-Angler-emote.png/revision/latest/scale-to-width-down/51', name: '不安', nameEn: 'Anxious', maxLevel: 4, location: '秘宝の環礁', locationEn: 'Treasure Reef', spirit: '繊細な漁師', spiritEn: 'Anxious Angler' },
+  { id: 'emote_081', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/0d/Morybel-0146-SoPerformance_-_Mellow_Musician-icon.png/revision/latest/scale-to-width-down/51', name: 'ヘッドバンギング', nameEn: 'Headbob', maxLevel: 4, location: '夢見の劇場', locationEn: 'Theater of Dreams', spirit: 'のんびり屋の音楽家', spiritEn: 'Mellow Musician' },
+  { id: 'emote_082', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/3/3e/SoPerformance_-_Forgetful_Storyteller-emote-icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'うわー！', nameEn: 'Awww', maxLevel: 4, location: '夢見の劇場', locationEn: 'Theater of Dreams', spirit: '忘れっぽい劇作家', spiritEn: 'Forgetful Storyteller' },
+  { id: 'emote_083', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b0/SoAurora-Running-Wayfarer-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '光を振る', nameEn: 'Waving Light', maxLevel: 4, location: '円形劇場', locationEn: 'Amphitheater', spirit: '駆けゆく旅人', spiritEn: 'Running Wayfarer' },
+  { id: 'emote_084', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c1/SoAurora-Mindful-Miner-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '持ち上げる', nameEn: 'Raise the Roof', maxLevel: 4, location: '円形劇場', locationEn: 'Amphitheater', spirit: '覚醒の採掘者', spiritEn: 'Mindful Miner' },
+  { id: 'emote_085', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/61/SoAurora-Warrior-of-Love-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'クルクル', nameEn: 'Twirl', maxLevel: 4, location: '円形劇場', locationEn: 'Amphitheater', spirit: '慈愛の戦士', spiritEn: 'Warrior of Love' },
+  { id: 'emote_086', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/f1/SoAurora-Seed-of-Hope-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '手拍子', nameEn: 'Rhythmic Clap', maxLevel: 4, location: '円形劇場', locationEn: 'Amphitheater', spirit: '希望の君', spiritEn: 'Seed of Hope' },
+  { id: 'emote_087', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b3/SoAurora-Ultimate-Expression-Dance-2-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '指揮', nameEn: 'Conduct', maxLevel: 4, location: '円形劇場', locationEn: 'Amphitheater', spirit: 'AURORA', spiritEn: 'AURORA', isGuide: true },
+  { id: 'emote_088', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/9/9b/SoAurora-Ultimate-Expression-Dance-1-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'サイレント拍手', nameEn: 'Silent Clap', maxLevel: 4, location: '円形劇場', locationEn: 'Amphitheater', spirit: 'AURORA', spiritEn: 'AURORA', isGuide: true },
+  { id: 'emote_089', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a6/SoAurora-Ultimate-Expression-Dance-3-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'スキップ', nameEn: 'Skipping', maxLevel: 4, location: '円形劇場', locationEn: 'Amphitheater', spirit: 'AURORA', spiritEn: 'AURORA', isGuide: true },
+  { id: 'emote_090', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/66/SoRemembrance-Pleading-Child-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '懇願', nameEn: 'Pleading', maxLevel: 4, location: '君憶う保存庫', locationEn: 'Archive of Memory', spirit: '懇願する幼子', spiritEn: 'Pleading Youngster' },
+  { id: 'emote_091', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/1/1c/SoRemembrance-Tiptoeing-Tea-Brewer-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'ぬき足', nameEn: 'Tiptoeing', maxLevel: 4, location: '君憶う保存庫', locationEn: 'Archive of Memory', spirit: 'ぬき足の茶人', spiritEn: 'Tiptoeing Tea-Brewer' },
+  { id: 'emote_092', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a0/SoRemembrance-Bereft-Veteran-Emote-Icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '嘆く', nameEn: 'Grieving', maxLevel: 4, location: '君憶う保存庫', locationEn: 'Archive of Memory', spirit: '喪失の初老', spiritEn: 'Bereft Veteran' },
+  { id: 'emote_093', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/8/8c/Passage-Oddball-Outcast-Emote-icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'フットバック', nameEn: 'Hacky Sack', maxLevel: 4, location: '孤島', locationEn: 'Isle of Dawn', spirit: '風変わりなひとり好き', spiritEn: 'Quirky Loner' },
+  { id: 'emote_094', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/8/87/Passage-Tumbling-Troublemaker-Emote-icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'でんぐり返し', nameEn: 'Somersault', maxLevel: 4, location: '孤島', locationEn: 'Isle of Dawn', spirit: 'ぐるぐる回るいたずらっ子', spiritEn: 'Spinning Prankster' },
+  { id: 'emote_095', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c0/Passage-Melancholy-Mope-Emote-icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: 'とぼとぼ歩き', nameEn: 'Moping', maxLevel: 4, location: '孤島', locationEn: 'Isle of Dawn', spirit: '物憂げなとぼとぼ歩き', spiritEn: 'Melancholic Wanderer' },
+  { id: 'emote_096', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c2/Passage-Overactive-Overachiever-Emote-icon-Morybel-0146.png/revision/latest/scale-to-width-down/51', name: '懸垂', nameEn: 'Pull-up', maxLevel: 4, location: '孤島', locationEn: 'Isle of Dawn', spirit: '活発すぎる頑張り屋', spiritEn: 'Overeager Try-Hard' },
+  { id: 'emote_097', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/78/Jolly-Geologist-Emote-icon-Credit-Morybel.png/revision/latest/scale-to-width-down/51', name: '上機嫌', nameEn: 'Jolly Dance', maxLevel: 4, location: '草原連峰', locationEn: 'Prairie Peaks', spirit: '上機嫌な地質学者', spiritEn: 'Jolly Geologist' },
+  { id: 'emote_098', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/72/Ascetic-Monk-Emote-icon-Credit-Morybel.png/revision/latest/scale-to-width-down/51', name: '目隠しバランスポーズ', nameEn: 'Blindfold Balance Pose', maxLevel: 4, location: '草原連峰', locationEn: 'Prairie Peaks', spirit: '節制の修行者', spiritEn: 'Ascetic Monk' },
+  { id: 'emote_099', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/79/AURORA-Cure-for-Me-expression-icon-Credit-Morybel.png/revision/latest/scale-to-width-down/51', name: 'キュア・フォー・ミー', nameEn: 'Cure for Me Dance', maxLevel: 2, location: '円形劇場', locationEn: 'Amphitheater', spirit: 'AURORA', spiritEn: 'AURORA', isGuide: true },
+  { id: 'emote_100', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/e/e5/Herb-Gatherer-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '口笛', nameEn: 'Whistle', maxLevel: 4, location: '三日月オアシス', locationEn: 'Crescent Oasis', spirit: '薬草採集人', spiritEn: 'Herb Gatherer' },
+  { id: 'emote_101', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/6c/Hunter-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '手足を曲げる', nameEn: 'Flex', maxLevel: 4, location: '三日月オアシス', locationEn: 'Crescent Oasis', spirit: '狩人', spiritEn: 'Hunter' },
+  { id: 'emote_102', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/0/07/Princess-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '浮遊スピン', nameEn: 'Float Spin', maxLevel: 4, location: '三日月オアシス', locationEn: 'Crescent Oasis', spirit: '王女', spiritEn: 'Princess' },
+  { id: 'emote_103', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/7/73/The-Moomin-Storybook-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '本を読む', nameEn: 'Read', maxLevel: 4, location: 'ムーミン谷', locationEn: 'Moominvalley', spirit: 'ムーミンの本', spiritEn: 'The Moomin Storybook', isGuide: true },
+  { id: 'emote_104', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b2/Radiance-Leaping-Dancer-Cartwheel-expression-icon.png/revision/latest/scale-to-width-down/51', name: '側転', nameEn: 'Cartwheel', maxLevel: 4, location: '花鳥郷', locationEn: 'Aviary Village', spirit: '光に染まる飛び跳ねる舞踏家', spiritEn: 'Radiance Leaping Dancer' },
+  { id: 'emote_105', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a8/Radiance-Greeting-Shaman-Expression-icon.png/revision/latest/scale-to-width-down/51', name: 'ハートジェスチャー', nameEn: 'Heart Gesture', maxLevel: 4, location: '花鳥郷', locationEn: 'Aviary Village', spirit: '光に染まる礼を尽くす祈祷師', spiritEn: 'Radiance Greeting Shaman' },
+  { id: 'emote_106', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c6/Radiance-Provoking-Performer-Expression-icon.png/revision/latest/scale-to-width-down/51', name: 'アップダンス', nameEn: 'Hype Dance', maxLevel: 4, location: '花鳥郷', locationEn: 'Aviary Village', spirit: '光に染まる挑戦的な表現者', spiritEn: 'Radiance Provoking Performer' },
+  { id: 'emote_107', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/2e/Blue-Bird-Guide-ultimate-expression.png/revision/latest/scale-to-width-down/51', name: '咳き込む', nameEn: 'Cough', maxLevel: 4, location: '青い鳥劇場', locationEn: 'Blue Bird Theater', spirit: '青い鳥の案内人', spiritEn: 'Blue Bird Guide', isGuide: true },
+  { id: 'emote_108', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/e/e3/Royal-Hairtousle-Teen-emote-icon.png/revision/latest/scale-to-width-down/51', name: '驚き', nameEn: 'Surprised', maxLevel: 4, location: '青い鳥劇場', locationEn: 'Blue Bird Theater', spirit: '高貴なぽんぽんする若者', spiritEn: 'Royal Hairtousle Teen' },
+  { id: 'emote_109', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/6/62/Migrating-Manta-Whisperer-emote-icon.png/revision/latest/scale-to-width-down/51', name: 'レースフラッグ', nameEn: 'Flag Signal', maxLevel: 4, location: '風の街道', locationEn: 'Wind Paths', spirit: '渡りのマンタの語り部', spiritEn: 'Migrating Manta Whisperer' },
+  { id: 'emote_110', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/fb/Migrating-Bird-Whisperer-emote-icon.png/revision/latest/scale-to-width-down/51', name: '飛行ごっこ', nameEn: 'Flight Run', maxLevel: 4, location: '風の街道', locationEn: 'Wind Paths', spirit: '渡りの鳥の語り部', spiritEn: 'Migrating Bird Whisperer' },
+  { id: 'emote_111', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/c4/Migrating-Jelly-Whisperer-emote-icon.png/revision/latest/scale-to-width-down/51', name: '海月ダンス', nameEn: 'Jellyfish Dance', maxLevel: 4, location: '風の街道', locationEn: 'Wind Paths', spirit: '渡りの海月の語り部', spiritEn: 'Migrating Jelly Whisperer' },
+  { id: 'emote_112', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/bd/Migrating-Butterfly-Charmer-emote-icon.png/revision/latest/scale-to-width-down/51', name: 'くらくら', nameEn: 'Dizzy', maxLevel: 4, location: '風の街道', locationEn: 'Wind Paths', spirit: '渡りの蝶々使い', spiritEn: 'Migrating Butterfly Charmer' },
+  { id: 'emote_113', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/23/Lightmending-Pioneer-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '小さく拍手', nameEn: 'Cute Clap', maxLevel: 4, location: '壊れし燈の保管庫', locationEn: 'Vault of Broken Light', spirit: '光修繕する開拓者', spiritEn: 'Lightmending Pioneer' },
+  { id: 'emote_114', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/a/a3/Carnival-Stunt-Actor-Emote-icon.png/revision/latest/scale-to-width-down/51', name: 'いいね', nameEn: 'Approve', maxLevel: 4, location: '放浪カーニバル（仮訳）', locationEn: 'Wandering Carnival (tentative)', spirit: 'カーニバルの旅役者', spiritEn: 'Carnival Stunt Actor' },
+  { id: 'emote_115', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/be/Carnival-Athletic-Dancer-Emote-icon.png/revision/latest/scale-to-width-down/51', name: 'ブレイクダンス', nameEn: 'Break Dance', maxLevel: 4, location: '放浪カーニバル（仮訳）', locationEn: 'Wandering Carnival (tentative)', spirit: 'カーニバルの旋舞家', spiritEn: 'Carnival Athletic Dancer' },
+  { id: 'emote_116', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/5/54/Carnival-Juggler-Emote-icon.png/revision/latest/scale-to-width-down/51', name: 'ボール回し', nameEn: 'Ball Spin Trick', maxLevel: 4, location: '放浪カーニバル（仮訳）', locationEn: 'Wandering Carnival (tentative)', spirit: 'カーニバルの曲芸師', spiritEn: 'Carnival Juggler' },
+  { id: 'emote_117', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/2/22/Carnival-Puzzle-Director-Emote-icon.png/revision/latest/scale-to-width-down/51', name: 'メモする', nameEn: 'Take Notes', maxLevel: 4, location: '放浪カーニバル（仮訳）', locationEn: 'Wandering Carnival (tentative)', spirit: 'カーニバルの謎解き座長', spiritEn: 'Carnival Puzzle Director' },
+  { id: 'emote_118', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/c/cb/Dear-Van-Gogh-Dutch-Memory-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '落胆', nameEn: 'Frustration', maxLevel: 4, location: '星々の展示（仮訳）', locationEn: 'Starlight Exhibition (tentative)', spirit: 'オランダの思い出', spiritEn: 'Dutch Memory' },
+  { id: 'emote_119', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/b/b8/Dear-Van-Gogh-Joyful-Memory-Emote-icon.png/revision/latest/scale-to-width-down/51', name: 'ゆっくり歩く', nameEn: 'Slow Walk', maxLevel: 4, location: '星々の展示（仮訳）', locationEn: 'Starlight Exhibition (tentative)', spirit: '歓喜の思い出', spiritEn: 'Joyful Memory' },
+  { id: 'emote_120', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/f/fc/Dear-Van-Gogh-Rustic-Memory-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '浴びる', nameEn: 'Bask', maxLevel: 4, location: '星々の展示（仮訳）', locationEn: 'Starlight Exhibition (tentative)', spirit: '素朴な思い出', spiritEn: 'Rustic Memory' },
+  { id: 'emote_121', img: 'https://static.wikia.nocookie.net/sky-children-of-the-light/images/1/1c/Dear-Van-Gogh-Artistic-Memory-Emote-icon.png/revision/latest/scale-to-width-down/51', name: '描く', nameEn: 'Draw', maxLevel: 4, location: '星々の展示（仮訳）', locationEn: 'Starlight Exhibition (tentative)', spirit: '画家の思い出', spiritEn: 'Artistic Memory' },
 ];
 
 /* ================================================================
@@ -1698,7 +2173,7 @@ async function pfIconApply(dataUrl) {
 
 function pfIconSave() {
   if (pfIconMode === 'image' && !pfIconUploadedImg) {
-    document.getElementById('iconSaveStatus').textContent = '画像を選択してください';
+    document.getElementById('iconSaveStatus').textContent = t('iconSaveStatusSelectImage');
     return;
   }
   const dataUrl = pfIconGenerateDataUrl(512);
@@ -1710,11 +2185,11 @@ function pfIconSave() {
   try {
     localStorage.setItem(PF_ICON_STORAGE_KEY, JSON.stringify(state));
   } catch (e) {
-    document.getElementById('iconSaveStatus').textContent = '保存に失敗しました(容量オーバーの可能性があります)';
+    document.getElementById('iconSaveStatus').textContent = t('iconSaveStatusFailed');
     return;
   }
   pfIconApply(dataUrl);
-  document.getElementById('iconSaveStatus').textContent = '✅ 保存しました。これでホーム画面に追加すると反映されます';
+  document.getElementById('iconSaveStatus').textContent = t('iconSaveStatusSuccess');
 }
 
 function pfIconReset() {
@@ -1727,7 +2202,7 @@ function pfIconReset() {
   document.getElementById('iconEmojiInput').value = '🎭';
   document.getElementById('iconBgColorInput').value = '#FF9500';
   pfIconSetMode('emoji');
-  document.getElementById('iconSaveStatus').textContent = 'デフォルトのアイコンに戻しました';
+  document.getElementById('iconSaveStatus').textContent = t('iconSaveStatusReset');
 }
 
 function pfIconApplyFromStorage() {
@@ -1773,12 +2248,12 @@ const SITE_URL = 'https://taipak5000.github.io/tai-emote/';
 const SHARE_HASHTAG = '#Skyエモート所持率';
 
 const SHARE_THEMES = {
-  orange: { label: 'オレンジ', grad: 'linear-gradient(135deg, var(--orange-d) 0%, var(--orange) 55%, #FFBB00 100%)' },
-  blue:   { label: 'ブルー',   grad: 'linear-gradient(135deg, #0051A8 0%, #007AFF 55%, #5AC8FA 100%)' },
-  green:  { label: 'グリーン', grad: 'linear-gradient(135deg, #1F7A3D 0%, #34C759 55%, #8BE28B 100%)' },
-  purple: { label: 'パープル', grad: 'linear-gradient(135deg, #4B2E83 0%, #7B4FCB 55%, #B98CFF 100%)' },
-  pink:   { label: 'ピンク',   grad: 'linear-gradient(135deg, #B0184D 0%, #FF2D78 55%, #FF8FB3 100%)' },
-  dark:   { label: 'ダーク',   grad: 'linear-gradient(135deg, #05070d 0%, #1b2333 100%)' },
+  orange: { labelKey: 'themeNameOrange', grad: 'linear-gradient(135deg, var(--orange-d) 0%, var(--orange) 55%, #FFBB00 100%)' },
+  blue:   { labelKey: 'themeNameBlue',   grad: 'linear-gradient(135deg, #0051A8 0%, #007AFF 55%, #5AC8FA 100%)' },
+  green:  { labelKey: 'themeNameGreen',  grad: 'linear-gradient(135deg, #1F7A3D 0%, #34C759 55%, #8BE28B 100%)' },
+  purple: { labelKey: 'themeNamePurple', grad: 'linear-gradient(135deg, #4B2E83 0%, #7B4FCB 55%, #B98CFF 100%)' },
+  pink:   { labelKey: 'themeNamePink',   grad: 'linear-gradient(135deg, #B0184D 0%, #FF2D78 55%, #FF8FB3 100%)' },
+  dark:   { labelKey: 'themeNameDark',   grad: 'linear-gradient(135deg, #05070d 0%, #1b2333 100%)' },
 };
 const SHARE_CUSTOMIZE_KEY = 'emoteShareCustomize_v1';
 
@@ -1802,7 +2277,7 @@ function openCustomizeModal() {
   const saved = loadShareCustomize();
   document.getElementById('themeSwatchRow').innerHTML = Object.keys(SHARE_THEMES).map(key => `
     <div class="theme-swatch ${key === saved.theme ? 'selected' : ''}" data-theme="${key}"
-      style="background:${SHARE_THEMES[key].grad};" title="${SHARE_THEMES[key].label}"
+      style="background:${SHARE_THEMES[key].grad};" title="${escapeAttr(t(SHARE_THEMES[key].labelKey))}"
       onclick="selectShareTheme('${key}')"></div>`).join('');
   document.getElementById('customizeShowIcons').checked = saved.showIcons;
   document.getElementById('customizeComment').value = '';
@@ -1828,7 +2303,7 @@ function buildEmoteIconGridHtml() {
   const data = loadOwned();
   const ownedEmotes = EMOTES_DATA.filter(e => (data[e.id] || []).length > 0);
   if (ownedEmotes.length === 0) {
-    return '<div class="exp-emote-icon-empty">まだ所持しているエモートがありません</div>';
+    return `<div class="exp-emote-icon-empty">${t('exportNoOwnedEmotes')}</div>`;
   }
   const cells = ownedEmotes.map(e => {
     const ownedLevels = new Set(data[e.id] || []);
@@ -1838,8 +2313,8 @@ function buildEmoteIconGridHtml() {
       dots.push(`<span class="exp-lv-dot ${ownedLevels.has(lv) ? 'is-owned' : ''}"></span>`);
     }
     return `
-      <div class="exp-emote-icon-cell ${isComplete ? 'is-complete' : ''}" title="${escapeHtml(e.name)}">
-        <img src="${e.img}" alt="${escapeHtml(e.name)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="exp-emote-icon-cell ${isComplete ? 'is-complete' : ''}" title="${escapeHtml(emoteName(e))}">
+        <img src="${e.img}" alt="${escapeHtml(emoteName(e))}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
         <span class="exp-emote-icon-fallback" style="display:none;">🎭</span>
         <div class="exp-emote-icon-levels">${dots.join('')}</div>
       </div>`;
@@ -1857,18 +2332,18 @@ function buildOverallExportCardEl(opts = {}) {
   const completeCount = EMOTES_DATA.filter(e => (data[e.id] || []).length === e.maxLevel).length;
 
   const today = new Date();
-  const dateTxt = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日作成`;
+  const dateTxt = t('exportCardDateTemplate', { y: today.getFullYear(), m: today.getMonth() + 1, d: today.getDate() });
 
   const card = document.createElement('div');
   card.className = 'export-card';
   card.style.background = SHARE_THEMES[theme].grad;
   card.innerHTML = `
-    <div class="exp-brand">🎭 エモート所持率管理</div>
+    <div class="exp-brand">${t('exportCardBrand')}</div>
     <div class="exp-hero">
       <div class="exp-hero-pct">${pctTxt}</div>
-      <div class="exp-hero-label">エモート所持率</div>
-      <div class="exp-hero-nums">所持中 ${total > 0 ? owned : '--'} ／ 総レベル数 ${total > 0 ? total : '--'}</div>
-      <div class="exp-hero-sub">コンプリート済み ${completeCount} / ${EMOTES_DATA.length} エモート</div>
+      <div class="exp-hero-label">${t('exportHeroLabel')}</div>
+      <div class="exp-hero-nums">${t('exportHeroNumsTemplate', { owned: total > 0 ? owned : '--', total: total > 0 ? total : '--' })}</div>
+      <div class="exp-hero-sub">${t('exportHeroSubTemplate', { n: completeCount, total: EMOTES_DATA.length })}</div>
     </div>
     ${comment ? `<div class="exp-comment">${escapeHtml(comment)}</div>` : ''}
     ${opts.showIcons ? buildEmoteIconGridHtml() : ''}
@@ -1900,8 +2375,8 @@ function sanitizeFilename(str) {
 
 // 指定したカード生成関数の出力を画像として書き出し、保存/共有する（共通処理）
 async function exportElementAsImage(buildCardFn, filenameBase, opts = {}) {
-  const { shareText, successToast = '画像を保存しました！' } = opts;
-  showToast('画像を生成中…');
+  const { shareText, successToast = t('imageSavedToast') } = opts;
+  showToast(t('imageGenerating'));
   let card = null;
   try {
     await ensureHtml2Canvas();
@@ -1919,7 +2394,7 @@ async function exportElementAsImage(buildCardFn, filenameBase, opts = {}) {
     openImagePreview(canvas.toDataURL('image/png'), filename, shareText);
   } catch (err) {
     console.error(err);
-    showToast('画像の保存に失敗しました');
+    showToast(t('imageSaveFailed'));
   } finally {
     if (card) card.remove();
   }
@@ -1963,13 +2438,13 @@ function openImagePreview(dataUrl, filename, shareText) {
   const title = document.getElementById('previewModalTitle');
 
   if (shareText) {
-    title.textContent = '🖼️ 画像を保存してXへ投稿';
-    hint.textContent = '① 下の「ダウンロード」で画像を保存 → ② 「Xの投稿画面を開く」を押して、保存した画像を添付して投稿してください';
+    title.textContent = t('previewModalTitleSaveShare');
+    hint.textContent = t('previewHintSaveShare');
     document.getElementById('previewTwitterLink').href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText);
     twRow.style.display = '';
   } else {
-    title.textContent = '🖼️ 画像を保存';
-    hint.textContent = '画像を長押し（PCの場合は右クリック）して「画像を保存」を選んでください';
+    title.textContent = t('previewModalTitleSave');
+    hint.textContent = t('previewHintSave');
     twRow.style.display = 'none';
   }
 
@@ -1980,16 +2455,16 @@ function buildOverallTweetText(comment) {
   if (comment) return `${comment}\n\n${SITE_URL}\n${SHARE_HASHTAG}`;
   const { owned, total, pct } = getStats();
   const pctTxt = formatPct(pct);
-  return `エモート所持率は${pctTxt}でした！\n（所持中 ${owned} ／ 総レベル数 ${total}）\nあなたは何%持ってる？✨\n\n${SITE_URL}\n${SHARE_HASHTAG}`;
+  return t('tweetTextTemplate', { pct: pctTxt, owned, total, url: SITE_URL, hashtag: SHARE_HASHTAG });
 }
 
 function shareOverallOnTwitter(fromCustomize) {
-  if (getStats().total === 0) { showToast('まずはエモートを登録してください'); return; }
+  if (getStats().total === 0) { showToast(t('toastNoEmotesRegistered')); return; }
   const opts = fromCustomize ? readShareCustomizeFromModal() : {};
   if (fromCustomize) closeModal('customizeModal');
-  return exportElementAsImage(() => buildOverallExportCardEl(opts), 'エモート所持率', {
+  return exportElementAsImage(() => buildOverallExportCardEl(opts), t('exportHeroLabel'), {
     shareText: buildOverallTweetText(opts.comment),
-    successToast: '共有しました！'
+    successToast: t('imageSharedToast')
   });
 }
 
@@ -2008,17 +2483,25 @@ function setViewMode(mode) {
 }
 
 // エリア絞り込みのプルダウンを、データに登場する順番のまま重複なしで作る
+// エリア絞り込みのoption値は常に元のJAロケーション名（データの一意キー）を使う。
+// 表示テキストのみ locationDisplay() でLANGに応じて切り替える。
+// 言語切替のたびに呼び直されるため、既存の（"all"以外の）optionは一旦クリアしてから作り直す。
 function populateLocationFilter() {
   const select = document.getElementById('filterLocation');
+  const prevValue = select.value;
+  Array.from(select.options).forEach(opt => { if (opt.value !== 'all') opt.remove(); });
   const seen = new Set();
   EMOTES_DATA.forEach(e => {
     if (seen.has(e.location)) return;
     seen.add(e.location);
     const opt = document.createElement('option');
     opt.value = e.location;
-    opt.textContent = e.location;
+    opt.textContent = locationDisplay(e);
     select.appendChild(opt);
   });
+  if (prevValue && Array.from(select.options).some(o => o.value === prevValue)) {
+    select.value = prevValue;
+  }
 }
 
 function renderList() {
@@ -2053,9 +2536,9 @@ function renderList() {
           <span class="emote-card-icon-fallback">🎭</span>
         </div>
         <div class="emote-info">
-          <a href="${emoteSearchUrl(e)}" target="_blank" rel="noopener noreferrer" class="emote-name" onclick="event.stopPropagation()">${escapeHtml(e.name)}</a>
-          <div class="emote-name-en">${escapeHtml(e.nameEn)} ／ ${escapeHtml(e.location)}</div>
-          <div class="emote-sub">${isComplete ? '✓ コンプリート' : `${ownedCount} / ${e.maxLevel} レベル所持`}</div>
+          <a href="${emoteSearchUrl(e)}" target="_blank" rel="noopener noreferrer" class="emote-name" onclick="event.stopPropagation()">${escapeHtml(emoteName(e))}</a>
+          <div class="emote-name-en">${escapeHtml(emoteNameSecondary(e))} ／ ${escapeHtml(locationDisplay(e))}</div>
+          <div class="emote-sub">${isComplete ? t('emoteCompleteLabel') : t('emoteLevelCountTemplate', { owned: ownedCount, total: e.maxLevel })}</div>
         </div>
         <div class="lv-row">${levelBtns.join('')}</div>
       </div>`;
@@ -2071,34 +2554,35 @@ function renderList() {
       dots.push(`<span class="tile-lv-dot ${ownedLevels.has(lv) ? 'is-owned' : ''}" title="Lv${lv}" onclick="event.stopPropagation(); toggleLevel('${e.id}', ${lv})"></span>`);
     }
     return `
-      <div class="emote-tile" title="${escapeHtml(e.location)}">
+      <div class="emote-tile" title="${escapeHtml(locationDisplay(e))}">
         <div class="emote-tile-frame ${isComplete ? 'is-complete' : ''}">
           <div class="emote-tile-img-wrap">
-            <img src="${e.img}" alt="${escapeHtml(e.name)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('img-fallback')">
+            <img src="${e.img}" alt="${escapeHtml(emoteName(e))}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('img-fallback')">
             <span class="emote-tile-fallback">🎭</span>
           </div>
           <div class="emote-tile-levels">${dots.join('')}</div>
         </div>
-        <a href="${emoteSearchUrl(e)}" target="_blank" rel="noopener noreferrer" class="emote-tile-name" onclick="event.stopPropagation()">${escapeHtml(e.name)}</a>
+        <a href="${emoteSearchUrl(e)}" target="_blank" rel="noopener noreferrer" class="emote-tile-name" onclick="event.stopPropagation()">${escapeHtml(emoteName(e))}</a>
       </div>`;
   }).join('');
 
-  document.getElementById('emoteList').innerHTML = listHtml || '<div class="empty-message">条件に一致するエモートがありません。</div>';
-  document.getElementById('emoteGrid').innerHTML = gridHtml || '<div class="empty-message">条件に一致するエモートがありません。</div>';
+  document.getElementById('emoteList').innerHTML = listHtml || `<div class="empty-message">${t('emptyMessage')}</div>`;
+  document.getElementById('emoteGrid').innerHTML = gridHtml || `<div class="empty-message">${t('emptyMessage')}</div>`;
 
   document.getElementById('emoteList').style.display = viewMode === 'list' ? 'flex' : 'none';
   document.getElementById('emoteGrid').style.display = viewMode === 'grid' ? 'grid' : 'none';
   document.getElementById('viewListBtn').classList.toggle('active', viewMode === 'list');
   document.getElementById('viewGridBtn').classList.toggle('active', viewMode === 'grid');
 
-  document.getElementById('listCountLabel').textContent = `${filtered.length} / ${EMOTES_DATA.length}件`;
+  document.getElementById('listCountLabel').textContent = t('listCountTemplate', { n: filtered.length, total: EMOTES_DATA.length });
 
   const stats = getStats();
-  document.getElementById('hdrCount').textContent = `${stats.owned} / ${stats.total} レベル所持`;
+  document.getElementById('hdrCount').textContent = t('headerCountTemplate', { owned: stats.owned, total: stats.total });
   document.getElementById('hdrPct').textContent = formatPct(stats.pct);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  applyI18n();
   pfRenderBar();
   populateLocationFilter();
   renderList();
