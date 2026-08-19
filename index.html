@@ -11,6 +11,19 @@
   <meta name="apple-mobile-web-app-title" content="エモート管理">
   <title id="pageTitleTag">エモート所持率管理</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    /* 🌙 ダークモード（'sky_app_theme' は taipak5000.github.io 系ツール共通のキー）。
+       CSSが描画される前に同期実行し、意図しないテーマでの一瞬の表示（ちらつき）を防ぐ。 */
+    (function () {
+      try {
+        var saved = localStorage.getItem('sky_app_theme');
+        var isDark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
   <style>
     /* ── Design tokens（アイテム所持率管理と統一） ──────────────── */
     :root {
@@ -31,6 +44,24 @@
       --r-sm:      10px;
     }
 
+    /* 🌙 ダークモード用のカラー上書き（:root より確実に優先させるため :root[data-theme="dark"] で指定）。
+       アクセント色（オレンジ／ブルー／グリーン）は色相を変えず、暗い背景でのAAコントラストを保つため
+       Apple純正のダークモード配色（systemOrange/systemBlue/systemGreen）と同じ明度に調整している。 */
+    :root[data-theme="dark"] {
+      --bg:        #000000;
+      --card:      #1C1C1E;
+      --sep:       rgba(255,255,255,0.14);
+      --orange:    #FF9F0A;
+      --orange-bg: rgba(255,159,10,0.18);
+      --blue:      #0A84FF;
+      --blue-bg:   rgba(10,132,255,0.16);
+      --green:     #30D158;
+      --green-bg:  rgba(48,209,88,0.16);
+      --text:      #F2F2F7;
+      --text-2:    #98989D;
+      --text-3:    #636366;
+    }
+
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     a { text-decoration:none; color:inherit; -webkit-tap-highlight-color:transparent; }
     button { cursor:pointer; border:none; background:none; font-family:inherit; }
@@ -47,6 +78,8 @@
       border-bottom: 0.5px solid var(--sep); padding: 14px 20px 12px;
       display: flex; align-items: center; justify-content: space-between;
     }
+    /* body > nav の背景はCSS変数を使わない直書きのrgba(--bgの値)のため、ダークモード用に個別で上書きする */
+    :root[data-theme="dark"] body > nav { background: rgba(0,0,0,0.88); }
     /* サイドバー内の<nav>はリンクを縦積みにする（上のセレクタが波及しないよう明示的に指定） */
     .sidebar nav { display: flex; flex-direction: column; }
     .nav-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
@@ -385,6 +418,16 @@
     }
     .customize-toggle-opt input { width: 17px; height: 17px; flex-shrink: 0; accent-color: var(--orange); }
 
+    /* ── ⚙️ 表示設定モーダル（ダークモード／キーボードショートカット） ─── */
+    .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 2px; font-size: 13.5px; color: var(--text); }
+    .settings-shortcut-list { margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--sep); display: flex; flex-direction: column; gap: 8px; }
+    .settings-shortcut-row { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--text-2); }
+    .settings-kbd {
+      flex-shrink: 0; min-width: 24px; text-align: center; box-sizing: border-box;
+      background: var(--bg); border: 1px solid var(--sep); border-radius: 6px;
+      padding: 3px 7px; font-size: 11.5px; font-weight: 700; color: var(--text); font-family: inherit;
+    }
+
     /* ── シェア画像内：所持エモートのアイコン一覧グリッド ───── */
     .exp-emote-icon-grid {
       display: grid; grid-template-columns: repeat(6, 1fr); gap: 7px;
@@ -497,6 +540,10 @@
     <div style="margin-top:18px; padding-top:14px; border-top:0.5px solid var(--sep);">
       <div class="sidebar-section-label" data-i18n="sidebarHomeIcon">📱 ホーム画面アイコン</div>
       <button type="button" class="action-btn secondary full" onclick="openModal('iconCustomModal'); closeSidebarMobile();" data-i18n="sidebarCustomizeIcon">🎨 アイコンを<br>カスタマイズ</button>
+    </div>
+    <div style="margin-top:18px; padding-top:14px; border-top:0.5px solid var(--sep);">
+      <div class="sidebar-section-label" data-i18n="sidebarSettings">⚙️ 表示設定</div>
+      <button type="button" class="action-btn secondary full" onclick="openSettingsModal(); closeSidebarMobile();" data-i18n="sidebarOpenSettings">⚙️ 表示設定を開く</button>
     </div>
   </aside>
 
@@ -676,6 +723,34 @@
   </div>
 </div>
 
+<!-- ▸ 表示設定モーダル（ダークモード／キーボードショートカット） -->
+<div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeSettingsModal()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title" data-i18n="settingsModalTitle">⚙️ 表示設定</span>
+      <button class="modal-close" onclick="closeSettingsModal()">✕</button>
+    </div>
+
+    <div class="customize-section-label" style="margin-top:0;" data-i18n="settingsDisplaySectionLabel">🌙 表示</div>
+    <div class="settings-row">
+      <span data-i18n="settingsDarkModeLabel">ダークモード</span>
+      <button type="button" class="action-btn secondary" id="settingsThemeToggleBtn" onclick="toggleTheme()"></button>
+    </div>
+
+    <div class="customize-section-label" data-i18n="settingsShortcutsSectionLabel">⌨️ キーボードショートカット</div>
+    <label class="customize-toggle-opt">
+      <input type="checkbox" id="settingsShortcutsEnabled" onchange="onSettingsShortcutsToggle(this.checked)">
+      <span data-i18n="settingsShortcutsEnableLabel">ショートカットを有効にする</span>
+    </label>
+
+    <div class="settings-shortcut-list">
+      <div class="settings-shortcut-row"><kbd class="settings-kbd">?</kbd><span data-i18n="settingsShortcutOpenSettings">この設定を開く</span></div>
+      <div class="settings-shortcut-row"><kbd class="settings-kbd">D</kbd><span data-i18n="settingsShortcutToggleDark">ダークモード切替</span></div>
+      <div class="settings-shortcut-row"><kbd class="settings-kbd">Esc</kbd><span data-i18n="settingsShortcutCloseModal">開いているウィンドウを閉じる</span></div>
+    </div>
+  </div>
+</div>
+
 <footer style="text-align:center; padding:24px 16px; color:var(--text-2); font-size:13px; border-top:1px solid var(--sep); margin-top:40px; line-height:1.6;">
   <span data-i18n="footerDisclaimer">このサイトはSky 星を紡ぐ子どもたちの非公式ファンサイトです。thatgamecompanyは一切関与していません。</span><br>
   <span data-i18n="footerCreditLabel">作成・ご意見:</span> <a href="https://x.com/Skyzztai" target="_blank" rel="noopener noreferrer" style="color:var(--blue); text-decoration:none; font-weight:bold;">@Skyzztai</a>　／　<a href="https://odaibako.net/u/Skyzztai" target="_blank" rel="noopener noreferrer" style="color:var(--blue); text-decoration:none; font-weight:bold;" data-i18n="footerRequestForm">リクエストフォーム</a><br>
@@ -722,6 +797,8 @@ const I18N = {
     toolDataTransfer: '🔄 データ引継ぎ',
     sidebarHomeIcon: '📱 ホーム画面アイコン',
     sidebarCustomizeIcon: '🎨 アイコンを<br>カスタマイズ',
+    sidebarSettings: '⚙️ 表示設定',
+    sidebarOpenSettings: '⚙️ 表示設定を開く',
     langToggleBtn: 'EN',
 
     pageTitle: 'エモート所持率管理',
@@ -852,6 +929,17 @@ const I18N = {
     iconSaveStatusSuccess: '✅ 保存しました。これでホーム画面に追加すると反映されます',
     iconSaveStatusReset: 'デフォルトのアイコンに戻しました',
 
+    settingsModalTitle: '⚙️ 表示設定',
+    settingsDisplaySectionLabel: '🌙 表示',
+    settingsDarkModeLabel: 'ダークモード',
+    settingsThemeToggleToDark: '🌙 ダーク',
+    settingsThemeToggleToLight: '☀️ ライト',
+    settingsShortcutsSectionLabel: '⌨️ キーボードショートカット',
+    settingsShortcutsEnableLabel: 'ショートカットを有効にする',
+    settingsShortcutOpenSettings: 'この設定を開く',
+    settingsShortcutToggleDark: 'ダークモード切替',
+    settingsShortcutCloseModal: '開いているウィンドウを閉じる',
+
     customizeModalTitle: '🎨 画像をカスタマイズ',
     customizeThemeLabel: '背景テーマ',
     customizeDisplayOptionsLabel: '表示オプション',
@@ -912,6 +1000,8 @@ const I18N = {
     toolDataTransfer: '🔄 Data Transfer',
     sidebarHomeIcon: '📱 Home Screen Icon',
     sidebarCustomizeIcon: '🎨 Customize Icon',
+    sidebarSettings: '⚙️ Display Settings',
+    sidebarOpenSettings: '⚙️ Open Display Settings',
     langToggleBtn: '日本語',
 
     pageTitle: 'Emote Collection Tracker',
@@ -1042,6 +1132,17 @@ const I18N = {
     iconSaveStatusSuccess: '✅ Saved. This will apply the next time you add this to your home screen',
     iconSaveStatusReset: 'Reset to the default icon',
 
+    settingsModalTitle: '⚙️ Display Settings',
+    settingsDisplaySectionLabel: '🌙 Display',
+    settingsDarkModeLabel: 'Dark Mode',
+    settingsThemeToggleToDark: '🌙 Dark',
+    settingsThemeToggleToLight: '☀️ Light',
+    settingsShortcutsSectionLabel: '⌨️ Keyboard Shortcuts',
+    settingsShortcutsEnableLabel: 'Enable keyboard shortcuts',
+    settingsShortcutOpenSettings: 'Open this settings panel',
+    settingsShortcutToggleDark: 'Toggle dark mode',
+    settingsShortcutCloseModal: 'Close the open window',
+
     customizeModalTitle: '🎨 Customize Image',
     customizeThemeLabel: 'Background Theme',
     customizeDisplayOptionsLabel: 'Display Options',
@@ -1110,6 +1211,7 @@ function applyI18n() {
   document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.alt = t(el.getAttribute('data-i18n-alt')); });
   const langBtn = document.getElementById('langToggleBtn');
   if (langBtn) langBtn.textContent = t('langToggleBtn');
+  updateSettingsModalUI();
 }
 
 function toggleLang() {
@@ -1123,6 +1225,35 @@ function toggleLang() {
   if (document.getElementById('dashModalOverlay').classList.contains('open') && pfDashCache) {
     document.getElementById('dashBody').innerHTML = pfDashBuildHtml(pfDashCache);
   }
+}
+
+/* ================================================================
+   🌙 ダークモード / ⌨️ キーボードショートカット（⚙️ 表示設定）
+   'sky_app_theme' と 'sky_shortcuts_enabled' は taipak5000.github.io 系ツール
+   共通のキー（sky_app_lang と同様、プロフィールに依存しない端末単位の設定の
+   ため nsKey() は使わない）。data-theme属性の初期反映は<head>内の同期スクリプト
+   （ちらつき防止）で行っており、ここではトグル操作と状態参照のみを扱う。
+   ================================================================ */
+const THEME_KEY = 'sky_app_theme';
+const SHORTCUTS_KEY = 'sky_shortcuts_enabled';
+
+function isDarkMode() {
+  return document.documentElement.getAttribute('data-theme') === 'dark';
+}
+function toggleTheme() {
+  const next = !isDarkMode();
+  document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light');
+  try { localStorage.setItem(THEME_KEY, next ? 'dark' : 'light'); } catch (e) { /* プライベートブラウジング等でlocalStorageが使えない場合も表示は継続する */ }
+  updateSettingsModalUI();
+}
+
+// 未設定時（値がnull）はデフォルトで有効（'1'扱い）
+function skyShortcutsEnabled() {
+  const v = localStorage.getItem(SHORTCUTS_KEY);
+  return v === null ? true : v === '1';
+}
+function setSkyShortcutsEnabled(on) {
+  try { localStorage.setItem(SHORTCUTS_KEY, on ? '1' : '0'); } catch (e) {}
 }
 
 /* ================================================================
@@ -1827,7 +1958,7 @@ function pfRenderModal() {
       return `
         <div class="pf-row" style="flex-wrap: wrap;">
           <input type="text" class="pf-row-input" id="pfEditInput" value="${nameEsc}" maxlength="30"
-            onkeydown="if(event.key==='Enter') pfConfirmRenameInline('${p.id}'); if(event.key==='Escape') pfCancelRowState();">
+            onkeydown="if(event.key==='Enter') pfConfirmRenameInline('${p.id}'); if(event.key==='Escape'){ event.stopPropagation(); pfCancelRowState(); }">
           <button type="button" class="pf-icon-btn pf-row-btn-ok" onclick="pfConfirmRenameInline('${p.id}')">${t('pfRenameSaveBtn')}</button>
           <button type="button" class="pf-icon-btn" onclick="pfCancelRowState()">${t('pfCancelBtn')}</button>
         </div>`;
@@ -2078,6 +2209,66 @@ function formatPct(pct) {
    ================================================================ */
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── ⚙️ 表示設定モーダル（ダークモード切替／キーボードショートカット設定） ──
+function openSettingsModal() {
+  updateSettingsModalUI();
+  openModal('settingsModal');
+}
+function closeSettingsModal() { closeModal('settingsModal'); }
+function updateSettingsModalUI() {
+  const themeBtn = document.getElementById('settingsThemeToggleBtn');
+  if (themeBtn) themeBtn.textContent = isDarkMode() ? t('settingsThemeToggleToLight') : t('settingsThemeToggleToDark');
+  const cb = document.getElementById('settingsShortcutsEnabled');
+  if (cb) cb.checked = skyShortcutsEnabled();
+}
+function onSettingsShortcutsToggle(checked) { setSkyShortcutsEnabled(checked); }
+
+/* ================================================================
+   ⌨️ グローバルキーボードショートカット（'?' で表示設定を開く／'D' でダーク
+   モード切替／Escで開いているモーダルを閉じる）。
+   taipak5000.github.io 系ツール共通の仕様。Escによるモーダル閉じは既存の
+   クリックアウトサイド閉じと同様の“基本UX”のためショートカットのON/OFF設定
+   の対象外（常に有効）。'?'・'D'はテキスト入力中は発火させず、shortcutsが
+   無効化されている場合も発火させない。
+   ================================================================ */
+// id → その要素を正しく閉じる関数（close関数側に個別の後片付けがある場合はそれも実行する）
+const SKY_MODAL_CLOSE_FNS = {
+  pfModalOverlay: pfCloseModal,
+  dmModalOverlay: dmCloseModal,
+  dashModalOverlay: pfDashClose,
+  customizeModal: () => closeModal('customizeModal'),
+  imagePreviewModal: () => closeModal('imagePreviewModal'),
+  iconCustomModal: () => closeModal('iconCustomModal'),
+  settingsModal: closeSettingsModal,
+};
+function closeTopmostOpenModal() {
+  const openEls = document.querySelectorAll('.pf-modal-overlay.open, .modal-overlay.open');
+  if (!openEls.length) return;
+  // 同時に開くのは通常1つだが、複数開いている場合はDOM上で最後（＝見た目上手前）のものを閉じる
+  const el = openEls[openEls.length - 1];
+  const fn = SKY_MODAL_CLOSE_FNS[el.id];
+  if (fn) fn(); else el.classList.remove('open');
+}
+
+document.addEventListener('keydown', function (e) {
+  if (e.repeat) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const evTarget = e.target;
+  const isTyping = evTarget && (evTarget.tagName === 'INPUT' || evTarget.tagName === 'TEXTAREA' || evTarget.tagName === 'SELECT' || evTarget.isContentEditable);
+
+  if (e.key === 'Escape') {
+    // Escapeはテキスト入力中でもsky_shortcuts_enabledの設定に関わらず常に有効
+    closeTopmostOpenModal();
+    return;
+  }
+
+  if (isTyping) return;
+  if (!skyShortcutsEnabled()) return;
+
+  if (e.key === '?') { e.preventDefault(); openSettingsModal(); return; }
+  if (e.key === 'd' || e.key === 'D') { e.preventDefault(); toggleTheme(); return; }
+});
 
 // ── ホーム画面アイコンのカスタマイズ ────────────────────────
 // 「ホーム画面に追加」時に使われるアイコン（apple-touch-icon / manifest.json）を、
