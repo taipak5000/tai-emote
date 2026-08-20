@@ -273,6 +273,16 @@
       background: rgba(255,255,255,0.85); border: 1px solid var(--text-3); cursor: pointer;
     }
     .tile-lv-dot.is-owned { background: var(--green); border-color: var(--green); }
+    /* 一括所持ボタン（グリッド表示）：タイル右上に丸バッジで重ねる */
+    .tile-own-all-btn {
+      position: absolute; top: 3px; right: 3px; z-index: 3;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--blue); color: #fff; font-size: 10px; font-weight: 700; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+    }
+    .tile-own-all-btn:active { transform: scale(0.9); }
+    .tile-own-all-btn.is-complete { background: var(--text-3); }
     .emote-tile-name {
       font-size: 10.5px; line-height: 1.3; text-align: center; color: var(--text-2);
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
@@ -315,6 +325,15 @@
     }
     .lv-btn:active { transform: scale(0.9); }
     .lv-btn.is-owned { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+
+    /* 一括所持ボタン（リスト表示）：未コンプリート時は「全部所持」、コンプリート済みなら「所持解除」に切替 */
+    .own-all-btn {
+      display: flex; align-items: center; gap: 4px; flex-shrink: 0;
+      background: var(--blue-bg); color: var(--blue); border-radius: 999px;
+      padding: 7px 12px; font-size: 12px; font-weight: 700; white-space: nowrap;
+    }
+    .own-all-btn:active { transform: scale(0.95); }
+    .own-all-btn.is-complete { background: var(--bg); color: var(--text-2); }
 
     .empty-message { text-align: center; padding: 40px; color: var(--text-2); font-size: 14px; background: var(--card); border-radius: var(--r); }
 
@@ -609,6 +628,14 @@
           <option value="all" data-i18n="filterAreaAll">すべてのエリア</option>
         </select>
       </div>
+      <div class="control-row">
+        <span class="control-label" data-i18n="controlLabelSort">並び替え</span>
+        <select class="select-box" id="sortOrder" onchange="renderList()">
+          <option value="default" data-i18n="sortDefault">既定の順番</option>
+          <option value="pctDesc" data-i18n="sortPctDesc">所持率が高い順</option>
+          <option value="pctAsc" data-i18n="sortPctAsc">所持率が低い順</option>
+        </select>
+      </div>
     </div>
 
     <p class="sec-label" style="padding:22px 4px 8px;" data-i18n="shareSectionLabel">達成率をシェア</p>
@@ -871,8 +898,8 @@ const I18N = {
     headerName: 'エモート全体',
     headerCountTemplate: '{owned} / {total} レベル所持',
 
-    controlLabelSearch: '名前検索',
-    searchPlaceholder: '🔍 エモート名で絞り込み...',
+    controlLabelSearch: '検索',
+    searchPlaceholder: '🔍 名前・精霊・エリアで絞り込み...',
     controlLabelFilter: '絞り込み',
     filterStatusAll: 'すべての所持状態',
     filterStatusComplete: 'コンプリート済みのみ',
@@ -880,6 +907,10 @@ const I18N = {
     filterStatusNone: '未所持のみ',
     controlLabelArea: 'エリア',
     filterAreaAll: 'すべてのエリア',
+    controlLabelSort: '並び替え',
+    sortDefault: '既定の順番',
+    sortPctDesc: '所持率が高い順',
+    sortPctAsc: '所持率が低い順',
 
     shareSectionLabel: '達成率をシェア',
     shareTwitterBtn: '📤🖼️ Xで画像を共有',
@@ -894,6 +925,10 @@ const I18N = {
     emptyMessage: '条件に一致するエモートがありません。',
     emoteLevelCountTemplate: '{owned} / {total} レベル所持',
     emoteCompleteLabel: '✓ コンプリート',
+    ownAllBtn: '✅ 全部所持',
+    ownAllBtnTitle: 'このエモートの全レベルを所持済みにする',
+    ownAllUndoBtn: '↺ 所持解除',
+    ownAllUndoBtnTitle: 'このエモートの所持レベルをすべて解除する',
 
     genericCancel: 'キャンセル',
     pfCloseBtn: '閉じる',
@@ -1084,7 +1119,7 @@ const I18N = {
     headerCountTemplate: '{owned} / {total} levels owned',
 
     controlLabelSearch: 'Search',
-    searchPlaceholder: '🔍 Filter by emote name...',
+    searchPlaceholder: '🔍 Filter by name, spirit, or area...',
     controlLabelFilter: 'Filter',
     filterStatusAll: 'All ownership status',
     filterStatusComplete: 'Complete only',
@@ -1092,6 +1127,10 @@ const I18N = {
     filterStatusNone: 'Unowned only',
     controlLabelArea: 'Area',
     filterAreaAll: 'All areas',
+    controlLabelSort: 'Sort',
+    sortDefault: 'Default order',
+    sortPctDesc: 'Highest completion first',
+    sortPctAsc: 'Lowest completion first',
 
     shareSectionLabel: 'Share your completion rate',
     shareTwitterBtn: '📤🖼️ Share image on X',
@@ -1106,6 +1145,10 @@ const I18N = {
     emptyMessage: 'No emotes match the current filter.',
     emoteLevelCountTemplate: '{owned} / {total} levels owned',
     emoteCompleteLabel: '✓ Complete',
+    ownAllBtn: '✅ Own All',
+    ownAllBtnTitle: 'Mark all levels of this emote as owned',
+    ownAllUndoBtn: '↺ Clear',
+    ownAllUndoBtnTitle: 'Clear all owned levels for this emote',
 
     genericCancel: 'Cancel',
     pfCloseBtn: 'Close',
@@ -2274,6 +2317,24 @@ function toggleLevel(emoteId, level) {
   renderList();
 }
 
+// 一括所持切替：ゲーム内では購入時に全レベルがまとめて解放されるため、
+// 1個ずつドットをタップしなくても済むワンタップ操作。
+// 既に全レベル所持済みの場合は逆に全解除（誤タップの取り消し用）。
+// toggleLevel()と同じ loadOwned/saveOwned を経由して保存するため、保存形式・localStorageキーは完全に同一。
+function toggleAllLevels(emoteId) {
+  const e = EMOTES_DATA.find(x => x.id === emoteId);
+  if (!e) return;
+  const data = loadOwned();
+  const ownedCount = (data[emoteId] || []).length;
+  if (ownedCount >= e.maxLevel) {
+    delete data[emoteId];
+  } else {
+    data[emoteId] = Array.from({ length: e.maxLevel }, (_, i) => i + 1);
+  }
+  saveOwned(data);
+  renderList();
+}
+
 function getStats() {
   const data = loadOwned();
   let owned = 0, total = 0;
@@ -2795,10 +2856,17 @@ function renderList() {
   const search = document.getElementById('searchName').value.trim().toLowerCase();
   const filter = document.getElementById('filterStatus').value;
   const location = document.getElementById('filterLocation').value;
+  const sortOrder = document.getElementById('sortOrder').value;
   const viewMode = getViewMode();
 
   const filtered = EMOTES_DATA.filter(e => {
-    if (search && !e.name.toLowerCase().includes(search) && !e.nameEn.toLowerCase().includes(search)) return false;
+    // 検索はエモート名（日英）に加えて、精霊名・エリア名（日英）にもマッチさせる
+    // （精霊が存在しないエモートもあるため spirit/spiritEn は filter(Boolean) で除外）
+    if (search) {
+      const haystack = [e.name, e.nameEn, e.spirit, e.spiritEn, e.location, e.locationEn]
+        .filter(Boolean).join(' ').toLowerCase();
+      if (!haystack.includes(search)) return false;
+    }
     if (location !== 'all' && e.location !== location) return false;
     const ownedCount = (data[e.id] || []).length;
     if (filter === 'complete' && ownedCount !== e.maxLevel) return false;
@@ -2806,6 +2874,16 @@ function renderList() {
     if (filter === 'none' && ownedCount !== 0) return false;
     return true;
   });
+
+  // 所持率（自分自身のレベル所持率）で並び替え。'default'はデータ順のまま。
+  // Array#sortは安定ソートなので、所持率が同じもの同士は元の順序を保つ。
+  if (sortOrder === 'pctDesc' || sortOrder === 'pctAsc') {
+    const pctOf = e => e.maxLevel > 0 ? (data[e.id] || []).length / e.maxLevel : 0;
+    filtered.sort((a, b) => {
+      const diff = pctOf(a) - pctOf(b);
+      return sortOrder === 'pctAsc' ? diff : -diff;
+    });
+  }
 
   const listHtml = filtered.map(e => {
     const ownedLevels = new Set(data[e.id] || []);
@@ -2815,6 +2893,10 @@ function renderList() {
     for (let lv = 1; lv <= e.maxLevel; lv++) {
       levelBtns.push(`<button type="button" class="lv-btn ${ownedLevels.has(lv) ? 'is-owned' : ''}" onclick="toggleLevel('${e.id}', ${lv})">${lv}</button>`);
     }
+    // レベルが2つ以上あるエモートのみ「全部所持」ボタンを出す（1レベルのみのエモートはドット1つで足りるため不要）
+    const ownAllBtn = e.maxLevel > 1
+      ? `<button type="button" class="own-all-btn ${isComplete ? 'is-complete' : ''}" onclick="event.stopPropagation(); toggleAllLevels('${e.id}')" title="${escapeHtml(isComplete ? t('ownAllUndoBtnTitle') : t('ownAllBtnTitle'))}">${isComplete ? t('ownAllUndoBtn') : t('ownAllBtn')}</button>`
+      : '';
     return `
       <div class="emote-card ${isComplete ? 'is-complete' : ''}">
         <div class="emote-card-icon">
@@ -2826,6 +2908,7 @@ function renderList() {
           <div class="emote-name-en">${escapeHtml(emoteNameSecondary(e))} ／ ${escapeHtml(locationDisplay(e))}</div>
           <div class="emote-sub">${isComplete ? t('emoteCompleteLabel') : t('emoteLevelCountTemplate', { owned: ownedCount, total: e.maxLevel })}</div>
         </div>
+        ${ownAllBtn}
         <div class="lv-row">${levelBtns.join('')}</div>
       </div>`;
   }).join('');
@@ -2839,6 +2922,10 @@ function renderList() {
     for (let lv = 1; lv <= e.maxLevel; lv++) {
       dots.push(`<span class="tile-lv-dot ${ownedLevels.has(lv) ? 'is-owned' : ''}" title="Lv${lv}" onclick="event.stopPropagation(); toggleLevel('${e.id}', ${lv})"></span>`);
     }
+    // レベルが2つ以上あるエモートのみ、タイル右上に「全部所持」の丸バッジボタンを重ねる
+    const tileOwnAllBtn = e.maxLevel > 1
+      ? `<button type="button" class="tile-own-all-btn ${isComplete ? 'is-complete' : ''}" onclick="event.stopPropagation(); toggleAllLevels('${e.id}')" title="${escapeHtml(isComplete ? t('ownAllUndoBtnTitle') : t('ownAllBtnTitle'))}">✓</button>`
+      : '';
     return `
       <div class="emote-tile" title="${escapeHtml(locationDisplay(e))}">
         <div class="emote-tile-frame ${isComplete ? 'is-complete' : ''}">
@@ -2847,6 +2934,7 @@ function renderList() {
             <span class="emote-tile-fallback">🎭</span>
           </div>
           <div class="emote-tile-levels">${dots.join('')}</div>
+          ${tileOwnAllBtn}
         </div>
         <a href="${emoteSearchUrl(e)}" target="_blank" rel="noopener noreferrer" class="emote-tile-name" onclick="event.stopPropagation()">${escapeHtml(emoteName(e))}</a>
       </div>`;
