@@ -766,12 +766,6 @@
       <button type="button" class="action-btn secondary" id="settingsThemeToggleBtn" onclick="toggleTheme()"></button>
     </div>
 
-    <div class="customize-section-label" data-i18n="settingsLangSectionLabel">🌐 言語 / Language</div>
-    <div class="action-row" style="margin-top:0;">
-      <button type="button" class="action-btn" id="settingsLangJaBtn" onclick="setLang('ja')">日本語</button>
-      <button type="button" class="action-btn" id="settingsLangEnBtn" onclick="setLang('en')">English</button>
-    </div>
-
     <div class="customize-section-label" data-i18n="settingsShortcutsSectionLabel">⌨️ キーボードショートカット</div>
     <label class="customize-toggle-opt">
       <input type="checkbox" id="settingsShortcutsEnabled" onchange="onSettingsShortcutsToggle(this.checked)">
@@ -786,6 +780,14 @@
 
     <div class="customize-section-label" data-i18n="settingsCustomizeSectionLabel">🎨 表示のカスタマイズ</div>
     <button type="button" class="action-btn secondary full" onclick="closeSettingsModal(); openModal('iconCustomModal');" data-i18n="settingsCustomizeBtn">🎨 カスタマイズ</button>
+
+    <div class="customize-section-label" data-i18n="settingsLangSectionLabel">🌐 言語 / Language</div>
+    <div class="action-row" style="margin-top:0;">
+      <button type="button" class="action-btn" id="settingsLangJaBtn" onclick="setLang('ja')">日本語</button>
+      <button type="button" class="action-btn" id="settingsLangEnBtn" onclick="setLang('en')">English</button>
+    </div>
+
+    <button type="button" class="pf-close-btn" onclick="closeSettingsModal()" data-i18n="pfCloseBtn">閉じる</button>
   </div>
 </div>
 
