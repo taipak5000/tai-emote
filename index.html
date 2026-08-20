@@ -351,7 +351,7 @@
     .action-row { display: flex; gap: 10px; margin-top: 14px; }
     .action-btn {
       flex: 1; padding: 12px; border-radius: var(--r-sm); font-size: 14px; font-weight: 700;
-      text-align: center; cursor: pointer; box-sizing: border-box;
+      text-align: center; cursor: pointer; box-sizing: border-box; color: var(--text);
     }
     .action-btn.primary   { background: var(--blue); color: #fff; }
     .action-btn.secondary { background: var(--bg); color: var(--text); }
@@ -481,7 +481,10 @@
     }
     .site-dock button:active { background: var(--sep); }
     .site-dock .site-dock-icon { font-size: 20px; line-height: 1; }
-    .site-dock .site-dock-label { font-size: 10px; font-weight: 700; color: var(--text-2); }
+    .site-dock .site-dock-label {
+      font-size: 10px; font-weight: 700; color: var(--text-2);
+      max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
   </style>
 </head>
 <body>
@@ -763,6 +766,12 @@
       <button type="button" class="action-btn secondary" id="settingsThemeToggleBtn" onclick="toggleTheme()"></button>
     </div>
 
+    <div class="customize-section-label" data-i18n="settingsLangSectionLabel">🌐 言語 / Language</div>
+    <div class="action-row" style="margin-top:0;">
+      <button type="button" class="action-btn" id="settingsLangJaBtn" onclick="setLang('ja')">日本語</button>
+      <button type="button" class="action-btn" id="settingsLangEnBtn" onclick="setLang('en')">English</button>
+    </div>
+
     <div class="customize-section-label" data-i18n="settingsShortcutsSectionLabel">⌨️ キーボードショートカット</div>
     <label class="customize-toggle-opt">
       <input type="checkbox" id="settingsShortcutsEnabled" onchange="onSettingsShortcutsToggle(this.checked)">
@@ -797,7 +806,7 @@
 <nav class="site-dock" data-i18n-aria-label="dockAriaLabel" aria-label="クイックメニュー">
   <button type="button" onclick="pfOpenModal()">
     <span class="site-dock-icon">🗂️</span>
-    <span class="site-dock-label" data-i18n="dockProfileLabel">プロフィール</span>
+    <span class="site-dock-label" id="siteDockProfileLabel" data-i18n="dockProfileLabel">プロフィール</span>
   </button>
   <button type="button" onclick="pfDashOpen()">
     <span class="site-dock-icon">🗓️</span>
@@ -988,6 +997,7 @@ const I18N = {
     settingsDarkModeLabel: 'ダークモード',
     settingsThemeToggleToDark: '🌙 ダーク',
     settingsThemeToggleToLight: '☀️ ライト',
+    settingsLangSectionLabel: '🌐 言語 / Language',
     settingsShortcutsSectionLabel: '⌨️ キーボードショートカット',
     settingsShortcutsEnableLabel: 'ショートカットを有効にする',
     settingsShortcutOpenSettings: 'この設定を開く',
@@ -1199,6 +1209,7 @@ const I18N = {
     settingsDarkModeLabel: 'Dark Mode',
     settingsThemeToggleToDark: '🌙 Dark',
     settingsThemeToggleToLight: '☀️ Light',
+    settingsLangSectionLabel: '🌐 Language',
     settingsShortcutsSectionLabel: '⌨️ Keyboard Shortcuts',
     settingsShortcutsEnableLabel: 'Enable keyboard shortcuts',
     settingsShortcutOpenSettings: 'Open this settings panel',
@@ -1279,8 +1290,10 @@ function applyI18n() {
   updateSettingsModalUI();
 }
 
-function toggleLang() {
-  LANG = LANG === 'ja' ? 'en' : 'ja';
+function setLang(lang) {
+  lang = lang === 'en' ? 'en' : 'ja';
+  if (lang === LANG) return; // 既にその言語ならボタンを押しても何もしない（無駄な再描画を避ける）
+  LANG = lang;
   localStorage.setItem(LANG_KEY, LANG);
   applyI18n();
   pfRenderBar();
@@ -1290,6 +1303,10 @@ function toggleLang() {
   if (document.getElementById('dashModalOverlay').classList.contains('open') && pfDashCache) {
     document.getElementById('dashBody').innerHTML = pfDashBuildHtml(pfDashCache);
   }
+}
+
+function toggleLang() {
+  setLang(LANG === 'ja' ? 'en' : 'ja');
 }
 
 /* ================================================================
@@ -1701,10 +1718,15 @@ function pfRenderBar() {
   const profile = getActiveProfile();
   pfApplyThemeColor(profile.color);
   const bar = document.getElementById('pfBar');
-  if (!bar) return;
-  bar.innerHTML = `
-    <span class="pf-bar-text" onclick="pfOpenModal()">🗂️ <b>${escapeHtml(pfDisplayName(profile))}</b> ${t('pfBarActiveSuffix')}</span>
-    <button type="button" class="pf-dash-btn" onclick="pfDashOpen()" title="${escapeAttr(t('pfDashBtnTitle'))}">🗓️</button>`;
+  if (bar) {
+    bar.innerHTML = `
+      <span class="pf-bar-text" onclick="pfOpenModal()">🗂️ <b>${escapeHtml(pfDisplayName(profile))}</b> ${t('pfBarActiveSuffix')}</span>
+      <button type="button" class="pf-dash-btn" onclick="pfDashOpen()" title="${escapeAttr(t('pfDashBtnTitle'))}">🗓️</button>`;
+  }
+  // 🧭 画面下部ドックの「プロフィール」ボタンにも、現在アクティブなプロフィール名を表示する
+  // （長い名前は.site-dock-label側のCSSで省略記号に切り詰める）
+  const dockLabel = document.getElementById('siteDockProfileLabel');
+  if (dockLabel) dockLabel.textContent = pfDisplayName(profile);
 }
 
 /* ================================================================
@@ -2286,6 +2308,12 @@ function updateSettingsModalUI() {
   if (themeBtn) themeBtn.textContent = isDarkMode() ? t('settingsThemeToggleToLight') : t('settingsThemeToggleToDark');
   const cb = document.getElementById('settingsShortcutsEnabled');
   if (cb) cb.checked = skyShortcutsEnabled();
+  const langJaBtn = document.getElementById('settingsLangJaBtn');
+  const langEnBtn = document.getElementById('settingsLangEnBtn');
+  if (langJaBtn && langEnBtn) {
+    langJaBtn.classList.toggle('primary', LANG === 'ja');
+    langEnBtn.classList.toggle('primary', LANG === 'en');
+  }
 }
 function onSettingsShortcutsToggle(checked) { setSkyShortcutsEnabled(checked); }
 
