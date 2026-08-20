@@ -68,7 +68,8 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
-      background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 60px;
+      background: var(--bg); color: var(--text); min-height: 100vh;
+      padding-bottom: calc(76px + env(safe-area-inset-bottom));
     }
 
     /* ── Navigation bar ────────────────────────── */
@@ -361,7 +362,7 @@
     .preview-img { width: 100%; border-radius: 12px; margin: 10px 0; }
 
     .toast {
-      position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(10px);
+      position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(10px);
       background: rgba(28,28,30,0.92); color: #fff; padding: 12px 20px; border-radius: 999px;
       font-size: 13.5px; font-weight: 600; z-index: 2000; opacity: 0; transition: opacity 0.25s, transform 0.25s;
       pointer-events: none; white-space: nowrap; max-width: 90vw; text-overflow: ellipsis; overflow: hidden;
@@ -456,6 +457,31 @@
       text-align: center; padding: 24px 16px; color: var(--text-2); font-size: 13px;
       border-top: 1px solid var(--sep); margin-top: 40px; line-height: 1.6;
     }
+
+    /* ── 🧭 サイトドック（画面下部固定のクイックアクセスバー。既存のハンバー
+       ガーサイドバーとは別系統の、常時表示のショートカット行） ───── */
+    /* このnavは`body > nav`（上部ナビバー用セレクタ）にもマッチしてしまうため、
+       position/top/border-bottom等はここで明示的に上書きする（top:autoが特に必須。
+       指定しないと上部navのtop:0が漏れて全画面高さになってしまう）。 */
+    .site-dock {
+      display: flex; position: fixed; top: auto; left: 0; right: 0; bottom: 0; z-index: 90;
+      padding: 6px 10px calc(8px + env(safe-area-inset-bottom));
+      background: var(--card); border-bottom: none;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-top: 0.5px solid var(--sep);
+      justify-content: space-around; align-items: stretch; gap: 4px;
+    }
+    /* body > nav 用ダークモード背景上書き（:root[data-theme="dark"] body > nav）の方が
+       詳細度が高くこの要素にも波及するため、専用セレクタで明示的に上書きする */
+    :root[data-theme="dark"] .site-dock { background: var(--card); }
+    .site-dock button {
+      flex: 1 1 0; max-width: 110px; border: 0; background: none; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 6px 0; min-height: 52px; border-radius: 12px; font-family: inherit;
+    }
+    .site-dock button:active { background: var(--sep); }
+    .site-dock .site-dock-icon { font-size: 20px; line-height: 1; }
+    .site-dock .site-dock-label { font-size: 10px; font-weight: 700; color: var(--text-2); }
   </style>
 </head>
 <body>
@@ -765,6 +791,25 @@
   </span>
 </footer>
 
+<nav class="site-dock" data-i18n-aria-label="dockAriaLabel" aria-label="クイックメニュー">
+  <button type="button" onclick="pfOpenModal()">
+    <span class="site-dock-icon">🗂️</span>
+    <span class="site-dock-label" data-i18n="dockProfileLabel">プロフィール</span>
+  </button>
+  <button type="button" onclick="openModal('iconCustomModal')">
+    <span class="site-dock-icon">🎨</span>
+    <span class="site-dock-label" data-i18n="dockCustomizeLabel">カスタマイズ</span>
+  </button>
+  <button type="button" onclick="openSidebarMobile()">
+    <span class="site-dock-icon">☰</span>
+    <span class="site-dock-label" data-i18n="dockToolsLabel">他のツール</span>
+  </button>
+  <button type="button" onclick="openSettingsModal()">
+    <span class="site-dock-icon">⚙️</span>
+    <span class="site-dock-label" data-i18n="dockSettingsLabel">表示設定</span>
+  </button>
+</nav>
+
 <script>
 /* ================================================================
    🌐 UI言語切替（日本語 / English）
@@ -800,6 +845,12 @@ const I18N = {
     sidebarSettings: '⚙️ 表示設定',
     sidebarOpenSettings: '⚙️ 表示設定を開く',
     langToggleBtn: 'EN',
+
+    dockAriaLabel: 'クイックメニュー',
+    dockProfileLabel: 'プロフィール',
+    dockCustomizeLabel: 'カスタマイズ',
+    dockToolsLabel: '他のツール',
+    dockSettingsLabel: '表示設定',
 
     pageTitle: 'エモート所持率管理',
 
@@ -1003,6 +1054,12 @@ const I18N = {
     sidebarSettings: '⚙️ Display Settings',
     sidebarOpenSettings: '⚙️ Open Display Settings',
     langToggleBtn: '日本語',
+
+    dockAriaLabel: 'Quick menu',
+    dockProfileLabel: 'Profile',
+    dockCustomizeLabel: 'Customize',
+    dockToolsLabel: 'Other Tools',
+    dockSettingsLabel: 'Settings',
 
     pageTitle: 'Emote Collection Tracker',
 
@@ -1209,6 +1266,7 @@ function applyI18n() {
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.getAttribute('data-i18n-placeholder')); });
   document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.getAttribute('data-i18n-title')); });
   document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.alt = t(el.getAttribute('data-i18n-alt')); });
+  document.querySelectorAll('[data-i18n-aria-label]').forEach(el => { el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria-label'))); });
   const langBtn = document.getElementById('langToggleBtn');
   if (langBtn) langBtn.textContent = t('langToggleBtn');
   updateSettingsModalUI();
