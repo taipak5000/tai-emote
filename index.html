@@ -35,6 +35,15 @@
       --orange-bg: rgba(255,149,0,0.10);
       --blue:      #007AFF;
       --blue-bg:   rgba(0,122,255,0.08);
+      /* 「一括所持」バッジ/ピル専用のAAコントラスト調整版ブルー。
+         通常の--blueは薄い背景/白文字に対して4.5:1未満（実測3.6〜4.0:1）になるため、
+         このテキスト・アイコンにだけ使う濃いブルーを別トークンとして用意している。 */
+      --own-all-blue:     #0062CC;
+      --own-all-badge-bg: #0062CC;
+      /* フォーカスリング専用の濃いオレンジ。素の--orangeを白いカード上でoutlineに使うと
+         実測2.2:1程度しかコントラストが出ず（非テキストのWCAG 1.4.11基準3:1未満）ほぼ見えないため、
+         このリングだけ濃い色にしている（--orange-dのグラデーション用途とは別目的のため別トークン）。 */
+      --focus-ring: #CC4B00;
       --green:     #34C759;
       --green-bg:  rgba(52,199,89,0.10);
       --text:      #1C1C1E;
@@ -55,6 +64,12 @@
       --orange-bg: rgba(255,159,10,0.18);
       --blue:      #0A84FF;
       --blue-bg:   rgba(10,132,255,0.16);
+      /* ダークモードの--blue-bgはほぼ黒に近い暗いタイルのため、上と同じ--own-all-blueでも
+         今度は逆に明るくしないと文字とタイルの区別がつかずコントラストが確保できない。
+         （--own-all-badge-bgは白文字に対する塗りなのでテーマに関わらず同じ濃さのままでよい） */
+      --own-all-blue: #4DA3FF;
+      /* ダークモードは黒背景に対して素の--orangeでも8:1超と十分見えるため、専用の暗い色は不要 */
+      --focus-ring: var(--orange);
       --green:     #30D158;
       --green-bg:  rgba(48,209,88,0.16);
       --text:      #F2F2F7;
@@ -226,6 +241,12 @@
       background: var(--bg); border: none; padding: 8px 12px; border-radius: var(--r-sm);
       font-size: 13px; color: var(--text); font-weight: 500; outline: none; flex: 1; min-width: 120px;
     }
+    /* キーボード操作時に絞り込みコントロールの現在位置が分かるよう、可視のフォーカスリングを付ける
+       （枠線を持たないためoutlineで表現。素の--orangeは白いカード上で2:1程度しか出ないため、
+       専用のフォーカス用トークン--focus-ringを使う） */
+    .select-box:focus {
+      outline: 2px solid var(--focus-ring); outline-offset: 1px;
+    }
     .search-input::placeholder { color: var(--text-3); }
 
     .list-header-row {
@@ -283,9 +304,14 @@
     .tile-own-all-btn {
       position: absolute; top: 3px; right: 3px; z-index: 3;
       width: 18px; height: 18px; border-radius: 50%;
-      background: var(--blue); color: #fff; font-size: 10px; font-weight: 700; line-height: 1;
+      background: var(--own-all-badge-bg); color: #fff; font-size: 10px; font-weight: 700; line-height: 1;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+    }
+    /* タップ判定域だけを見た目より広く取る（tile-lv-dotと同じ手法）。
+       見た目のバッジ自体は18pxのまま、負のinsetで絶対配置した透明な擬似要素がグリッドの密な並びを崩さずに判定域だけ拡大する。 */
+    .tile-own-all-btn::before {
+      content: ''; position: absolute; inset: -6px;
     }
     .tile-own-all-btn:active { transform: scale(0.9); }
     .tile-own-all-btn.is-complete { background: var(--text-3); }
@@ -335,7 +361,7 @@
     /* 一括所持ボタン（リスト表示）：未コンプリート時は「全部所持」、コンプリート済みなら「所持解除」に切替 */
     .own-all-btn {
       display: flex; align-items: center; gap: 4px; flex-shrink: 0;
-      background: var(--blue-bg); color: var(--blue); border-radius: 999px;
+      background: var(--blue-bg); color: var(--own-all-blue); border-radius: 999px;
       padding: 7px 12px; font-size: 12px; font-weight: 700; white-space: nowrap;
     }
     .own-all-btn:active { transform: scale(0.95); }
@@ -422,8 +448,10 @@
     }
     .customize-section-label:first-child { margin-top: 0; }
     .theme-swatch-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    /* pfIconPickSwatch（アイコンカスタマイズの色スウォッチ）と同じく<button>要素にすることで、
+       role/tabindex/keydownを自前実装しなくてもTab移動・Enter/Spaceでの選択が標準で効く */
     .theme-swatch {
-      width: 36px; height: 36px; border-radius: 50%; border: 2px solid transparent;
+      width: 36px; height: 36px; padding: 0; border-radius: 50%; border: 2px solid transparent;
       cursor: pointer; flex-shrink: 0; position: relative;
     }
     .theme-swatch.selected { border-color: var(--text); }
@@ -2629,9 +2657,9 @@ function openCustomizeModal() {
   if (getStats().total === 0) return;
   const saved = loadShareCustomize();
   document.getElementById('themeSwatchRow').innerHTML = Object.keys(SHARE_THEMES).map(key => `
-    <div class="theme-swatch ${key === saved.theme ? 'selected' : ''}" data-theme="${key}"
+    <button type="button" class="theme-swatch ${key === saved.theme ? 'selected' : ''}" data-theme="${key}"
       style="background:${SHARE_THEMES[key].grad};" title="${escapeAttr(t(SHARE_THEMES[key].labelKey))}"
-      onclick="selectShareTheme('${key}')"></div>`).join('');
+      onclick="selectShareTheme('${key}')"></button>`).join('');
   document.getElementById('customizeShowIcons').checked = saved.showIcons;
   document.getElementById('customizeComment').value = '';
   openModal('customizeModal');
