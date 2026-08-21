@@ -271,6 +271,12 @@
     .tile-lv-dot {
       width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
       background: rgba(255,255,255,0.85); border: 1px solid var(--text-3); cursor: pointer;
+      position: relative; /* for ::before touch-target expansion below */
+    }
+    /* タップ判定域だけを見た目より広く取る（見た目のドット自体は9pxのまま）。
+       負のinsetで絶対配置した透明な擬似要素はレイアウトに影響せず、グリッドの密な並びを崩さない。 */
+    .tile-lv-dot::before {
+      content: ''; position: absolute; inset: -6px;
     }
     .tile-lv-dot.is-owned { background: var(--green); border-color: var(--green); }
     /* 一括所持ボタン（グリッド表示）：タイル右上に丸バッジで重ねる */
@@ -2063,7 +2069,7 @@ async function pfDashOpen() {
   document.getElementById('dashModalOverlay').classList.add('open');
   const body = document.getElementById('dashBody');
   if (pfDashCache) { body.innerHTML = pfDashBuildHtml(pfDashCache); pfDashStartTimer(); return; }
-  body.innerHTML = `<div class="pf-hint">読み込み中…</div>`;
+  body.innerHTML = `<div class="pf-hint">${t('dashLoading')}</div>`;
   try {
     if (!pfDashLoading) pfDashLoading = pfDashLoadData();
     const data = await pfDashLoading;
@@ -2072,7 +2078,7 @@ async function pfDashOpen() {
     pfDashStartTimer();
   } catch (e) {
     console.error('pfDashOpen', e);
-    body.innerHTML = `<div class="dash-empty">読み込みに失敗しました</div>`;
+    body.innerHTML = `<div class="dash-empty">${t('dashLoadFailed')}</div>`;
   }
 }
 function pfDashClose() {
@@ -2920,7 +2926,7 @@ function renderList() {
     const isComplete = ownedCount === e.maxLevel;
     const dots = [];
     for (let lv = 1; lv <= e.maxLevel; lv++) {
-      dots.push(`<span class="tile-lv-dot ${ownedLevels.has(lv) ? 'is-owned' : ''}" title="Lv${lv}" onclick="event.stopPropagation(); toggleLevel('${e.id}', ${lv})"></span>`);
+      dots.push(`<button type="button" class="tile-lv-dot ${ownedLevels.has(lv) ? 'is-owned' : ''}" title="Lv${lv}" aria-label="Lv${lv}" onclick="event.stopPropagation(); toggleLevel('${e.id}', ${lv})"></button>`);
     }
     // レベルが2つ以上あるエモートのみ、タイル右上に「全部所持」の丸バッジボタンを重ねる
     const tileOwnAllBtn = e.maxLevel > 1
