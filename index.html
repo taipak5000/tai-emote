@@ -13,11 +13,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script>
     /* 🌙 ダークモード（'sky_app_theme' は taipak5000.github.io 系ツール共通のキー）。
-       CSSが描画される前に同期実行し、意図しないテーマでの一瞬の表示（ちらつき）を防ぐ。 */
+       CSSが描画される前に同期実行し、意図しないテーマでの一瞬の表示（ちらつき）を防ぐ。
+       値は 'light' | 'dark' | 'system'（未設定含む）の3種類。'system' または未設定の
+       場合はOS設定に追従する。この判定ロジックは <script> 本体側の resolveDarkMode() と
+       ロジックを完全に一致させること（このスクリプトは他の何よりも先に単体で動く必要が
+       あるため、あえて複製している）。 */
     (function () {
       try {
         var saved = localStorage.getItem('sky_app_theme');
-        var isDark = saved ? (saved === 'dark') : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var isDark;
+        if (saved === 'dark') isDark = true;
+        else if (saved === 'light') isDark = false;
+        else isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
       } catch (e) {
         document.documentElement.setAttribute('data-theme', 'light');
@@ -889,7 +896,7 @@
 
     <div class="customize-section-label" style="margin-top:0;" data-i18n="settingsDisplaySectionLabel">🌙 表示</div>
     <div class="settings-row">
-      <span data-i18n="settingsDarkModeLabel">ダークモード</span>
+      <span data-i18n="settingsDarkModeLabel">テーマ</span>
       <button type="button" class="action-btn secondary" id="settingsThemeToggleBtn" onclick="toggleTheme()"></button>
     </div>
 
@@ -901,7 +908,7 @@
 
     <div class="settings-shortcut-list">
       <div class="settings-shortcut-row"><kbd class="settings-kbd">?</kbd><span data-i18n="settingsShortcutOpenSettings">この設定を開く</span></div>
-      <div class="settings-shortcut-row"><kbd class="settings-kbd">D</kbd><span data-i18n="settingsShortcutToggleDark">ダークモード切替</span></div>
+      <div class="settings-shortcut-row"><kbd class="settings-kbd">D</kbd><span data-i18n="settingsShortcutToggleDark">テーマ切替（ライト/ダーク/システム）</span></div>
       <div class="settings-shortcut-row"><kbd class="settings-kbd">Esc</kbd><span data-i18n="settingsShortcutCloseModal">開いているウィンドウを閉じる</span></div>
     </div>
 
@@ -1142,14 +1149,18 @@ const I18N = {
 
     settingsModalTitle: '⚙️ 表示設定',
     settingsDisplaySectionLabel: '🌙 表示',
-    settingsDarkModeLabel: 'ダークモード',
+    settingsDarkModeLabel: 'テーマ',
     settingsThemeToggleToDark: '🌙 ダーク',
     settingsThemeToggleToLight: '☀️ ライト',
+    settingsThemeToggleToSystem: '🖥️ システム',
+    settingsThemeAriaLight: '現在のテーマ: ライト（クリックでダークに切り替え）',
+    settingsThemeAriaDark: '現在のテーマ: ダーク（クリックでシステムに従うへ切り替え）',
+    settingsThemeAriaSystem: '現在のテーマ: システムに従う（クリックでライトに切り替え）',
     settingsLangSectionLabel: '🌐 言語 / Language',
     settingsShortcutsSectionLabel: '⌨️ キーボードショートカット',
     settingsShortcutsEnableLabel: 'ショートカットを有効にする',
     settingsShortcutOpenSettings: 'この設定を開く',
-    settingsShortcutToggleDark: 'ダークモード切替',
+    settingsShortcutToggleDark: 'テーマ切替（ライト/ダーク/システム）',
     settingsShortcutCloseModal: '開いているウィンドウを閉じる',
     settingsCustomizeSectionLabel: '🎨 表示のカスタマイズ',
     settingsCustomizeBtn: '🎨 カスタマイズ',
@@ -1373,14 +1384,18 @@ const I18N = {
 
     settingsModalTitle: '⚙️ Display Settings',
     settingsDisplaySectionLabel: '🌙 Display',
-    settingsDarkModeLabel: 'Dark Mode',
+    settingsDarkModeLabel: 'Theme',
     settingsThemeToggleToDark: '🌙 Dark',
     settingsThemeToggleToLight: '☀️ Light',
+    settingsThemeToggleToSystem: '🖥️ System',
+    settingsThemeAriaLight: 'Current theme: Light (click to switch to Dark)',
+    settingsThemeAriaDark: 'Current theme: Dark (click to switch to Follow System)',
+    settingsThemeAriaSystem: 'Current theme: Follow System (click to switch to Light)',
     settingsLangSectionLabel: '🌐 Language',
     settingsShortcutsSectionLabel: '⌨️ Keyboard Shortcuts',
     settingsShortcutsEnableLabel: 'Enable keyboard shortcuts',
     settingsShortcutOpenSettings: 'Open this settings panel',
-    settingsShortcutToggleDark: 'Toggle dark mode',
+    settingsShortcutToggleDark: 'Cycle theme (Light/Dark/System)',
     settingsShortcutCloseModal: 'Close the open window',
     settingsCustomizeSectionLabel: '🎨 Customize Appearance',
     settingsCustomizeBtn: '🎨 Customize',
@@ -1477,24 +1492,52 @@ function toggleLang() {
 }
 
 /* ================================================================
-   🌙 ダークモード / ⌨️ キーボードショートカット（⚙️ 表示設定）
+   🌙 ダークモード（ライト/ダーク/システム追従の3状態） / ⌨️ キーボードショートカット
+   （⚙️ 表示設定）
    'sky_app_theme' と 'sky_shortcuts_enabled' は taipak5000.github.io 系ツール
    共通のキー（sky_app_lang と同様、プロフィールに依存しない端末単位の設定の
-   ため nsKey() は使わない）。data-theme属性の初期反映は<head>内の同期スクリプト
-   （ちらつき防止）で行っており、ここではトグル操作と状態参照のみを扱う。
+   ため nsKey() は使わない）。保存値は 'light' | 'dark' | 'system'（未設定含む）の
+   3種類で、'system'（および未設定）はOS設定（prefers-color-scheme）に追従する。
+   data-theme属性の初期反映は<head>内の同期スクリプト（ちらつき防止）で行っており、
+   resolveDarkMode()と同一ロジックをそちらにも複製している（両者は必ず一致させる）。
    ================================================================ */
 const THEME_KEY = 'sky_app_theme';
 const SHORTCUTS_KEY = 'sky_shortcuts_enabled';
 
+// 保存値から実際に適用すべきダーク/ライトを解決する共通ヘルパー。
+// 'light'/'dark'はそのまま、'system'または未設定（null）はOS設定に追従する。
+function resolveDarkMode(saved) {
+  if (saved === 'dark') return true;
+  if (saved === 'light') return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+// 現在の保存値を 'light' | 'dark' | 'system' に正規化する（未設定は'system'扱い）
+function currentThemeMode() {
+  const saved = localStorage.getItem(THEME_KEY);
+  return (saved === 'dark' || saved === 'light') ? saved : 'system';
+}
+function applyThemeToDOM(isDark) {
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+}
 function isDarkMode() {
   return document.documentElement.getAttribute('data-theme') === 'dark';
 }
+// ライト → ダーク → システム追従 → ライト … の順で切り替える
 function toggleTheme() {
-  const next = !isDarkMode();
-  document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light');
-  try { localStorage.setItem(THEME_KEY, next ? 'dark' : 'light'); } catch (e) { /* プライベートブラウジング等でlocalStorageが使えない場合も表示は継続する */ }
+  const mode = currentThemeMode();
+  const next = mode === 'light' ? 'dark' : mode === 'dark' ? 'system' : 'light';
+  try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* プライベートブラウジング等でlocalStorageが使えない場合も表示は継続する */ }
+  applyThemeToDOM(resolveDarkMode(next));
   updateSettingsModalUI();
 }
+// OS側のテーマ設定がタブを開いたまま切り替わった場合（例: 日没時の自動切替）、
+// 保存値が'system'（未設定含む）の間はリアルタイムに追従させる。
+// 明示的に'light'/'dark'を選択済みの場合は何もしない。
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === 'dark' || saved === 'light') return;
+  applyThemeToDOM(resolveDarkMode(saved));
+});
 
 // 未設定時（値がnull）はデフォルトで有効（'1'扱い）
 function skyShortcutsEnabled() {
@@ -1573,6 +1616,12 @@ function pfApplyThemeColor(hex) {
 }
 window.addEventListener('storage', (e) => {
   if (e.key === PROFILES_KEY) pfApplyThemeColor(getActiveProfile().color);
+  // 他のタブ／同一オリジンの姉妹サイトで sky_app_theme が変更された場合、
+  // このタブにもリロードなしで即時反映する（'light'/'dark'/'system'/未設定のすべてに対応）。
+  if (e.key === THEME_KEY) {
+    applyThemeToDOM(resolveDarkMode(e.newValue));
+    updateSettingsModalUI();
+  }
 });
 function pfSetProfileColor(id, color) {
   if (!pfIsSafeColor(color)) return;
@@ -2528,7 +2577,19 @@ function openSettingsModal() {
 function closeSettingsModal() { closeModal('settingsModal'); }
 function updateSettingsModalUI() {
   const themeBtn = document.getElementById('settingsThemeToggleBtn');
-  if (themeBtn) themeBtn.textContent = isDarkMode() ? t('settingsThemeToggleToLight') : t('settingsThemeToggleToDark');
+  if (themeBtn) {
+    // ボタンには「次に切り替わる先」のラベルを表示する（ライト→ダーク→システム→…）
+    const mode = currentThemeMode();
+    const nextLabelKey = mode === 'light' ? 'settingsThemeToggleToDark'
+      : mode === 'dark' ? 'settingsThemeToggleToSystem'
+      : 'settingsThemeToggleToLight';
+    themeBtn.textContent = t(nextLabelKey);
+    // aria-pressedは2値のため3状態には不向き。現在のモードと次の切替先をaria-labelで説明する
+    const ariaKey = mode === 'light' ? 'settingsThemeAriaLight'
+      : mode === 'dark' ? 'settingsThemeAriaDark'
+      : 'settingsThemeAriaSystem';
+    themeBtn.setAttribute('aria-label', t(ariaKey));
+  }
   const cb = document.getElementById('settingsShortcutsEnabled');
   if (cb) cb.checked = skyShortcutsEnabled();
   const langJaBtn = document.getElementById('settingsLangJaBtn');
