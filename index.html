@@ -35,11 +35,15 @@
       --orange-bg: rgba(255,149,0,0.10);
       --blue:      #007AFF;
       --blue-bg:   rgba(0,122,255,0.08);
-      /* 「一括所持」バッジ/ピル専用のAAコントラスト調整版ブルー。
-         通常の--blueは薄い背景/白文字に対して4.5:1未満（実測3.6〜4.0:1）になるため、
-         このテキスト・アイコンにだけ使う濃いブルーを別トークンとして用意している。 */
-      --own-all-blue:     #0062CC;
-      --own-all-badge-bg: #0062CC;
+      /* AAコントラスト調整版ブルー。通常の--blueは薄い背景の上のテキストや、白文字を乗せた
+         塗りつぶし背景に対して4.5:1未満（実測ライトモードで約4.0:1、ダークモードで約3.65:1）
+         になるため、この濃いブルーを別トークンとして用意している。
+         --own-all-blue: 「一括所持」ピル（薄い背景の上）のテキスト・アイコン用。
+         --blue-solid: 白文字を乗せる塗りつぶしボタン/バッジ用（一括所持バッジ、プロフィール追加
+         ボタン、確定ボタン、モーダルのprimaryボタンなど）。白文字に対する塗りなのでテーマに
+         関わらず同じ濃さのままでよい。 */
+      --own-all-blue: #0062CC;
+      --blue-solid:   #0062CC;
       /* フォーカスリング専用の濃いオレンジ。素の--orangeを白いカード上でoutlineに使うと
          実測2.2:1程度しかコントラストが出ず（非テキストのWCAG 1.4.11基準3:1未満）ほぼ見えないため、
          このリングだけ濃い色にしている（--orange-dのグラデーション用途とは別目的のため別トークン）。 */
@@ -66,7 +70,8 @@
       --blue-bg:   rgba(10,132,255,0.16);
       /* ダークモードの--blue-bgはほぼ黒に近い暗いタイルのため、上と同じ--own-all-blueでも
          今度は逆に明るくしないと文字とタイルの区別がつかずコントラストが確保できない。
-         （--own-all-badge-bgは白文字に対する塗りなのでテーマに関わらず同じ濃さのままでよい） */
+         （--blue-solidは白文字に対する塗りなのでテーマに関わらず同じ濃さのままでよい。
+         :root側の定義のままここでは上書きしない） */
       --own-all-blue: #4DA3FF;
       /* ダークモードは黒背景に対して素の--orangeでも8:1超と十分見えるため、専用の暗い色は不要 */
       --focus-ring: var(--orange);
@@ -168,7 +173,7 @@
     .pf-add-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
     .pf-input { flex: 1; min-width: 0; background: var(--bg); border: 1px solid var(--sep); border-radius: 6px;
       padding: 8px 10px; font-size: 14px; color: var(--text); font-family: inherit; outline: none; box-sizing: border-box; }
-    .pf-add-btn { background: var(--blue); color: #fff; border: none; border-radius: 6px; padding: 8px 14px;
+    .pf-add-btn { background: var(--blue-solid); color: #fff; border: none; border-radius: 6px; padding: 8px 14px;
       font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; }
     .pf-hint { font-size: 11.5px; color: var(--text-2); line-height: 1.5; margin: 12px 0 0; }
     .pf-close-btn { display: block; width: 100%; margin-top: 16px; background: var(--bg); border: 1px solid var(--sep);
@@ -180,7 +185,7 @@
        （flex-basis:0%相当）だと横幅の希望値が0扱いになり、ボタンと同じ行に押し込まれて
        極端に狭い縦長カラムになってしまっていたため。 */
     .pf-row-confirm-text { flex: 1 1 100%; font-size: 13px; color: var(--text); line-height: 1.4; }
-    .pf-row-btn-ok { background: var(--blue); color: #fff; border: none; }
+    .pf-row-btn-ok { background: var(--blue-solid); color: #fff; border: none; }
     .pf-row-btn-danger { background: #ff3b30; color: #fff; border: none; }
 
     .pf-currency-section { margin-top: 14px; padding-top: 14px; border-top: 0.5px solid var(--sep); }
@@ -307,11 +312,13 @@
       content: ''; position: absolute; inset: -8px;
     }
     .tile-lv-dot.is-owned { background: var(--green); border-color: var(--green); }
+    /* キーボード操作時の可視フォーカスリング（.select-box:focus と同じ--focus-ringトークンを使用） */
+    .tile-lv-dot:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
     /* 一括所持ボタン（グリッド表示）：タイル右上に丸バッジで重ねる */
     .tile-own-all-btn {
       position: absolute; top: 3px; right: 3px; z-index: 3;
       width: 18px; height: 18px; border-radius: 50%;
-      background: var(--own-all-badge-bg); color: #fff; font-size: 10px; font-weight: 700; line-height: 1;
+      background: var(--blue-solid); color: #fff; font-size: 10px; font-weight: 700; line-height: 1;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 1px 3px rgba(0,0,0,0.35);
     }
@@ -322,6 +329,16 @@
     }
     .tile-own-all-btn:active { transform: scale(0.9); }
     .tile-own-all-btn.is-complete { background: var(--text-3); }
+    .tile-own-all-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+    /* 「案内人」バッジ（タイル左上）：isGuideなエモートにのみ表示する。.toastと同じ
+       黒半透明地に白文字の配色を流用しており、テーマやタイル背景色に関わらず常に読みやすい。 */
+    .tile-guide-badge {
+      position: absolute; top: 3px; left: 3px; z-index: 3;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: rgba(28,28,30,0.82); color: #fff; font-size: 10px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+    }
     .emote-tile-name {
       font-size: 10.5px; line-height: 1.3; text-align: center; color: var(--text-2);
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
@@ -354,6 +371,12 @@
     .emote-name-en { font-size: 11px; color: var(--text-2); margin-top: 2px; }
     .emote-sub { font-size: 12px; color: var(--text-2); margin-top: 3px; }
     .emote-card.is-complete .emote-sub { color: var(--green); font-weight: 600; }
+    /* 「案内人」バッジ（リスト表示）：tile-guide-badgeと同じ黒半透明地に白文字の配色（.toastと同じ配色）。 */
+    .guide-badge {
+      display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 700;
+      color: #fff; background: rgba(28,28,30,0.82); border-radius: 999px; padding: 2px 8px;
+      margin-top: 4px; white-space: nowrap;
+    }
 
     .lv-row { display: flex; gap: 6px; flex-shrink: 0; }
     .lv-btn {
@@ -364,6 +387,8 @@
     }
     .lv-btn:active { transform: scale(0.9); }
     .lv-btn.is-owned { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+    /* キーボード操作時の可視フォーカスリング（.select-box:focus と同じ--focus-ringトークンを使用） */
+    .lv-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
     /* 一括所持ボタン（リスト表示）：未コンプリート時は「全部所持」、コンプリート済みなら「所持解除」に切替 */
     .own-all-btn {
@@ -373,6 +398,17 @@
     }
     .own-all-btn:active { transform: scale(0.95); }
     .own-all-btn.is-complete { background: var(--bg); color: var(--text-2); }
+    .own-all-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+    /* 絞り込み結果の一括所持ボタン：検索・絞り込みが有効な間だけcontrol-panel内に表示される
+       （表示制御はrenderList()内のisFilterActive()判定で行う）。#own-all-btnと同じ「全部所持」
+       操作の一括版のため、色は個別ボタンと同じ--blue-solid（白文字4.5:1以上を確保済み）を使う。 */
+    .bulk-own-btn {
+      width: 100%; background: var(--blue-solid); color: #fff; border-radius: var(--r-sm);
+      padding: 10px 14px; font-size: 13px; font-weight: 700; text-align: center;
+    }
+    .bulk-own-btn:active { transform: scale(0.98); }
+    .bulk-own-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
     .empty-message { text-align: center; padding: 40px; color: var(--text-2); font-size: 14px; background: var(--card); border-radius: var(--r); }
 
@@ -411,7 +447,7 @@
       flex: 1; padding: 12px; border-radius: var(--r-sm); font-size: 14px; font-weight: 700;
       text-align: center; cursor: pointer; box-sizing: border-box; color: var(--text);
     }
-    .action-btn.primary   { background: var(--blue); color: #fff; }
+    .action-btn.primary   { background: var(--blue-solid); color: #fff; }
     .action-btn.secondary { background: var(--bg); color: var(--text); }
     .action-btn.full      { width: 100%; }
     .action-btn.twitter   { background: #000; color: #fff; }
@@ -670,12 +706,22 @@
         </select>
       </div>
       <div class="control-row">
+        <span class="control-label" data-i18n="controlLabelGuide">種別</span>
+        <select class="select-box" id="filterGuide" onchange="renderList()">
+          <option value="all" data-i18n="filterGuideAll">すべての種別</option>
+          <option value="guideOnly" data-i18n="filterGuideOnly">🧭 案内人のみ</option>
+        </select>
+      </div>
+      <div class="control-row">
         <span class="control-label" data-i18n="controlLabelSort">並び替え</span>
         <select class="select-box" id="sortOrder" onchange="renderList()">
           <option value="default" data-i18n="sortDefault">既定の順番</option>
           <option value="pctDesc" data-i18n="sortPctDesc">所持率が高い順</option>
           <option value="pctAsc" data-i18n="sortPctAsc">所持率が低い順</option>
         </select>
+      </div>
+      <div class="control-row" id="bulkOwnRow" style="display:none;">
+        <button type="button" class="bulk-own-btn" id="bulkOwnFilteredBtn" onclick="bulkOwnFiltered()"></button>
       </div>
     </div>
 
@@ -948,10 +994,17 @@ const I18N = {
     filterStatusNone: '未所持のみ',
     controlLabelArea: 'エリア',
     filterAreaAll: 'すべてのエリア',
+    controlLabelGuide: '種別',
+    filterGuideAll: 'すべての種別',
+    filterGuideOnly: '🧭 案内人のみ',
     controlLabelSort: '並び替え',
     sortDefault: '既定の順番',
     sortPctDesc: '所持率が高い順',
     sortPctAsc: '所持率が低い順',
+    bulkOwnFilteredBtnTemplate: '✅ 絞り込み結果（{n}件）を全部所持にする',
+    bulkOwnFilteredBtnTitle: '検索・絞り込みで表示されているエモートを、すべて全レベル所持済みにします',
+    guideBadgeLabel: '🧭 案内人',
+    guideBadgeTitle: '精霊ではなく案内人（AURORAなど）から入手するエモートです',
 
     shareSectionLabel: '達成率をシェア',
     shareTwitterBtn: '📤🖼️ Xで画像を共有',
@@ -1021,6 +1074,8 @@ const I18N = {
     dashCurrentlyActive: 'が開催中',
     dashEndsIn: '終了まで',
     dashSeasonEndsInSuffix: '終了まで',
+    dashSeasonQuoteOpen: '「',
+    dashSeasonQuoteClose: '」',
     dashRevisitSpirit: '再訪精霊',
     dashRevisitHereNow: 'が来訪中',
     dashRevisitReturnsIn: 'の次回来訪まで',
@@ -1168,10 +1223,17 @@ const I18N = {
     filterStatusNone: 'Unowned only',
     controlLabelArea: 'Area',
     filterAreaAll: 'All areas',
+    controlLabelGuide: 'Type',
+    filterGuideAll: 'All types',
+    filterGuideOnly: '🧭 Guide only',
     controlLabelSort: 'Sort',
     sortDefault: 'Default order',
     sortPctDesc: 'Highest completion first',
     sortPctAsc: 'Lowest completion first',
+    bulkOwnFilteredBtnTemplate: '✅ Mark all {n} filtered emotes as owned',
+    bulkOwnFilteredBtnTitle: 'Marks every level of every emote currently shown by the search/filter as owned.',
+    guideBadgeLabel: '🧭 Guide',
+    guideBadgeTitle: 'Granted by a Guide character (e.g. AURORA), not a regular spirit',
 
     shareSectionLabel: 'Share your completion rate',
     shareTwitterBtn: '📤🖼️ Share image on X',
@@ -1241,6 +1303,8 @@ const I18N = {
     dashCurrentlyActive: ' is currently active',
     dashEndsIn: 'Ends in',
     dashSeasonEndsInSuffix: ' ends in',
+    dashSeasonQuoteOpen: '',
+    dashSeasonQuoteClose: '',
     dashRevisitSpirit: 'Revisit Spirit',
     dashRevisitHereNow: ' is here now',
     dashRevisitReturnsIn: ' returns in',
@@ -2092,7 +2156,7 @@ function pfDashBuildHtml(data) {
   let monthHtml;
   if (data.season && data.season.endDate) {
     const end = new Date(data.season.endDate);
-    monthHtml = pfDashRow('🎨', `「<b>${escapeHtml(dashEventName(data.season.name))}</b>」${t('dashSeasonEndsInSuffix')}<span class="dash-countdown">${pfDashCountdown(end)}</span>`);
+    monthHtml = pfDashRow('🎨', `${t('dashSeasonQuoteOpen')}<b>${escapeHtml(dashEventName(data.season.name))}</b>${t('dashSeasonQuoteClose')}${t('dashSeasonEndsInSuffix')}<span class="dash-countdown">${pfDashCountdown(end)}</span>`);
   } else {
     monthHtml = `<div class="dash-empty">${t('dashSeasonLoadFailed')}</div>`;
   }
@@ -2375,6 +2439,13 @@ function toggleLevel(emoteId, level) {
   renderList();
 }
 
+// 指定エモートの全レベルを所持済みにする（純粋な状態更新のみ。呼び出し側でsaveOwned/renderListを行う）。
+// toggleAllLevels()（個別のワンタップ一括所持）とbulkOwnFiltered()（絞り込み結果の一括所持）の
+// 両方から共有される、一括所持の中核ロジック。
+function applyOwnAll(data, e) {
+  data[e.id] = Array.from({ length: e.maxLevel }, (_, i) => i + 1);
+}
+
 // 一括所持切替：ゲーム内では購入時に全レベルがまとめて解放されるため、
 // 1個ずつドットをタップしなくても済むワンタップ操作。
 // 既に全レベル所持済みの場合は逆に全解除（誤タップの取り消し用）。
@@ -2387,8 +2458,22 @@ function toggleAllLevels(emoteId) {
   if (ownedCount >= e.maxLevel) {
     delete data[emoteId];
   } else {
-    data[emoteId] = Array.from({ length: e.maxLevel }, (_, i) => i + 1);
+    applyOwnAll(data, e);
   }
+  saveOwned(data);
+  renderList();
+}
+
+// 検索・絞り込みで現在表示中のエモートすべてを一括で「全部所持」にする。
+// 個別の一括所持ボタンと同じapplyOwnAll()で所持データを更新するため、保存形式は完全に同一。
+// ただしtoggleAllLevels()と違い、既に全部所持済みのエモートが結果に混ざっていても
+// それを解除方向へは倒さない（誤って一括で所持データを消してしまわないようにするため、常に
+// 「所持済みにする」方向のみの一方向操作にしている）。
+function bulkOwnFiltered() {
+  const filtered = getFilteredEmotes();
+  if (!filtered.length) return;
+  const data = loadOwned();
+  filtered.forEach(e => applyOwnAll(data, e));
   saveOwned(data);
   renderList();
 }
@@ -2933,15 +3018,41 @@ function populateLocationFilter() {
   }
 }
 
-function renderList() {
-  const data = loadOwned();
+// renderList()はレベルドット/全部所持ボタンのトグル毎にエモート一覧全体をinnerHTMLで
+// 作り直すため、そのままだと操作していたボタンがDOMごと差し替わってキーボードフォーカスが
+// 失われ、フォーカスがdocument.bodyに落ちてしまう。再描画の直前にフォーカス中の要素を
+// data-emote-id/data-level（一覧側はlv-btn/own-all-btn、グリッド側はtile-lv-dot/tile-own-all-btn）
+// で識別しておき、再描画後に同じ識別子を持つ新しい要素へフォーカスを戻す。
+function captureFocusedControl() {
+  const active = document.activeElement;
+  if (!active || !active.classList) return null;
+  const types = ['lv-btn', 'tile-lv-dot', 'own-all-btn', 'tile-own-all-btn'];
+  const type = types.find(cls => active.classList.contains(cls));
+  if (!type || !active.dataset.emoteId) return null;
+  return { type, emoteId: active.dataset.emoteId, level: active.dataset.level };
+}
+function restoreFocusedControl(focusInfo) {
+  if (!focusInfo) return;
+  const hasLevel = focusInfo.type === 'lv-btn' || focusInfo.type === 'tile-lv-dot';
+  const selector = hasLevel
+    ? `.${focusInfo.type}[data-emote-id="${focusInfo.emoteId}"][data-level="${focusInfo.level}"]`
+    : `.${focusInfo.type}[data-emote-id="${focusInfo.emoteId}"]`;
+  const el = document.querySelector(selector);
+  if (el) el.focus();
+}
+
+// 検索・絞り込みの4条件（名前検索／所持状態／エリア／種別＝案内人のみ）を読み取り、
+// 一致するエモートを返す。renderList()（一覧表示）とbulkOwnFiltered()（絞り込み結果の
+// 一括所持）の両方から呼ばれるため、一覧に表示されている内容と一括所持の対象は常に一致する。
+// data（所持データ）は省略時にloadOwned()で読み直す（renderList()側では既に読み込み済みの
+// ものをそのまま渡し、同一フレーム内での二重読み込みを避けている）。
+function getFilteredEmotes(data) {
+  data = data || loadOwned();
   const search = document.getElementById('searchName').value.trim().toLowerCase();
   const filter = document.getElementById('filterStatus').value;
   const location = document.getElementById('filterLocation').value;
-  const sortOrder = document.getElementById('sortOrder').value;
-  const viewMode = getViewMode();
-
-  const filtered = EMOTES_DATA.filter(e => {
+  const guideOnly = document.getElementById('filterGuide').value === 'guideOnly';
+  return EMOTES_DATA.filter(e => {
     // 検索はエモート名（日英）に加えて、精霊名・エリア名（日英）にもマッチさせる
     // （精霊が存在しないエモートもあるため spirit/spiritEn は filter(Boolean) で除外）
     if (search) {
@@ -2950,12 +3061,32 @@ function renderList() {
       if (!haystack.includes(search)) return false;
     }
     if (location !== 'all' && e.location !== location) return false;
+    if (guideOnly && !e.isGuide) return false;
     const ownedCount = (data[e.id] || []).length;
     if (filter === 'complete' && ownedCount !== e.maxLevel) return false;
     if (filter === 'partial' && (ownedCount === 0 || ownedCount === e.maxLevel)) return false;
     if (filter === 'none' && ownedCount !== 0) return false;
     return true;
   });
+}
+
+// 検索・絞り込みのいずれかが既定値から変更されているか（＝一覧が全件表示ではないか）を返す。
+// 絞り込み結果の一括所持ボタンは、これがtrueの間だけcontrol-panel内に表示する。
+function isFilterActive() {
+  const search = document.getElementById('searchName').value.trim();
+  const filter = document.getElementById('filterStatus').value;
+  const location = document.getElementById('filterLocation').value;
+  const guide = document.getElementById('filterGuide').value;
+  return !!search || filter !== 'all' || location !== 'all' || guide !== 'all';
+}
+
+function renderList() {
+  const focusInfo = captureFocusedControl();
+  const data = loadOwned();
+  const sortOrder = document.getElementById('sortOrder').value;
+  const viewMode = getViewMode();
+
+  const filtered = getFilteredEmotes(data);
 
   // 所持率（自分自身のレベル所持率）で並び替え。'default'はデータ順のまま。
   // Array#sortは安定ソートなので、所持率が同じもの同士は元の順序を保つ。
@@ -2973,12 +3104,14 @@ function renderList() {
     const isComplete = ownedCount === e.maxLevel;
     const levelBtns = [];
     for (let lv = 1; lv <= e.maxLevel; lv++) {
-      levelBtns.push(`<button type="button" class="lv-btn ${ownedLevels.has(lv) ? 'is-owned' : ''}" onclick="toggleLevel('${e.id}', ${lv})">${lv}</button>`);
+      levelBtns.push(`<button type="button" class="lv-btn ${ownedLevels.has(lv) ? 'is-owned' : ''}" data-emote-id="${e.id}" data-level="${lv}" onclick="toggleLevel('${e.id}', ${lv})">${lv}</button>`);
     }
     // レベルが2つ以上あるエモートのみ「全部所持」ボタンを出す（1レベルのみのエモートはドット1つで足りるため不要）
     const ownAllBtn = e.maxLevel > 1
-      ? `<button type="button" class="own-all-btn ${isComplete ? 'is-complete' : ''}" onclick="event.stopPropagation(); toggleAllLevels('${e.id}')" title="${escapeHtml(isComplete ? t('ownAllUndoBtnTitle') : t('ownAllBtnTitle'))}">${isComplete ? t('ownAllUndoBtn') : t('ownAllBtn')}</button>`
+      ? `<button type="button" class="own-all-btn ${isComplete ? 'is-complete' : ''}" data-emote-id="${e.id}" onclick="event.stopPropagation(); toggleAllLevels('${e.id}')" title="${escapeHtml(isComplete ? t('ownAllUndoBtnTitle') : t('ownAllBtnTitle'))}">${isComplete ? t('ownAllUndoBtn') : t('ownAllBtn')}</button>`
       : '';
+    // isGuideなエモート（精霊ではなく案内人から入手）にのみ「案内人」バッジを表示する
+    const guideBadge = e.isGuide ? `<span class="guide-badge" title="${escapeHtml(t('guideBadgeTitle'))}">${t('guideBadgeLabel')}</span>` : '';
     return `
       <div class="emote-card ${isComplete ? 'is-complete' : ''}">
         <div class="emote-card-icon">
@@ -2989,6 +3122,7 @@ function renderList() {
           <a href="${emoteSearchUrl(e)}" target="_blank" rel="noopener noreferrer" class="emote-name" onclick="event.stopPropagation()">${escapeHtml(emoteName(e))}</a>
           <div class="emote-name-en">${escapeHtml(emoteNameSecondary(e))} ／ ${escapeHtml(locationDisplay(e))}</div>
           <div class="emote-sub">${isComplete ? t('emoteCompleteLabel') : t('emoteLevelCountTemplate', { owned: ownedCount, total: e.maxLevel })}</div>
+          ${guideBadge}
         </div>
         ${ownAllBtn}
         <div class="lv-row">${levelBtns.join('')}</div>
@@ -3002,12 +3136,14 @@ function renderList() {
     const isComplete = ownedCount === e.maxLevel;
     const dots = [];
     for (let lv = 1; lv <= e.maxLevel; lv++) {
-      dots.push(`<button type="button" class="tile-lv-dot ${ownedLevels.has(lv) ? 'is-owned' : ''}" title="Lv${lv}" aria-label="Lv${lv}" onclick="event.stopPropagation(); toggleLevel('${e.id}', ${lv})"></button>`);
+      dots.push(`<button type="button" class="tile-lv-dot ${ownedLevels.has(lv) ? 'is-owned' : ''}" data-emote-id="${e.id}" data-level="${lv}" title="Lv${lv}" aria-label="Lv${lv}" onclick="event.stopPropagation(); toggleLevel('${e.id}', ${lv})"></button>`);
     }
     // レベルが2つ以上あるエモートのみ、タイル右上に「全部所持」の丸バッジボタンを重ねる
     const tileOwnAllBtn = e.maxLevel > 1
-      ? `<button type="button" class="tile-own-all-btn ${isComplete ? 'is-complete' : ''}" onclick="event.stopPropagation(); toggleAllLevels('${e.id}')" title="${escapeHtml(isComplete ? t('ownAllUndoBtnTitle') : t('ownAllBtnTitle'))}">✓</button>`
+      ? `<button type="button" class="tile-own-all-btn ${isComplete ? 'is-complete' : ''}" data-emote-id="${e.id}" onclick="event.stopPropagation(); toggleAllLevels('${e.id}')" title="${escapeHtml(isComplete ? t('ownAllUndoBtnTitle') : t('ownAllBtnTitle'))}">✓</button>`
       : '';
+    // isGuideなエモートにのみ、タイル左上に「案内人」の丸バッジを重ねる（右上は一括所持バッジ用）
+    const tileGuideBadge = e.isGuide ? `<span class="tile-guide-badge" title="${escapeHtml(t('guideBadgeTitle'))}">🧭</span>` : '';
     return `
       <div class="emote-tile" title="${escapeHtml(locationDisplay(e))}">
         <div class="emote-tile-frame ${isComplete ? 'is-complete' : ''}">
@@ -3017,6 +3153,7 @@ function renderList() {
           </div>
           <div class="emote-tile-levels">${dots.join('')}</div>
           ${tileOwnAllBtn}
+          ${tileGuideBadge}
         </div>
         <a href="${emoteSearchUrl(e)}" target="_blank" rel="noopener noreferrer" class="emote-tile-name" onclick="event.stopPropagation()">${escapeHtml(emoteName(e))}</a>
       </div>`;
@@ -3032,9 +3169,21 @@ function renderList() {
 
   document.getElementById('listCountLabel').textContent = t('listCountTemplate', { n: filtered.length, total: EMOTES_DATA.length });
 
+  // 絞り込み結果の一括所持ボタン：検索・絞り込みが有効で、かつ対象が1件以上ある間だけ表示する
+  const bulkOwnRow = document.getElementById('bulkOwnRow');
+  const showBulkOwn = isFilterActive() && filtered.length > 0;
+  bulkOwnRow.style.display = showBulkOwn ? 'flex' : 'none';
+  if (showBulkOwn) {
+    const bulkOwnBtn = document.getElementById('bulkOwnFilteredBtn');
+    bulkOwnBtn.textContent = t('bulkOwnFilteredBtnTemplate', { n: filtered.length });
+    bulkOwnBtn.title = t('bulkOwnFilteredBtnTitle');
+  }
+
   const stats = getStats();
   document.getElementById('hdrCount').textContent = t('headerCountTemplate', { owned: stats.owned, total: stats.total });
   document.getElementById('hdrPct').textContent = formatPct(stats.pct);
+
+  restoreFocusedControl(focusInfo);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
