@@ -478,6 +478,24 @@
     .modal-title  { font-size: 17px; font-weight: 700; }
     .modal-close  { font-size: 22px; color: var(--text-2); padding: 2px 6px; }
 
+    /* ── 📅 入手履歴モーダルの行 ─────────────── */
+    .log-row-list { display: flex; flex-direction: column; margin-top: 10px; }
+    .log-row { display: flex; align-items: center; gap: 10px; padding: 10px 2px; border-bottom: 0.5px solid var(--sep); }
+    .log-row:last-child { border-bottom: none; }
+    .log-row-icon {
+      width: 36px; height: 36px; border-radius: var(--r-sm); flex-shrink: 0;
+      background: var(--bg); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;
+    }
+    .log-row-icon img { width: 100%; height: 100%; object-fit: contain; padding: 12%; display: block; }
+    .log-row-icon.img-fallback img { display: none; }
+    .log-row-icon-fallback { display: none; font-size: 16px; }
+    .log-row-icon.img-fallback .log-row-icon-fallback { display: block; }
+    .log-row-info { flex: 1; min-width: 0; }
+    .log-row-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .log-row-level { font-size: 11.5px; font-weight: 700; color: var(--orange); margin-left: 2px; }
+    .log-row-meta { font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
+    .log-empty { font-size: 12.5px; color: var(--text-2); padding: 10px 2px; line-height: 1.6; }
+
     .action-row { display: flex; gap: 10px; margin-top: 14px; }
     .action-btn {
       flex: 1; padding: 12px; border-radius: var(--r-sm); font-size: 14px; font-weight: 700;
@@ -913,6 +931,23 @@
   </div>
 </div>
 
+<!-- ▸ 📅 入手履歴モーダル -->
+<div class="modal-overlay" id="acquireLogModal" onclick="if(event.target===this)closeModal('acquireLogModal')">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title" data-i18n="acquireLogModalTitle">📅 入手履歴</span>
+      <button class="modal-close" onclick="closeModal('acquireLogModal')">✕</button>
+    </div>
+
+    <div class="hint" style="margin-top:0; display:flex; gap:8px; align-items:flex-start; font-size:12.5px; color:var(--text-2);">
+      <span>💡</span>
+      <span data-i18n="acquireLogHint">所持レベルにチェックを入れた日時を自動で記録します。チェックを外すと記録も消えます。</span>
+    </div>
+
+    <div id="acquireLogBody"><!-- JS --></div>
+  </div>
+</div>
+
 <!-- ▸ 表示設定モーダル（ダークモード／キーボードショートカット） -->
 <div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeSettingsModal()">
   <div class="modal-card">
@@ -975,6 +1010,10 @@
     <span class="site-dock-icon">🗓️</span>
     <span class="site-dock-label" data-i18n="dockDashboardLabel">ダッシュボード</span>
   </button>
+  <button type="button" onclick="openAcquireLog()">
+    <span class="site-dock-icon">📅</span>
+    <span class="site-dock-label" data-i18n="dockAcquireLogLabel">入手履歴</span>
+  </button>
   <button type="button" onclick="openSidebarMobile()">
     <span class="site-dock-icon">☰</span>
     <span class="site-dock-label" data-i18n="dockToolsLabel">他のツール</span>
@@ -1024,6 +1063,7 @@ const I18N = {
     dockAriaLabel: 'クイックメニュー',
     dockProfileLabel: 'プロフィール',
     dockDashboardLabel: 'ダッシュボード',
+    dockAcquireLogLabel: '入手履歴',
     dockToolsLabel: '他のツール',
     dockSettingsLabel: '表示設定',
 
@@ -1038,6 +1078,12 @@ const I18N = {
     titleUnlockToastMultiTemplate: '🏆 称号を{n}個獲得！ {names}',
     titleLockedName: '？？？',
     titleLockedHint: '称号は条件を満たすと明らかになります',
+
+    acquireLogModalTitle: '📅 入手履歴',
+    acquireLogHint: '所持レベルにチェックを入れた日時を自動で記録します。チェックを外すと記録も消えます。',
+    acquireLogEmpty: 'まだ記録がありません。<br>エモートのレベルに所持チェックを入れると、ここに記録されます。',
+    acquireLogCountTemplate: '記録件数：{n}件',
+    acquireLogRemoveBtnLabel: '記録を削除',
 
     controlLabelSearch: '検索',
     searchPlaceholder: '🔍 名前・精霊・エリアで絞り込み...',
@@ -1266,6 +1312,7 @@ const I18N = {
     dockAriaLabel: 'Quick menu',
     dockProfileLabel: 'Profile',
     dockDashboardLabel: 'Dashboard',
+    dockAcquireLogLabel: 'History',
     dockToolsLabel: 'Other Tools',
     dockSettingsLabel: 'Settings',
 
@@ -1280,6 +1327,12 @@ const I18N = {
     titleUnlockToastMultiTemplate: '🏆 {n} titles unlocked! {names}',
     titleLockedName: '？？？',
     titleLockedHint: 'Unlocks when you meet its condition',
+
+    acquireLogModalTitle: '📅 Acquisition History',
+    acquireLogHint: 'Records the date and time you checked off each level as owned. Unchecking a level removes its record.',
+    acquireLogEmpty: 'No records yet.<br>Checking off an emote level as owned will add it here.',
+    acquireLogCountTemplate: '{n} record(s)',
+    acquireLogRemoveBtnLabel: 'Delete record',
 
     controlLabelSearch: 'Search',
     searchPlaceholder: '🔍 Filter by name, spirit, or area...',
@@ -1526,6 +1579,7 @@ function setLang(lang) {
   if (document.getElementById('dashModalOverlay').classList.contains('open') && pfDashCache) {
     document.getElementById('dashBody').innerHTML = pfDashBuildHtml(pfDashCache);
   }
+  if (document.getElementById('acquireLogModal').classList.contains('open')) renderAcquireLog();
 }
 
 function toggleLang() {
@@ -2535,14 +2589,57 @@ function saveOwned(data) {
   try { localStorage.setItem(OWNED_KEY, JSON.stringify(data)); } catch (_) { /* noop */ }
 }
 
+/* ================================================================
+   📅 入手履歴（獲得ログ）
+   所持レベルにチェックを入れた（新規に所持済みになった）日時を記録する。
+   チェックを外した場合は記録を削除する（未所持なのに「入手日」が残るのは
+   不自然なため）。アイテム所持管理（item）のアイテム獲得ログ
+   （itemAcquireLog_v1）と同じ考え方だが、こちらはエモート1件につき複数
+   レベルを個別に所持できるため、エモートIDだけではキーが一意にならない。
+   そのため "<emoteId>::<level>" の複合文字列キーで1レベルごとに記録する。
+   localStorage キー: emoteAcquireLog_v1
+     = { "<emoteId>::<level>": { emoteId, level, at: ISO日時 }, ... }
+   ================================================================ */
+const ACQUIRE_LOG_KEY = nsKey('emoteAcquireLog_v1');
+
+function acquireLogKey(emoteId, level) { return emoteId + '::' + level; }
+
+function loadAcquireLog() {
+  try {
+    const data = JSON.parse(localStorage.getItem(ACQUIRE_LOG_KEY));
+    return (data && typeof data === 'object') ? data : {};
+  } catch (_) { return {}; }
+}
+function saveAcquireLog(data) {
+  try { localStorage.setItem(ACQUIRE_LOG_KEY, JSON.stringify(data)); } catch (_) { /* noop */ }
+}
+
+function recordEmoteAcquire(emoteId, level) {
+  const log = loadAcquireLog();
+  log[acquireLogKey(emoteId, level)] = { emoteId, level, at: new Date().toISOString() };
+  saveAcquireLog(log);
+}
+function removeEmoteAcquireRecord(emoteId, level) {
+  const log = loadAcquireLog();
+  const key = acquireLogKey(emoteId, level);
+  if (log[key]) {
+    delete log[key];
+    saveAcquireLog(log);
+  }
+}
+
 function toggleLevel(emoteId, level) {
   const data = loadOwned();
   const owned = new Set(data[emoteId] || []);
-  if (owned.has(level)) owned.delete(level); else owned.add(level);
+  const wasOwned = owned.has(level);
+  if (wasOwned) owned.delete(level); else owned.add(level);
   const arr = Array.from(owned).sort((a, b) => a - b);
   if (arr.length === 0) delete data[emoteId];
   else data[emoteId] = arr;
   saveOwned(data);
+  // 📅 未所持→所持なら入手履歴に記録、所持→未所持なら記録を削除する
+  if (wasOwned) removeEmoteAcquireRecord(emoteId, level);
+  else recordEmoteAcquire(emoteId, level);
   renderList();
 }
 
@@ -2561,11 +2658,19 @@ function toggleAllLevels(emoteId) {
   const e = EMOTES_DATA.find(x => x.id === emoteId);
   if (!e) return;
   const data = loadOwned();
-  const ownedCount = (data[emoteId] || []).length;
+  const before = new Set(data[emoteId] || []);
+  const ownedCount = before.size;
   if (ownedCount >= e.maxLevel) {
     delete data[emoteId];
+    // 📅 全解除：それまで所持していた各レベルの入手履歴もあわせて削除する
+    before.forEach(lv => removeEmoteAcquireRecord(emoteId, lv));
   } else {
     applyOwnAll(data, e);
+    // 📅 一括所持で新規に所持済みになったレベルだけを入手履歴に記録する
+    // （既に個別所持済みだったレベルは記録済みのため二重記録しない）
+    for (let lv = 1; lv <= e.maxLevel; lv++) {
+      if (!before.has(lv)) recordEmoteAcquire(emoteId, lv);
+    }
   }
   saveOwned(data);
   renderList();
@@ -2580,7 +2685,16 @@ function bulkOwnFiltered() {
   const filtered = getFilteredEmotes();
   if (!filtered.length) return;
   const data = loadOwned();
-  filtered.forEach(e => applyOwnAll(data, e));
+  filtered.forEach(e => {
+    const before = new Set(data[e.id] || []);
+    applyOwnAll(data, e);
+    // 📅 このエモートで新規に所持済みになったレベルだけを入手履歴に記録する
+    // （既に所持済みだったレベルは記録済みのため二重記録しない。bulkOwnFilteredは
+    // applyOwnAll()の項のコメント通り一方向操作＝未所持→所持のみなので、削除側の処理は不要）
+    for (let lv = 1; lv <= e.maxLevel; lv++) {
+      if (!before.has(lv)) recordEmoteAcquire(e.id, lv);
+    }
+  });
   saveOwned(data);
   renderList();
 }
@@ -2699,6 +2813,71 @@ function renderTitles(stats) {
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
+/* ================================================================
+   📅 入手履歴モーダル
+   emoteAcquireLog_v1（loadAcquireLog/recordEmoteAcquire等）に記録された
+   ログを新しい順に一覧表示する。行の削除ボタンは記録の削除のみを行い、
+   所持状態（OWNED_KEY側）には一切触れない。
+   ================================================================ */
+function openAcquireLog() {
+  openModal('acquireLogModal');
+  renderAcquireLog();
+}
+
+// ログ1件の削除。所持データ（OWNED_KEY）は変更しない＝所持状態はそのまま残る
+function removeAcquireLogEntry(key) {
+  const log = loadAcquireLog();
+  const rec = log[key];
+  if (rec) removeEmoteAcquireRecord(rec.emoteId, rec.level);
+  renderAcquireLog();
+}
+
+function fmtAcquireLogDate(iso) {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  return LANG === 'en'
+    ? d.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+function renderAcquireLog() {
+  const body = document.getElementById('acquireLogBody');
+  if (!body) return;
+
+  const log = loadAcquireLog();
+  // EMOTES_DATAから該当エモートが見つからない記録（万一データ改変等で不整合が起きた場合）は
+  // 一覧から静かに除外する（描画エラーで一覧全体が表示できなくなる事態を避けるため）
+  const entries = Object.keys(log).map(key => {
+    const rec = log[key];
+    const e = EMOTES_DATA.find(x => x.id === rec.emoteId);
+    return e ? { key, emote: e, level: rec.level, at: rec.at } : null;
+  }).filter(Boolean);
+
+  if (entries.length === 0) {
+    body.innerHTML = `<div class="log-empty">${t('acquireLogEmpty')}</div>`;
+    return;
+  }
+
+  entries.sort((a, b) => new Date(b.at) - new Date(a.at));
+
+  const rowsHtml = entries.map(entry => `
+    <div class="log-row">
+      <div class="log-row-icon">
+        <img src="${entry.emote.img}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('img-fallback')">
+        <span class="log-row-icon-fallback">🎭</span>
+      </div>
+      <div class="log-row-info">
+        <div class="log-row-name">${escapeHtml(emoteName(entry.emote))} <span class="log-row-level">Lv${entry.level}</span></div>
+        <div class="log-row-meta">${fmtAcquireLogDate(entry.at)}</div>
+      </div>
+      <button type="button" class="pf-icon-btn pf-row-btn-danger" onclick="removeAcquireLogEntry('${entry.key}')" title="${escapeAttr(t('acquireLogRemoveBtnLabel'))}" aria-label="${escapeAttr(t('acquireLogRemoveBtnLabel'))}">✕</button>
+    </div>`).join('');
+
+  body.innerHTML = `
+    <div class="log-row-list">${rowsHtml}</div>
+    <div class="pf-hint" style="text-align:right;">${t('acquireLogCountTemplate', { n: entries.length })}</div>`;
+}
+
 // ── ⚙️ 表示設定モーダル（ダークモード切替／キーボードショートカット設定） ──
 function openSettingsModal() {
   updateSettingsModalUI();
@@ -2747,6 +2926,7 @@ const SKY_MODAL_CLOSE_FNS = {
   customizeModal: () => closeModal('customizeModal'),
   imagePreviewModal: () => closeModal('imagePreviewModal'),
   iconCustomModal: () => closeModal('iconCustomModal'),
+  acquireLogModal: () => closeModal('acquireLogModal'),
   settingsModal: closeSettingsModal,
   // 「関連ツール」サイドバー（モバイル版ドロワー）は.pf-modal-overlay/.modal-overlayとは
   // 別系統の.sidebar.mobile-open/.sidebar-overlay.showで開閉するため、専用に登録する。
