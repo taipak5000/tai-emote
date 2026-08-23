@@ -1036,6 +1036,8 @@ const I18N = {
     titlesCountTemplate: '{earned} / {total} 個解除',
     titleUnlockToastTemplate: '🏆 称号「{name}」を獲得！',
     titleUnlockToastMultiTemplate: '🏆 称号を{n}個獲得！ {names}',
+    titleLockedName: '？？？',
+    titleLockedHint: '称号は条件を満たすと明らかになります',
 
     controlLabelSearch: '検索',
     searchPlaceholder: '🔍 名前・精霊・エリアで絞り込み...',
@@ -1276,6 +1278,8 @@ const I18N = {
     titlesCountTemplate: '{earned} / {total} unlocked',
     titleUnlockToastTemplate: '🏆 Title unlocked: {name}!',
     titleUnlockToastMultiTemplate: '🏆 {n} titles unlocked! {names}',
+    titleLockedName: '？？？',
+    titleLockedHint: 'Unlocks when you meet its condition',
 
     controlLabelSearch: 'Search',
     searchPlaceholder: '🔍 Filter by name, spirit, or area...',
@@ -2679,11 +2683,13 @@ function renderTitles(stats) {
   countEl.textContent = t('titlesCountTemplate', { earned: earnedCount, total: TITLES.length });
   row.innerHTML = TITLES.map(title => {
     const got = earned[title.id];
+    if (!got) {
+      // 未解除：名前・条件とも伏せ、🔒表示のみ。ホバーしても中身が漏れないよう汎用文言に固定する
+      return `<span class="title-chip locked" title="${escapeAttr(t('titleLockedHint'))}"><span class="title-chip-icon">🔒</span>${t('titleLockedName')}</span>`;
+    }
     const name = L({ ja: title.name, en: title.nameEn });
     const desc = L({ ja: title.desc, en: title.descEn });
-    return got
-      ? `<span class="title-chip" title="${escapeAttr(desc)}"><span class="title-chip-icon">${title.icon}</span>${name}</span>`
-      : `<span class="title-chip locked" title="${escapeAttr(desc)}"><span class="title-chip-icon">🔒</span>${name}</span>`;
+    return `<span class="title-chip" title="${escapeAttr(desc)}"><span class="title-chip-icon">${title.icon}</span>${name}</span>`;
   }).join('');
 }
 
