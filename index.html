@@ -246,6 +246,25 @@
     .cat-header-count { font-size: 13px; color: var(--text-2); margin-top: 2px; }
     .cat-header-pct { font-size: 24px; font-weight: 800; color: var(--orange); }
 
+    /* ── 🏆 称号（実績）パネル ─────────────────────── */
+    .titles-panel {
+      background: var(--card); border-radius: var(--r); padding: 14px 16px; margin-top: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .titles-panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .titles-count { font-size: 12px; font-weight: 700; color: var(--text-2); }
+    .titles-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    /* 獲得済み：他要素のis-owned系（.lv-btn.is-owned等）と同じ緑トークンで統一 */
+    .title-chip {
+      display: inline-flex; align-items: center; gap: 6px; border-radius: 999px;
+      padding: 7px 12px; font-size: 12.5px; font-weight: 700;
+      background: var(--green-bg); color: var(--green); cursor: default;
+    }
+    .title-chip-icon { font-size: 14px; line-height: 1; }
+    /* 未獲得：未所持エモートのグレーアウト（filter: grayscale/opacity）と同じ「まだ手が届いていない」
+       印象を、アイコンを🔒に差し替え text-3 で淡くする形で表現する */
+    .title-chip.locked { background: var(--bg); color: var(--text-3); font-weight: 600; }
+
     /* ── Filter / Search ─────────────────────── */
     .control-panel {
       background: var(--card); border-radius: var(--r); padding: 16px; margin-top: 12px;
@@ -702,6 +721,14 @@
       <div class="cat-header-pct" id="hdrPct">--%</div>
     </div>
 
+    <div class="titles-panel" id="titlesPanel">
+      <div class="titles-panel-head">
+        <span class="sec-label" data-i18n="titlesSectionLabel">🏆 称号</span>
+        <span class="titles-count" id="titlesCount">0 / 0</span>
+      </div>
+      <div class="titles-chip-row" id="titlesChipRow"></div>
+    </div>
+
     <div class="control-panel">
       <div class="control-row">
         <span class="control-label" data-i18n="controlLabelSearch">名前検索</span>
@@ -1005,6 +1032,11 @@ const I18N = {
     headerName: 'エモート全体',
     headerCountTemplate: '{owned} / {total} レベル所持',
 
+    titlesSectionLabel: '🏆 称号',
+    titlesCountTemplate: '{earned} / {total} 個解除',
+    titleUnlockToastTemplate: '🏆 称号「{name}」を獲得！',
+    titleUnlockToastMultiTemplate: '🏆 称号を{n}個獲得！ {names}',
+
     controlLabelSearch: '検索',
     searchPlaceholder: '🔍 名前・精霊・エリアで絞り込み...',
     controlLabelFilter: '絞り込み',
@@ -1239,6 +1271,11 @@ const I18N = {
 
     headerName: 'All Emotes',
     headerCountTemplate: '{owned} / {total} levels owned',
+
+    titlesSectionLabel: '🏆 Titles',
+    titlesCountTemplate: '{earned} / {total} unlocked',
+    titleUnlockToastTemplate: '🏆 Title unlocked: {name}!',
+    titleUnlockToastMultiTemplate: '🏆 {n} titles unlocked! {names}',
 
     controlLabelSearch: 'Search',
     searchPlaceholder: '🔍 Filter by name, spirit, or area...',
@@ -2546,12 +2583,22 @@ function bulkOwnFiltered() {
 
 function getStats() {
   const data = loadOwned();
-  let owned = 0, total = 0;
+  let owned = 0, total = 0, ownedEmoteCount = 0, guideCount = 0, ownedGuideCount = 0;
   EMOTES_DATA.forEach(e => {
     total += e.maxLevel;
-    owned += (data[e.id] || []).length;
+    const lv = (data[e.id] || []).length;
+    owned += lv;
+    if (lv > 0) {
+      ownedEmoteCount++;
+      if (e.isGuide) ownedGuideCount++;
+    }
+    if (e.isGuide) guideCount++;
   });
-  return { owned, total, pct: total > 0 ? (owned / total) * 100 : 0 };
+  return {
+    owned, total, pct: total > 0 ? (owned / total) * 100 : 0,
+    // 🏆 称号判定用（checkTitles）: エモート単位の所持数・案内人エモートの所持数
+    emoteCount: EMOTES_DATA.length, ownedEmoteCount, guideCount, ownedGuideCount,
+  };
 }
 
 // 全体は477レベル分もあるため、1個所持しただけだと整数%では0%のまま変化して
@@ -2561,6 +2608,83 @@ function formatPct(pct) {
   if (pct <= 0) return '0%';
   if (pct >= 100) return '100%';
   return pct.toFixed(1) + '%';
+}
+
+/* ================================================================
+   🏆 称号（実績）
+   一度解除した称号は、後から所持レベルを減らしても失われてはならない。
+   そのためcheck()はあくまで「今この瞬間、新規解除条件を満たしたか」の判定にのみ使い、
+   TITLES_KEYへは新規分の追記だけを行う（既存エントリの削除・巻き戻しは絶対にしない）。
+   ================================================================ */
+const TITLES_KEY = nsKey('emoteTitles_v1');
+
+const TITLES = [
+  { id: 'apprentice', icon: '🔰', name: '一芸見習い', nameEn: 'Emote Apprentice',
+    desc: '所持レベル数が全体の10%に到達', descEn: 'Owned levels reached 10% of the total',
+    check: s => s.pct >= 10 },
+  { id: 'performer', icon: '🎭', name: '芸達者', nameEn: 'Skilled Performer',
+    desc: '所持レベル数が全体の50%に到達', descEn: 'Owned levels reached 50% of the total',
+    check: s => s.pct >= 50 },
+  { id: 'grandmaster', icon: '👑', name: 'エモート完全制覇', nameEn: 'Emote Grandmaster',
+    desc: '全エモートの全レベルを所持', descEn: 'Owns every level of every emote',
+    check: s => s.total > 0 && s.owned >= s.total },
+  { id: 'completionist', icon: '🗺️', name: '全種踏破', nameEn: 'Full Collection',
+    desc: '全エモートを最低1レベルずつ所持', descEn: 'Owns at least one level of every emote',
+    check: s => s.emoteCount > 0 && s.ownedEmoteCount >= s.emoteCount },
+  { id: 'guideFan', icon: '🧭', name: '案内人めぐり', nameEn: 'Guide’s Companion',
+    desc: '「案内人」エモートを全種最低1レベルずつ所持', descEn: 'Owns at least one level of every Guide emote',
+    check: s => s.guideCount > 0 && s.ownedGuideCount >= s.guideCount },
+];
+
+function loadTitles() {
+  try {
+    const d = JSON.parse(localStorage.getItem(TITLES_KEY));
+    return (d && typeof d === 'object') ? d : {};
+  } catch (_) { return {}; }
+}
+function saveTitles(d) {
+  try { localStorage.setItem(TITLES_KEY, JSON.stringify(d)); } catch (_) { /* noop */ }
+}
+
+// 新規解除の判定・付与のみを行う関数。既に解除済みの称号は再判定せずスキップするため、
+// 後から所持数が減って条件を満たさなくなっても保存済みの解除記録は一切変更されない。
+function checkTitles(stats) {
+  const earned = loadTitles();
+  const newly = [];
+  TITLES.forEach(title => {
+    if (earned[title.id]) return;
+    if (title.check(stats)) {
+      earned[title.id] = { earnedAt: new Date().toISOString() };
+      newly.push(title);
+    }
+  });
+  if (newly.length > 0) {
+    saveTitles(earned);
+    if (newly.length === 1) {
+      showToast(t('titleUnlockToastTemplate', { name: L({ ja: newly[0].name, en: newly[0].nameEn }) }));
+    } else {
+      const names = newly.map(x => `${x.icon}${L({ ja: x.name, en: x.nameEn })}`).join('、');
+      showToast(t('titleUnlockToastMultiTemplate', { n: newly.length, names }));
+    }
+  }
+  return earned;
+}
+
+function renderTitles(stats) {
+  const earned = checkTitles(stats);
+  const row = document.getElementById('titlesChipRow');
+  const countEl = document.getElementById('titlesCount');
+  if (!row || !countEl) return;
+  const earnedCount = TITLES.filter(x => earned[x.id]).length;
+  countEl.textContent = t('titlesCountTemplate', { earned: earnedCount, total: TITLES.length });
+  row.innerHTML = TITLES.map(title => {
+    const got = earned[title.id];
+    const name = L({ ja: title.name, en: title.nameEn });
+    const desc = L({ ja: title.desc, en: title.descEn });
+    return got
+      ? `<span class="title-chip" title="${escapeAttr(desc)}"><span class="title-chip-icon">${title.icon}</span>${name}</span>`
+      : `<span class="title-chip locked" title="${escapeAttr(desc)}"><span class="title-chip-icon">🔒</span>${name}</span>`;
+  }).join('');
 }
 
 /* ================================================================
@@ -3273,6 +3397,7 @@ function renderList() {
   const stats = getStats();
   document.getElementById('hdrCount').textContent = t('headerCountTemplate', { owned: stats.owned, total: stats.total });
   document.getElementById('hdrPct').textContent = formatPct(stats.pct);
+  renderTitles(stats);
 
   restoreFocusedControl(focusInfo);
 }
