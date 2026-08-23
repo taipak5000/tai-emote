@@ -195,6 +195,24 @@
     .pf-row-btn-ok { background: var(--blue-solid); color: #fff; border: none; }
     .pf-row-btn-danger { background: #ff3b30; color: #fff; border: none; }
 
+    /* 🏆 プロフィール行ごとの「全ツール横断の称号」展開トグル。.pf-row-confirm-textと同じ
+       flex-basis:100%のテクニック（上のコメント参照）で、.pf-row内に折り返して差し込む。 */
+    .pf-titles-toggle {
+      flex: 1 1 100%; display: flex; align-items: center; gap: 4px;
+      font-size: 12px; font-weight: 700; color: var(--text-2);
+      background: none; border: none; padding: 4px 0 0; text-align: left; cursor: pointer;
+    }
+    .pf-titles-toggle:hover { color: var(--text); }
+    .pf-titles-toggle:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 4px; }
+    .pf-titles-list { flex: 1 1 100%; display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+    .pf-title-line { display: flex; align-items: flex-start; gap: 8px; background: var(--bg);
+      border-radius: var(--r-sm); padding: 8px 10px; }
+    .pf-title-line-icon { font-size: 15px; line-height: 1.4; flex-shrink: 0; }
+    .pf-title-line-body { flex: 1; min-width: 0; font-size: 12.5px; line-height: 1.5; color: var(--text); }
+    .pf-title-line-name { font-weight: 700; color: var(--green); }
+    .pf-title-line-source { display: block; font-size: 11px; color: var(--text-3); margin-top: 1px; }
+    .pf-titles-empty { flex: 1 1 100%; font-size: 12px; color: var(--text-2); padding: 4px 2px 0; }
+
     .pf-currency-section { margin-top: 14px; padding-top: 14px; border-top: 0.5px solid var(--sep); }
     .pf-currency-title { font-size: 12px; font-weight: 700; color: var(--text-2); margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.4px;
       display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
@@ -1054,6 +1072,10 @@ const I18N = {
     toolCompanion: '✨ 精霊同行ツール',
     toolWings: '🪽 羽トラッカー',
     toolDataTransfer: '🔄 データ引継ぎ',
+    // 🏆 プロフィール切替モーダルの称号一覧にのみ登場するツール名（サイドバーの
+    // 関連ツール一覧には未掲載＝spirit-catalogはまだ非公開のため意図的にリンクしていない）
+    toolSpiritCatalog: '🌳 精霊ツリー管理',
+    toolScore: '🎼 楽譜作成ツール',
     sidebarHomeIcon: '📱 ホーム画面アイコン',
     sidebarCustomizeIcon: '🎨 アイコンを<br>カスタマイズ',
     sidebarSettings: '⚙️ 表示設定',
@@ -1143,6 +1165,10 @@ const I18N = {
     pfDeleteConfirmTemplate: '「{name}」を削除しますか？（一覧からの削除のみで、保存済みデータはブラウザ内に残ります）',
     pfDeleteBtn: '削除',
     pfDefaultName: 'メイン',
+
+    // 🏆 プロフィール切替モーダル内、行ごとの「全ツール横断の称号」展開トグル
+    pfTitlesToggleTemplate: '🏆 {n}個の称号',
+    pfTitlesEmpty: 'まだ称号がありません。各ツールで実績を解除すると、ここに表示されます。',
 
     currencySectionLabel: '💰 所持通貨',
     currencyToggleOpen: '開く ▼',
@@ -1303,6 +1329,8 @@ const I18N = {
     toolCompanion: '✨ Spirit Companion Tool',
     toolWings: '🪽 Wing Tracker',
     toolDataTransfer: '🔄 Data Transfer',
+    toolSpiritCatalog: '🌳 Spirit Tree Catalog',
+    toolScore: '🎼 Sheet Music Maker',
     sidebarHomeIcon: '📱 Home Screen Icon',
     sidebarCustomizeIcon: '🎨 Customize Icon',
     sidebarSettings: '⚙️ Display Settings',
@@ -1392,6 +1420,9 @@ const I18N = {
     pfDeleteConfirmTemplate: 'Delete "{name}"? (This only removes it from the list — its saved data stays in this browser.)',
     pfDeleteBtn: 'Delete',
     pfDefaultName: 'Main',
+
+    pfTitlesToggleTemplate: '🏆 {n} title(s)',
+    pfTitlesEmpty: 'No titles yet. Unlock achievements in any of the tools to see them here.',
 
     currencySectionLabel: '💰 Owned Currency',
     currencyToggleOpen: 'Open ▼',
@@ -1742,6 +1773,14 @@ function nsKey(rawKey) {
   return id === DEFAULT_PROFILE_ID ? rawKey : `${rawKey}__p_${id}`;
 }
 
+// nsKey()と同じ名前空間化ルールを、"現在アクティブな"プロフィールに限らず任意の
+// プロフィールIDに対して適用する版。プロフィール切替モーダルの称号一覧
+// （pfCollectCrossToolTitles）のように、アクティブプロフィールを切り替えずに
+// 他プロフィールの保存データだけを読みたい場合に使う。
+function nsKeyFor(rawKey, profileId) {
+  return profileId === DEFAULT_PROFILE_ID ? rawKey : `${rawKey}__p_${profileId}`;
+}
+
 function switchProfile(id) {
   if (id === getActiveProfileId()) return;
   localStorage.setItem(ACTIVE_PROFILE_KEY, id);
@@ -1812,6 +1851,11 @@ function spiritDisplay(e) { return LANG === 'en' ? (e.spiritEn || e.spirit) : e.
 
 let pfEditingId = null;
 let pfDeletingId = null;
+
+// 🏆 プロフィール切替モーダルの各行で「全ツール横断の称号」一覧を開いているプロフィールID
+// の集合。折りたたみ状態はモーダルを開き直しても保持したいため、pfCancelRowState等では
+// クリアしない（pfOpenModal側でも触らない）。
+const pfTitlesExpandedIds = new Set();
 
 /* ================================================================
    💰 所持通貨の統一管理（プロフィール切替モーダル内、全サイト共通）
@@ -2387,14 +2431,36 @@ function pfRenderModal() {
         </div>`;
     }
     const colorVal = pfIsSafeColor(p.color) ? p.color : '#FF9500';
+
+    // 🏆 全ツール横断の称号（プロフィールを切り替えなくても、そのプロフィールIDのまま
+    // 各ツールのlocalStorageを直接読んで獲得済みの称号数・一覧を出す）
+    const isTitlesExpanded = pfTitlesExpandedIds.has(p.id);
+    const crossTitles = pfCollectCrossToolTitles(p.id);
+    const titlesToggleHtml = `
+        <button type="button" class="pf-titles-toggle" aria-expanded="${isTitlesExpanded ? 'true' : 'false'}"
+          onclick="pfToggleProfileTitles('${p.id}')">
+          <span>${t('pfTitlesToggleTemplate', { n: crossTitles.length })}</span>
+          <span aria-hidden="true">${isTitlesExpanded ? '▴' : '▾'}</span>
+        </button>
+        ${isTitlesExpanded ? (
+          crossTitles.length === 0
+            ? `<div class="pf-titles-empty">${t('pfTitlesEmpty')}</div>`
+            : `<div class="pf-titles-list">${crossTitles.map(x => `
+              <div class="pf-title-line">
+                <span class="pf-title-line-icon">${x.icon}</span>
+                <span class="pf-title-line-body"><span class="pf-title-line-name">${escapeHtml(x.name)}</span> — ${escapeHtml(x.desc)}<span class="pf-title-line-source">${escapeHtml(x.source)}</span></span>
+              </div>`).join('')}</div>`
+        ) : ''}`;
+
     return `
-      <div class="pf-row ${isActive ? 'active' : ''}">
+      <div class="pf-row ${isActive ? 'active' : ''}" style="flex-wrap: wrap;">
         <input type="color" class="pf-color-input" value="${colorVal}" title="${escapeAttr(t('pfAccountColorTitle'))}"
           onchange="pfSetProfileColor('${p.id}', this.value)">
         <span class="pf-row-name" onclick="switchProfile('${p.id}')">${isActive ? '✅ ' : ''}${escapeHtml(pfDisplayName(p))}</span>
         ${p.color ? `<button type="button" class="pf-icon-btn pf-color-clear-btn" title="${escapeAttr(t('pfResetColorTitle'))}" onclick="pfClearProfileColor('${p.id}')">↺</button>` : ''}
         <button type="button" class="pf-icon-btn" title="${escapeAttr(t('pfRenameTitle'))}" onclick="pfStartRename('${p.id}')">✏️</button>
         ${list.length > 1 ? `<button type="button" class="pf-icon-btn" title="${escapeAttr(t('pfDeleteBtn'))}" onclick="pfStartDelete('${p.id}')">🗑️</button>` : ''}
+        ${titlesToggleHtml}
       </div>`;
   }).join('');
 
@@ -2412,6 +2478,14 @@ function pfAddProfile() {
 function pfStartRename(id) { pfDeletingId = null; pfEditingId = id; pfRenderModal(); }
 function pfStartDelete(id) { pfEditingId = null; pfDeletingId = id; pfRenderModal(); }
 function pfCancelRowState() { pfEditingId = null; pfDeletingId = null; pfRenderModal(); }
+
+// 🏆 プロフィール行の「全ツール横断の称号」展開トグル。プロフィールを切り替えることなく、
+// そのプロフィールIDのまま各ツールの保存データを読みに行く（pfCollectCrossToolTitles）。
+function pfToggleProfileTitles(id) {
+  if (pfTitlesExpandedIds.has(id)) pfTitlesExpandedIds.delete(id);
+  else pfTitlesExpandedIds.add(id);
+  pfRenderModal();
+}
 function pfConfirmRenameInline(id) {
   const input = document.getElementById('pfEditInput');
   const next = input ? input.value : '';
@@ -2805,6 +2879,129 @@ function renderTitles(stats) {
     const desc = L({ ja: title.desc, en: title.descEn });
     return `<span class="title-chip" title="${escapeAttr(desc)}"><span class="title-chip-icon">${title.icon}</span>${name}</span>`;
   }).join('');
+}
+
+/* ================================================================
+   🏆 プロフィール切替モーダル用：全ツール横断の称号一覧
+   taipak5000.github.io 配下の称号（実績）機能を持つ8ツールぶんの localStorage を
+   直接読み、プロフィールを切り替えることなく「そのプロフィールが実際に獲得済みの
+   称号」を集めて表示する。各ツールは別々にデプロイされたファイルで実行時に共有
+   できるモジュールが無いため、称号の定義（id→アイコン・名前・条件文）はこのファイルにも
+   個別に複製して持つ（他ツール側で定義が変わった場合はこちらも追随して直す必要がある）。
+   このツール自身（エモート）の分だけは、二重管理を避けるため上のTITLES配列を
+   そのまま流用する。
+   ================================================================ */
+const PF_CROSS_TITLE_CATALOG = {
+  item: { storageKey: 'itemTitles_v1', namespaced: true, sourceKey: 'toolItem',
+    extract: d => Object.keys((d && d.earned) || {}),
+    titles: {
+      rate25:     { icon: '🕯️', name: '灯火の旅人', nameEn: 'Traveler of the Flame', desc: '全アイテムの所持率が25%に到達', descEn: 'Reached 25% overall ownership' },
+      rate50:     { icon: '🌙', name: '星屑の収集家', nameEn: 'Stardust Collector', desc: '全アイテムの所持率が50%に到達', descEn: 'Reached 50% overall ownership' },
+      rate75:     { icon: '✨', name: '煌めきの探究者', nameEn: 'Seeker of Radiance', desc: '全アイテムの所持率が75%に到達', descEn: 'Reached 75% overall ownership' },
+      rate100:    { icon: '👑', name: '光の守護者', nameEn: 'Guardian of the Light', desc: '登録した全アイテムを100%所持', descEn: 'Reached 100% overall ownership' },
+      catmaster1: { icon: '🏅', name: 'コレクションの第一歩', nameEn: 'First Steps of a Collection', desc: 'いずれか1カテゴリを100%達成', descEn: 'Completed at least 1 category' },
+      catmaster6: { icon: '🏆', name: '熟練コレクター', nameEn: 'Master Collector', desc: '6カテゴリ以上を100%達成', descEn: 'Completed 6 or more categories' },
+      spend1k:    { icon: '💴', name: '灯火の支援者', nameEn: 'Supporter of the Flame', desc: '実額の合計が¥1,000に到達', descEn: 'Real-money total reached ¥1,000' },
+      spend5k:    { icon: '🎁', name: '季節の後援者', nameEn: 'Patron of the Season', desc: '実額の合計が¥5,000に到達', descEn: 'Real-money total reached ¥5,000' },
+      spend15k:   { icon: '💎', name: '彩りの後援者', nameEn: 'Patron of Colors', desc: '実額の合計が¥15,000に到達', descEn: 'Real-money total reached ¥15,000' },
+      spend30k:   { icon: '🌌', name: '星空の大後援者', nameEn: 'Grand Patron of the Stars', desc: '実額の合計が¥30,000に到達', descEn: 'Real-money total reached ¥30,000' },
+      spend50k:   { icon: '🌟', name: '光の大後援者', nameEn: 'Grand Patron of Light', desc: '実額の合計が¥50,000に到達', descEn: 'Real-money total reached ¥50,000' },
+    } },
+  // このツール自身の称号定義（上のTITLES配列）を流用し、二重管理を避ける
+  emote: { storageKey: 'emoteTitles_v1', namespaced: true, sourceKey: 'toolEmote',
+    extract: d => Object.keys(d || {}),
+    titles: TITLES.reduce((acc, x) => {
+      acc[x.id] = { icon: x.icon, name: x.name, nameEn: x.nameEn, desc: x.desc, descEn: x.descEn };
+      return acc;
+    }, {}) },
+  wings: { storageKey: 'wingsTitles_v1', namespaced: true, sourceKey: 'toolWings',
+    extract: d => Object.keys(d || {}),
+    titles: {
+      cape_lv5:  { icon: '🪶', name: '羽ばたきの証', nameEn: 'Mark of the Wingbeat', desc: 'ケープレベル5に到達（光の翼20枚）', descEn: 'Reached Cape Level 5 (20 Wings of Light)' },
+      cape_lv10: { icon: '🧥', name: '旅するケープ使い', nameEn: 'Traveling Cape Wearer', desc: 'ケープレベル10に到達（光の翼120枚）', descEn: 'Reached Cape Level 10 (120 Wings of Light)' },
+      cape_lv13: { icon: '👑', name: '光の翼、極めし者', nameEn: 'Master of the Wings of Light', desc: 'ケープレベル最大の13に到達（光の翼250枚）', descEn: 'Reached the max Cape Level 13 (250 Wings of Light)' },
+      lc_half:   { icon: '🔦', name: '光を辿る探検家', nameEn: 'Explorer of the Light', desc: '光の子を62体（半数）発見', descEn: 'Found 62 Children of Light (half)' },
+      lc_all:    { icon: '🌟', name: '光の子コンプリート', nameEn: 'Children of Light Completionist', desc: '光の子124体すべてを発見', descEn: 'Found all 124 Children of Light' },
+    } },
+  spirit: { storageKey: 'spiritCatalogTitles_v1', namespaced: true, sourceKey: 'toolSpiritCatalog',
+    extract: d => Object.keys(d || {}),
+    titles: {
+      pct1:   { icon: '🌱', name: '芽吹きの精霊使い', nameEn: 'Budding Spirit Keeper', desc: '精霊ツリーのノードを1%以上解放した', descEn: 'Unlocked 1%+ of all spirit tree nodes' },
+      pct10:  { icon: '🕯️', name: '灯火の道しるべ', nameEn: 'Guiding Flame', desc: '精霊ツリーのノードを10%以上解放した', descEn: 'Unlocked 10%+ of all spirit tree nodes' },
+      pct25:  { icon: '🌿', name: '深緑の探求者', nameEn: 'Explorer of the Deep Green', desc: '精霊ツリーのノードを25%以上解放した', descEn: 'Unlocked 25%+ of all spirit tree nodes' },
+      pct50:  { icon: '🌳', name: '満開の森の守り人', nameEn: 'Guardian of the Blooming Forest', desc: '精霊ツリーのノードを50%以上解放した', descEn: 'Unlocked 50%+ of all spirit tree nodes' },
+      pct100: { icon: '👑', name: '精霊の森の賢者', nameEn: 'Sage of the Spirit Forest', desc: '精霊ツリーの全ノードをコンプリートした', descEn: 'Unlocked 100% of all spirit tree nodes' },
+    } },
+  // スコア（楽譜作成ツール）のみ namespaced:false＝プロフィール単位で分かれていない
+  // 共有データのため、プロフィールIDに関わらず常に同じ生キーを読む
+  score: { storageKey: 'taiScoreTitles_v1', namespaced: false, sourceKey: 'toolScore',
+    extract: d => ((d && d.earned) || []).map(e => e.id),
+    titles: {
+      firstSong:  { icon: '🎼', name: 'はじめの一歩', nameEn: 'First Step', desc: 'はじめての1曲をライブラリに加えた', descEn: 'Added your first song to the library' },
+      apprentice: { icon: '🎶', name: '作曲家見習い', nameEn: 'Apprentice Composer', desc: '曲を5曲、ライブラリに加えた', descEn: 'Added 5 songs to the library' },
+      craftsman:  { icon: '🎹', name: '楽譜職人', nameEn: 'Sheet Music Craftsman', desc: '曲を20曲、ライブラリに加えた', descEn: 'Added 20 songs to the library' },
+      legend:     { icon: '🏅', name: '伝説の作曲家', nameEn: 'Legendary Composer', desc: '曲を50曲、ライブラリに加えた', descEn: 'Added 50 songs to the library' },
+      passionate: { icon: '🔥', name: '情熱の演奏者', nameEn: 'Passionate Performer', desc: '1曲に100音を超える演奏を詰め込んだ', descEn: 'Packed over 100 notes into a single song' },
+      virtuoso:   { icon: '⚡', name: '超絶技巧', nameEn: 'Virtuoso', desc: '1曲に300音を超える演奏を詰め込んだ', descEn: 'Packed over 300 notes into a single song' },
+    } },
+  share: { storageKey: 'shareTitles_v1', namespaced: true, sourceKey: 'toolShare',
+    extract: d => ((d && d.earned) || []).map(e => e.id),
+    titles: {
+      first:      { icon: '🌱', name: 'はじめての一歩', nameEn: 'First Step', desc: '創作物をはじめて追加した', descEn: 'Added your first creation' },
+      apprentice: { icon: '🔨', name: '見習い設置職人', nameEn: 'Apprentice Builder', desc: '累計5個の創作物を追加した', descEn: '5 creations added (lifetime)' },
+      skilled:    { icon: '🏗️', name: '熟練の設置職人', nameEn: 'Skilled Builder', desc: '累計15個の創作物を追加した', descEn: '15 creations added (lifetime)' },
+      master:     { icon: '🏛️', name: '創作の匠', nameEn: 'Master Creator', desc: '累計30個の創作物を追加した', descEn: '30 creations added (lifetime)' },
+      legend:     { icon: '👑', name: '伝説の創作者', nameEn: 'Legendary Creator', desc: '累計50個の創作物を追加した', descEn: '50 creations added (lifetime)' },
+    } },
+  nomacan: { storageKey: 'skyNomacanTitles_v1', namespaced: true, sourceKey: 'toolNomacan',
+    extract: d => Object.keys((d && d.earned) || {}),
+    titles: {
+      streak3:  { icon: '🔥', name: '灯し始め', nameEn: 'First Light', desc: '3日連続で記録', descEn: 'Recorded 3 days in a row' },
+      streak7:  { icon: '🕯️', name: '一週間の灯火', nameEn: 'A Week of Flame', desc: '7日連続で記録', descEn: 'Recorded 7 days in a row' },
+      streak30: { icon: '🌟', name: '絶やさぬ灯', nameEn: 'Unwavering Flame', desc: '30日連続で記録', descEn: 'Recorded 30 days in a row' },
+      hold100:  { icon: '🕯️', name: '灯の蓄え', nameEn: 'Stockpile of Light', desc: '所持本数が100本に到達', descEn: 'Reached 100 candles held' },
+      hold300:  { icon: '🏮', name: '光の貯蔵庫', nameEn: 'Vault of Light', desc: '所持本数が300本に到達', descEn: 'Reached 300 candles held' },
+      hold600:  { icon: '👑', name: '灯火の富豪', nameEn: 'Flame Tycoon', desc: '所持本数が600本に到達', descEn: 'Reached 600 candles held' },
+    } },
+  starcandle: { storageKey: 'skyStarCandleCalc_titles_v1', namespaced: true, sourceKey: 'toolStarCandle',
+    extract: d => Object.keys(d || {}),
+    titles: {
+      streak_3:   { icon: '🕯️', name: '灯を絶やさぬ者', nameEn: 'Keeper of the Unbroken Flame', desc: '赤闇を3日連続で取りこぼさず回収', descEn: 'Collected shard rewards 3 days in a row without missing one' },
+      streak_7:   { icon: '🔥', name: '一週間の灯火番', nameEn: 'Weeklong Flame Watcher', desc: '赤闇を7日連続で取りこぼさず回収', descEn: 'Collected shard rewards 7 days in a row without missing one' },
+      streak_20:  { icon: '🌌', name: '常夜の灯守', nameEn: "Eternal Night's Flamekeeper", desc: '赤闇を20日連続で取りこぼさず回収', descEn: 'Collected shard rewards 20 days in a row without missing one' },
+      candle_30:  { icon: '⭐', name: '星屑の蒐集者', nameEn: 'Stardust Gatherer', desc: '所持本数が最高30本に到達', descEn: 'Held 30 candles at once for the first time' },
+      candle_100: { icon: '🌟', name: '百連の灯', nameEn: 'Hundredfold Flame', desc: '所持本数が最高100本に到達', descEn: 'Held 100 candles at once for the first time' },
+      candle_300: { icon: '👑', name: '星々の帳を統べる者', nameEn: 'Ruler of the Star Curtain', desc: '所持本数が最高300本に到達', descEn: 'Held 300 candles at once for the first time' },
+    } },
+};
+
+function pfReadJSON(key) {
+  try { return JSON.parse(localStorage.getItem(key)); } catch (_) { return null; }
+}
+
+// 指定プロフィールIDが、全8ツール横断で実際に獲得済みの称号を集めて返す
+// （アクティブプロフィールを切り替える必要はない＝nsKeyForで直接読みに行く）。
+// 未知のツール定義に無いid（バージョン差異等）は静かに無視する。
+function pfCollectCrossToolTitles(profileId) {
+  const result = [];
+  Object.keys(PF_CROSS_TITLE_CATALOG).forEach(toolKey => {
+    const tool = PF_CROSS_TITLE_CATALOG[toolKey];
+    const key = tool.namespaced ? nsKeyFor(tool.storageKey, profileId) : tool.storageKey;
+    const raw = pfReadJSON(key);
+    let earnedIds;
+    try { earnedIds = tool.extract(raw) || []; } catch (_) { earnedIds = []; }
+    earnedIds.forEach(id => {
+      const def = tool.titles[id];
+      if (!def) return;
+      result.push({
+        icon: def.icon,
+        name: L({ ja: def.name, en: def.nameEn }),
+        desc: L({ ja: def.desc, en: def.descEn }),
+        source: t(tool.sourceKey),
+      });
+    });
+  });
+  return result;
 }
 
 /* ================================================================
