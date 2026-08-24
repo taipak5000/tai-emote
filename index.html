@@ -2918,19 +2918,19 @@ const PF_CROSS_TITLE_CATALOG = {
   wings: { storageKey: 'wingsTitles_v1', namespaced: true, sourceKey: 'toolWings',
     extract: d => Object.keys(d || {}),
     titles: {
-      cape_lv5:  { icon: '🪶', name: '羽ばたきの証', nameEn: 'Mark of the Wingbeat', desc: 'ケープレベル5に到達（光の翼20枚）', descEn: 'Reached Cape Level 5 (20 Wings of Light)' },
-      cape_lv10: { icon: '🧥', name: '旅するケープ使い', nameEn: 'Traveling Cape Wearer', desc: 'ケープレベル10に到達（光の翼120枚）', descEn: 'Reached Cape Level 10 (120 Wings of Light)' },
-      cape_lv13: { icon: '👑', name: '光の翼、極めし者', nameEn: 'Master of the Wings of Light', desc: 'ケープレベル最大の13に到達（光の翼250枚）', descEn: 'Reached the max Cape Level 13 (250 Wings of Light)' },
-      lc_half:   { icon: '🔦', name: '光を辿る探検家', nameEn: 'Explorer of the Light', desc: '光の子を62体（半数）発見', descEn: 'Found 62 Children of Light (half)' },
+      cape_lv5:  { icon: '🪶', name: '羽ばたきの証', nameEn: 'Budding Wings', desc: 'ケープレベル5に到達（光の翼20枚）', descEn: 'Reached Cape Level 5 (20 Wings of Light)' },
+      cape_lv10: { icon: '🧥', name: '旅するケープ使い', nameEn: 'Traveling Cloak-Bearer', desc: 'ケープレベル10に到達（光の翼120枚）', descEn: 'Reached Cape Level 10 (120 Wings of Light)' },
+      cape_lv13: { icon: '👑', name: '光の翼、極めし者', nameEn: 'Master of the Winged Light', desc: 'ケープレベル最大の13に到達（光の翼250枚）', descEn: 'Reached the max Cape Level 13 (250 Wings of Light)' },
+      lc_half:   { icon: '🔦', name: '光を辿る探検家', nameEn: 'Light-Tracing Explorer', desc: '光の子を62体（半数）発見', descEn: 'Found 62 Children of Light (half)' },
       lc_all:    { icon: '🌟', name: '光の子コンプリート', nameEn: 'Children of Light Completionist', desc: '光の子124体すべてを発見', descEn: 'Found all 124 Children of Light' },
     } },
   spirit: { storageKey: 'spiritCatalogTitles_v1', namespaced: true, sourceKey: 'toolSpiritCatalog',
     extract: d => Object.keys(d || {}),
     titles: {
       pct1:   { icon: '🌱', name: '芽吹きの精霊使い', nameEn: 'Budding Spirit Keeper', desc: '精霊ツリーのノードを1%以上解放した', descEn: 'Unlocked 1%+ of all spirit tree nodes' },
-      pct10:  { icon: '🕯️', name: '灯火の道しるべ', nameEn: 'Guiding Flame', desc: '精霊ツリーのノードを10%以上解放した', descEn: 'Unlocked 10%+ of all spirit tree nodes' },
-      pct25:  { icon: '🌿', name: '深緑の探求者', nameEn: 'Explorer of the Deep Green', desc: '精霊ツリーのノードを25%以上解放した', descEn: 'Unlocked 25%+ of all spirit tree nodes' },
-      pct50:  { icon: '🌳', name: '満開の森の守り人', nameEn: 'Guardian of the Blooming Forest', desc: '精霊ツリーのノードを50%以上解放した', descEn: 'Unlocked 50%+ of all spirit tree nodes' },
+      pct10:  { icon: '🕯️', name: '灯火の道しるべ', nameEn: 'Candlelit Trailblazer', desc: '精霊ツリーのノードを10%以上解放した', descEn: 'Unlocked 10%+ of all spirit tree nodes' },
+      pct25:  { icon: '🌿', name: '深緑の探求者', nameEn: 'Verdant Explorer', desc: '精霊ツリーのノードを25%以上解放した', descEn: 'Unlocked 25%+ of all spirit tree nodes' },
+      pct50:  { icon: '🌳', name: '満開の森の守り人', nameEn: 'Guardian of the Blooming Grove', desc: '精霊ツリーのノードを50%以上解放した', descEn: 'Unlocked 50%+ of all spirit tree nodes' },
       pct100: { icon: '👑', name: '精霊の森の賢者', nameEn: 'Sage of the Spirit Forest', desc: '精霊ツリーの全ノードをコンプリートした', descEn: 'Unlocked 100% of all spirit tree nodes' },
     } },
   // スコア（楽譜作成ツール）のみ namespaced:false＝プロフィール単位で分かれていない
@@ -2957,22 +2957,22 @@ const PF_CROSS_TITLE_CATALOG = {
   nomacan: { storageKey: 'skyNomacanTitles_v1', namespaced: true, sourceKey: 'toolNomacan',
     extract: d => Object.keys((d && d.earned) || {}),
     titles: {
-      streak3:  { icon: '🔥', name: '灯し始め', nameEn: 'First Light', desc: '3日連続で記録', descEn: 'Recorded 3 days in a row' },
-      streak7:  { icon: '🕯️', name: '一週間の灯火', nameEn: 'A Week of Flame', desc: '7日連続で記録', descEn: 'Recorded 7 days in a row' },
+      streak3:  { icon: '🔥', name: '灯し始め', nameEn: 'Spark of a Streak', desc: '3日連続で記録', descEn: 'Recorded 3 days in a row' },
+      streak7:  { icon: '🕯️', name: '一週間の灯火', nameEn: "A Week's Flame", desc: '7日連続で記録', descEn: 'Recorded 7 days in a row' },
       streak30: { icon: '🌟', name: '絶やさぬ灯', nameEn: 'Unwavering Flame', desc: '30日連続で記録', descEn: 'Recorded 30 days in a row' },
-      hold100:  { icon: '🕯️', name: '灯の蓄え', nameEn: 'Stockpile of Light', desc: '所持本数が100本に到達', descEn: 'Reached 100 candles held' },
+      hold100:  { icon: '🕯️', name: '灯の蓄え', nameEn: 'Candle Stockpile', desc: '所持本数が100本に到達', descEn: 'Reached 100 candles held' },
       hold300:  { icon: '🏮', name: '光の貯蔵庫', nameEn: 'Vault of Light', desc: '所持本数が300本に到達', descEn: 'Reached 300 candles held' },
-      hold600:  { icon: '👑', name: '灯火の富豪', nameEn: 'Flame Tycoon', desc: '所持本数が600本に到達', descEn: 'Reached 600 candles held' },
+      hold600:  { icon: '👑', name: '灯火の富豪', nameEn: 'Candle Baron', desc: '所持本数が600本に到達', descEn: 'Reached 600 candles held' },
     } },
   starcandle: { storageKey: 'skyStarCandleCalc_titles_v1', namespaced: true, sourceKey: 'toolStarCandle',
     extract: d => Object.keys(d || {}),
     titles: {
-      streak_3:   { icon: '🕯️', name: '灯を絶やさぬ者', nameEn: 'Keeper of the Unbroken Flame', desc: '赤闇を3日連続で取りこぼさず回収', descEn: 'Collected shard rewards 3 days in a row without missing one' },
-      streak_7:   { icon: '🔥', name: '一週間の灯火番', nameEn: 'Weeklong Flame Watcher', desc: '赤闇を7日連続で取りこぼさず回収', descEn: 'Collected shard rewards 7 days in a row without missing one' },
-      streak_20:  { icon: '🌌', name: '常夜の灯守', nameEn: "Eternal Night's Flamekeeper", desc: '赤闇を20日連続で取りこぼさず回収', descEn: 'Collected shard rewards 20 days in a row without missing one' },
-      candle_30:  { icon: '⭐', name: '星屑の蒐集者', nameEn: 'Stardust Gatherer', desc: '所持本数が最高30本に到達', descEn: 'Held 30 candles at once for the first time' },
+      streak_3:   { icon: '🕯️', name: '灯を絶やさぬ者', nameEn: 'Flame Unwavering', desc: '赤闇を3日連続で取りこぼさず回収', descEn: 'Collected shard rewards 3 days in a row without missing one' },
+      streak_7:   { icon: '🔥', name: '一週間の灯火番', nameEn: 'Weeklong Flamekeeper', desc: '赤闇を7日連続で取りこぼさず回収', descEn: 'Collected shard rewards 7 days in a row without missing one' },
+      streak_20:  { icon: '🌌', name: '常夜の灯守', nameEn: 'Everlasting Flamekeeper', desc: '赤闇を20日連続で取りこぼさず回収', descEn: 'Collected shard rewards 20 days in a row without missing one' },
+      candle_30:  { icon: '⭐', name: '星屑の蒐集者', nameEn: 'Stardust Collector', desc: '所持本数が最高30本に到達', descEn: 'Held 30 candles at once for the first time' },
       candle_100: { icon: '🌟', name: '百連の灯', nameEn: 'Hundredfold Flame', desc: '所持本数が最高100本に到達', descEn: 'Held 100 candles at once for the first time' },
-      candle_300: { icon: '👑', name: '星々の帳を統べる者', nameEn: 'Ruler of the Star Curtain', desc: '所持本数が最高300本に到達', descEn: 'Held 300 candles at once for the first time' },
+      candle_300: { icon: '👑', name: '星々の帳を統べる者', nameEn: 'Sovereign of the Starry Veil', desc: '所持本数が最高300本に到達', descEn: 'Held 300 candles at once for the first time' },
     } },
 };
 
@@ -3332,13 +3332,37 @@ document.addEventListener('DOMContentLoaded', () => {
   pfIconSetMode(pfIconMode);
 });
 
+// 複数のトーストが短時間に連続発生すると（称号を連続解除した場合など）、後から出た
+// ものが常に同じ位置に生成されて前のものへ完全に重なり、古い方が全く見えなくなって
+// しまう。そのため現在表示中のトーストを配列で管理し、古いものほど上に積み上げる
+// ことで、複数同時表示になっても両方が視認できるようにする。
+let activeToasts = [];
 function showToast(msg) {
   const t = document.createElement('div');
   t.className = 'toast';
   t.textContent = msg;
   document.body.appendChild(t);
+  activeToasts.push(t);
+  repositionToasts();
   setTimeout(() => t.classList.add('show'), 10);
-  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 2600);
+  setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(() => {
+      t.remove();
+      activeToasts = activeToasts.filter(x => x !== t);
+      repositionToasts();
+    }, 300);
+  }, 2600);
+}
+// 表示中トーストのbottom位置を積み直す（showToastから呼ばれる）。配列内で一番新しい
+// ものがCSS既定位置（.toastのbottom）に来て、古いものほどそこから上に積まれていく。
+function repositionToasts() {
+  const gap = 8;
+  let offset = 0;
+  for (let i = activeToasts.length - 1; i >= 0; i--) {
+    activeToasts[i].style.bottom = `calc(84px + env(safe-area-inset-bottom) + ${offset}px)`;
+    offset += activeToasts[i].offsetHeight + gap;
+  }
 }
 
 /* ================================================================
