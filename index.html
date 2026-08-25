@@ -225,23 +225,20 @@
 
     /* ── Layout ───────────────────────── */
     .app-layout { max-width: 720px; margin: 0 auto; padding: 0 16px; }
-    @media (min-width: 850px) { .app-layout { max-width: 960px; display: flex; gap: 20px; align-items: flex-start; } }
-    .wrap { flex: 1; min-width: 0; }
 
     /* ── Sidebar overlay（モバイル） ─────────────── */
     .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 499; }
     .sidebar-overlay.show { display: block; }
 
-    /* ── Sidebar ──────────────────────────────── */
+    /* ── Sidebar（＝他ツール一覧ドロワー。常設カラムは持たず、下部ドックの
+       「他のツール」ボタンから開くオーバーレイとしてのみ、全幅で共通表示する） ─── */
     .sidebar {
-      width: 200px; flex-shrink: 0; position: sticky; top: 58px;
       background: var(--card); border-radius: var(--r); padding: 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07); display: none; margin-top: 22px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07); display: none;
     }
-    @media (min-width: 850px) { .sidebar { display: block; } }
     .sidebar.mobile-open {
       display: block; position: fixed; top: 0; left: 0; height: 100%; width: 240px;
-      z-index: 500; overflow-y: auto; border-radius: 0 var(--r) var(--r) 0; margin-top: 0;
+      z-index: 500; overflow-y: auto; border-radius: 0 var(--r) var(--r) 0;
     }
     .sidebar-section-label { font-size: 11px; font-weight: 700; color: var(--text-2); margin-bottom: 8px; text-transform: uppercase; }
     .sidebar-close-btn { font-size: 20px; color: var(--text-2); display: none; }
