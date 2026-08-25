@@ -115,6 +115,10 @@
       background: var(--card); border: 1px solid var(--sep); border-radius: var(--r-sm);
       padding: 6px 12px; font-size: 13px; font-weight: 600; color: var(--text);
     }
+    /* 🖥️ デスクトップレイアウト統一: 下部ドックの「他のツール」ボタンと同じ関連ツール
+       オーバーレイを開くだけのこのヘッダー側ボタンは、ドックが常時表示される850px以上の
+       幅では重複導線になるため非表示にする（wings/data-transfer/tai-info等と同じ基準）。 */
+    @media (min-width: 850px) { .sidebar-toggle-btn { visibility: hidden; } }
     .nav-right { display: flex; align-items: center; gap: 8px; }
     .lang-toggle-btn {
       background: var(--card); border: 1px solid var(--sep); border-radius: var(--r-sm);
@@ -225,6 +229,10 @@
 
     /* ── Layout ───────────────────────── */
     .app-layout { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+    /* 🖥️ デスクトップレイアウト統一: 他ツール(item/wings/tai-nomacan等)と同じ850pxブレークポイントで
+       960pxまで拡張する。常設サイドバー撤去時（コミット85e7bc7）にこの行ごと誤って削除されていたため復元。
+       display:flex/gap等のサイドバー専用プロパティは意図的に含めない（常設カラム化はしない）。 */
+    @media (min-width: 850px) { .app-layout { max-width: 960px; } }
 
     /* ── Sidebar overlay（モバイル） ─────────────── */
     .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 499; }
