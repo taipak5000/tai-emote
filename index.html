@@ -269,6 +269,14 @@
     .cat-header-count { font-size: 13px; color: var(--text-2); margin-top: 2px; }
     .cat-header-pct { font-size: 24px; font-weight: 800; color: var(--orange); }
 
+    /* ── 🧭 案内人エモートの達成率パネル ─────────────────────
+       全体達成率カード（.cat-header-card）と全く同じ見た目を流用し、isGuideな
+       エモートだけの所持状況（レベル所持数・所持率）を独立した統計として表示する。
+       構造は共通クラスのまま、この修飾クラスで余白とパーセント表示の色だけを
+       上書きして「全体」と視覚的に区別する（一括所持系のブルーで統一）。 */
+    .guide-header-card { margin-top: 12px; }
+    .guide-header-card .cat-header-pct { color: var(--blue); }
+
     /* ── 🏆 称号（実績）パネル ─────────────────────── */
     .titles-panel {
       background: var(--card); border-radius: var(--r); padding: 14px 16px; margin-top: 12px;
@@ -388,6 +396,18 @@
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 1px 3px rgba(0,0,0,0.35);
     }
+    /* 🆕 「最近入手」バッジ（タイル上部中央）：直近RECENT_ACQUIRE_MS以内に入手履歴へ
+       記録されたエモートにのみ表示する。入手履歴モーダルを開かなくても一覧だけで
+       直近の入手が分かるようにするための機能。左上のtile-guide-badge（黒地）・
+       右上のtile-own-all-btn（青地）とは配置・配色の両方で重ならず区別できるよう、
+       上部中央に--orangeの丸バッジとして重ねる。 */
+    .tile-recent-badge {
+      position: absolute; top: 3px; left: 50%; transform: translateX(-50%); z-index: 3;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--orange); color: #fff; font-size: 9px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+    }
     .emote-tile-name {
       font-size: 10.5px; line-height: 1.3; text-align: center; color: var(--text-2);
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
@@ -426,6 +446,16 @@
       color: #fff; background: rgba(28,28,30,0.82); border-radius: 999px; padding: 2px 8px;
       margin-top: 4px; white-space: nowrap;
     }
+    /* 🆕 「最近入手」バッジ（リスト表示）：guide-badgeと同じピル形状だが、案内人バッジ
+       （黒地）とひと目で区別できるようオレンジ系（--orange-bg/--orange-d）にする。
+       guide-badgeが直前にある場合だけ隣に小さな間隔を空ける（単独表示時に左端から
+       不自然にインデントされて見えないよう、margin-leftはguide-badgeの隣接時のみ付与）。 */
+    .recent-badge {
+      display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 700;
+      color: var(--orange-d); background: var(--orange-bg); border-radius: 999px; padding: 2px 8px;
+      margin-top: 4px; white-space: nowrap;
+    }
+    .guide-badge + .recent-badge { margin-left: 6px; }
 
     .lv-row { display: flex; gap: 6px; flex-shrink: 0; }
     .lv-btn {
@@ -753,6 +783,19 @@
         </div>
       </div>
       <div class="cat-header-pct" id="hdrPct">--%</div>
+    </div>
+
+    <!-- 🧭 案内人エモートの達成率：全体達成率カードと同じ見た目で、isGuideなエモートだけの
+         所持状況を独立した統計として表示する（renderGuideStats()で更新） -->
+    <div class="cat-header-card guide-header-card" id="guideHeaderCard">
+      <div class="cat-header-info">
+        <div class="cat-header-icon">🧭</div>
+        <div>
+          <div class="cat-header-name" data-i18n="guideHeaderName">案内人エモート</div>
+          <div class="cat-header-count" id="guideHdrCount">-- / -- レベル所持</div>
+        </div>
+      </div>
+      <div class="cat-header-pct" id="guideHdrPct">--%</div>
     </div>
 
     <div class="titles-panel" id="titlesPanel">
@@ -1089,6 +1132,7 @@ const I18N = {
 
     headerName: 'エモート全体',
     headerCountTemplate: '{owned} / {total} レベル所持',
+    guideHeaderName: '案内人エモート',
 
     titlesSectionLabel: '🏆 称号',
     titlesCountTemplate: '{earned} / {total} 個解除',
@@ -1125,6 +1169,8 @@ const I18N = {
     bulkOwnFilteredBtnTitle: '検索・絞り込みで表示されているエモートを、すべて全レベル所持済みにします',
     guideBadgeLabel: '🧭 案内人',
     guideBadgeTitle: '精霊ではなく案内人（AURORAなど）から入手するエモートです',
+    recentBadgeLabel: '🆕 最近入手',
+    recentBadgeTitleTemplate: '{date} に入手',
 
     shareSectionLabel: '達成率をシェア',
     shareTwitterBtn: '📤🖼️ Xで画像を共有',
@@ -1343,6 +1389,7 @@ const I18N = {
 
     headerName: 'All Emotes',
     headerCountTemplate: '{owned} / {total} levels owned',
+    guideHeaderName: 'Guide Emotes',
 
     titlesSectionLabel: '🏆 Titles',
     titlesCountTemplate: '{earned} / {total} unlocked',
@@ -1379,6 +1426,8 @@ const I18N = {
     bulkOwnFilteredBtnTitle: 'Marks every level of every emote currently shown by the search/filter as owned.',
     guideBadgeLabel: '🧭 Guide',
     guideBadgeTitle: 'Granted by a Guide character (e.g. AURORA), not a regular spirit',
+    recentBadgeLabel: '🆕 New',
+    recentBadgeTitleTemplate: 'Acquired {date}',
 
     shareSectionLabel: 'Share your completion rate',
     shareTwitterBtn: '📤🖼️ Share image on X',
@@ -2724,6 +2773,31 @@ function removeEmoteAcquireRecord(emoteId, level) {
   }
 }
 
+// 🆕 「最近入手」バッジ用：この期間内（ミリ秒）に入手履歴へ記録されたエモートには、
+// 入手履歴モーダルを開かなくても一覧（グリッド／リスト）に直接🆕バッジを表示する。
+const RECENT_ACQUIRE_MS = 3 * 24 * 60 * 60 * 1000; // 3日以内を「最近」とみなす
+
+// 入手履歴（emoteAcquireLog_v1）から、エモートIDごとの最新入手日時（ISO文字列）を集計する。
+// renderList()内で一覧描画のたびに1回だけ呼び出し、以降はエモートごとにO(1)で参照する
+// （エモートの数だけloadAcquireLog()をやり直すと、ログ件数×エモート数の総当りになってしまうため）。
+function buildLatestAcquireMap() {
+  const log = loadAcquireLog();
+  const map = {};
+  Object.keys(log).forEach(key => {
+    const rec = log[key];
+    const prev = map[rec.emoteId];
+    if (!prev || new Date(rec.at) > new Date(prev)) map[rec.emoteId] = rec.at;
+  });
+  return map;
+}
+
+// 指定エモートが直近RECENT_ACQUIRE_MS以内に入手記録されたかどうかを返す。
+function isRecentlyAcquired(recentAcquireMap, emoteId) {
+  const at = recentAcquireMap[emoteId];
+  if (!at) return false;
+  return (Date.now() - new Date(at).getTime()) <= RECENT_ACQUIRE_MS;
+}
+
 function toggleLevel(emoteId, level) {
   const data = loadOwned();
   const owned = new Set(data[emoteId] || []);
@@ -2798,6 +2872,8 @@ function bulkOwnFiltered() {
 function getStats() {
   const data = loadOwned();
   let owned = 0, total = 0, ownedEmoteCount = 0, guideCount = 0, ownedGuideCount = 0;
+  // 🧭 案内人エモートの達成率パネル用：isGuideなエモートだけのレベル所持数・総レベル数
+  let guideOwnedLv = 0, guideTotalLv = 0;
   EMOTES_DATA.forEach(e => {
     total += e.maxLevel;
     const lv = (data[e.id] || []).length;
@@ -2806,12 +2882,18 @@ function getStats() {
       ownedEmoteCount++;
       if (e.isGuide) ownedGuideCount++;
     }
-    if (e.isGuide) guideCount++;
+    if (e.isGuide) {
+      guideCount++;
+      guideTotalLv += e.maxLevel;
+      guideOwnedLv += lv;
+    }
   });
   return {
     owned, total, pct: total > 0 ? (owned / total) * 100 : 0,
     // 🏆 称号判定用（checkTitles）: エモート単位の所持数・案内人エモートの所持数
     emoteCount: EMOTES_DATA.length, ownedEmoteCount, guideCount, ownedGuideCount,
+    // 🧭 案内人エモートの達成率パネル用（renderGuideStats）: レベル単位の所持数・所持率
+    guideOwnedLv, guideTotalLv, guidePct: guideTotalLv > 0 ? (guideOwnedLv / guideTotalLv) * 100 : 0,
   };
 }
 
@@ -2901,6 +2983,18 @@ function renderTitles(stats) {
     const desc = L({ ja: title.desc, en: title.descEn });
     return `<span class="title-chip" title="${escapeAttr(desc)}"><span class="title-chip-icon">${title.icon}</span>${name}</span>`;
   }).join('');
+}
+
+// 🧭 案内人エモートの達成率パネル：全体達成率カード（.cat-header-card）と同じ見た目のまま、
+// isGuideなエモートだけのレベル所持状況を独立した統計として表示する。
+// 案内人エモートが1件も登録されていない場合（データ側の想定外の変更等）はパネルごと隠す。
+function renderGuideStats(stats) {
+  const card = document.getElementById('guideHeaderCard');
+  if (!card) return;
+  if (stats.guideTotalLv === 0) { card.style.display = 'none'; return; }
+  card.style.display = 'flex';
+  document.getElementById('guideHdrCount').textContent = t('headerCountTemplate', { owned: stats.guideOwnedLv, total: stats.guideTotalLv });
+  document.getElementById('guideHdrPct').textContent = formatPct(stats.guidePct);
 }
 
 /* ================================================================
@@ -3732,6 +3826,10 @@ function renderList() {
 
   const filtered = getFilteredEmotes(data);
 
+  // 🆕 「最近入手」バッジ用：エモートごとの最新入手日時をここで1回だけ集計し、
+  // 下のlistHtml/gridHtml両方のmap()から参照する
+  const recentAcquireMap = buildLatestAcquireMap();
+
   // 所持率（自分自身のレベル所持率）で並び替え。'default'はデータ順のまま。
   // Array#sortは安定ソートなので、所持率が同じもの同士は元の順序を保つ。
   if (sortOrder === 'pctDesc' || sortOrder === 'pctAsc') {
@@ -3756,6 +3854,11 @@ function renderList() {
       : '';
     // isGuideなエモート（精霊ではなく案内人から入手）にのみ「案内人」バッジを表示する
     const guideBadge = e.isGuide ? `<span class="guide-badge" title="${escapeHtml(t('guideBadgeTitle'))}">${t('guideBadgeLabel')}</span>` : '';
+    // 🆕 直近RECENT_ACQUIRE_MS以内に入手記録があるエモートには「最近入手」バッジを表示する
+    // （入手履歴モーダルを開かなくても一覧だけで直近の入手が分かるようにするための機能）
+    const recentBadge = isRecentlyAcquired(recentAcquireMap, e.id)
+      ? `<span class="recent-badge" title="${escapeHtml(t('recentBadgeTitleTemplate', { date: fmtAcquireLogDate(recentAcquireMap[e.id]) }))}">${t('recentBadgeLabel')}</span>`
+      : '';
     return `
       <div class="emote-card ${isComplete ? 'is-complete' : ''}">
         <div class="emote-card-icon">
@@ -3766,7 +3869,7 @@ function renderList() {
           <a href="${emoteSearchUrl(e)}" target="_blank" rel="noopener noreferrer" class="emote-name" onclick="event.stopPropagation()">${escapeHtml(emoteName(e))}</a>
           <div class="emote-name-en">${escapeHtml(emoteNameSecondary(e))} ／ ${escapeHtml(locationDisplay(e))}</div>
           <div class="emote-sub">${isComplete ? t('emoteCompleteLabel') : t('emoteLevelCountTemplate', { owned: ownedCount, total: e.maxLevel })}</div>
-          ${guideBadge}
+          ${guideBadge}${recentBadge}
         </div>
         ${ownAllBtn}
         <div class="lv-row">${levelBtns.join('')}</div>
@@ -3788,6 +3891,11 @@ function renderList() {
       : '';
     // isGuideなエモートにのみ、タイル左上に「案内人」の丸バッジを重ねる（右上は一括所持バッジ用）
     const tileGuideBadge = e.isGuide ? `<span class="tile-guide-badge" title="${escapeHtml(t('guideBadgeTitle'))}">🧭</span>` : '';
+    // 🆕 直近RECENT_ACQUIRE_MS以内に入手記録があるエモートにのみ、タイル上部中央に
+    // 「最近入手」の丸バッジを重ねる（入手履歴モーダルを開かなくても一覧だけで分かるようにするため）
+    const tileRecentBadge = isRecentlyAcquired(recentAcquireMap, e.id)
+      ? `<span class="tile-recent-badge" title="${escapeHtml(t('recentBadgeTitleTemplate', { date: fmtAcquireLogDate(recentAcquireMap[e.id]) }))}">🆕</span>`
+      : '';
     return `
       <div class="emote-tile" title="${escapeHtml(locationDisplay(e))}">
         <div class="emote-tile-frame ${isComplete ? 'is-complete' : ''}">
@@ -3798,6 +3906,7 @@ function renderList() {
           <div class="emote-tile-levels">${dots.join('')}</div>
           ${tileOwnAllBtn}
           ${tileGuideBadge}
+          ${tileRecentBadge}
         </div>
         <a href="${emoteSearchUrl(e)}" target="_blank" rel="noopener noreferrer" class="emote-tile-name" onclick="event.stopPropagation()">${escapeHtml(emoteName(e))}</a>
       </div>`;
@@ -3827,6 +3936,7 @@ function renderList() {
   document.getElementById('hdrCount').textContent = t('headerCountTemplate', { owned: stats.owned, total: stats.total });
   document.getElementById('hdrPct').textContent = formatPct(stats.pct);
   renderTitles(stats);
+  renderGuideStats(stats);
 
   restoreFocusedControl(focusInfo);
 }
