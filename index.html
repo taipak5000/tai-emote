@@ -2382,9 +2382,11 @@ function pfDashBuildHtml(data) {
   const bucketEmptyMsg = `<div class="dash-empty">${t('dashNoScheduleInRange')}</div>`;
   const todayHtml = bucketRows.today.length ? bucketRows.today.join('') : `<div class="dash-empty">${t('dashNoCurrentSeasonEvent')}</div>`;
   const weekHtml = bucketRows.week.length ? bucketRows.week.join('') : bucketEmptyMsg;
-  const monthHtml = seasonErrored
-    ? `<div class="dash-empty">${t('dashSeasonLoadFailed')}</div>`
-    : (bucketRows.month.length ? bucketRows.month.join('') : bucketEmptyMsg);
+  // シーズン情報の取得エラーは「今月」欄の内容を丸ごと差し替えるのではなく先頭に追加する。
+  // そうしないと、シーズンデータだけ取得に失敗した場合でも次回アップデート等の他の項目が
+  // 今月バケットに振り分けられていれば、エラー表示によってそれらが消えてしまう。
+  const seasonErrorRow = seasonErrored ? `<div class="dash-empty">${t('dashSeasonLoadFailed')}</div>` : '';
+  const monthHtml = seasonErrorRow + (bucketRows.month.length ? bucketRows.month.join('') : (seasonErrored ? '' : bucketEmptyMsg));
 
   return `
     <div class="dash-section"><p class="dash-section-label">${t('dashSectionDaily')}</p>${dailyHtml}</div>
@@ -2967,10 +2969,10 @@ const PF_CROSS_TITLE_CATALOG = {
   share: { storageKey: 'shareTitles_v1', namespaced: true, sourceKey: 'toolShare',
     extract: d => ((d && d.earned) || []).map(e => e.id),
     titles: {
-      first:      { icon: '🌱', name: 'はじめての一歩', nameEn: 'First Step', desc: '創作物をはじめて追加した', descEn: 'Added your first creation' },
-      apprentice: { icon: '🔨', name: '見習い設置職人', nameEn: 'Apprentice Builder', desc: '累計5個の創作物を追加した', descEn: '5 creations added (lifetime)' },
-      skilled:    { icon: '🏗️', name: '熟練の設置職人', nameEn: 'Skilled Builder', desc: '累計15個の創作物を追加した', descEn: '15 creations added (lifetime)' },
-      master:     { icon: '🏛️', name: '創作の匠', nameEn: 'Master Creator', desc: '累計30個の創作物を追加した', descEn: '30 creations added (lifetime)' },
+      first:      { icon: '🌱', name: 'はじめての一歩', nameEn: 'First Steps', desc: '創作物をはじめて追加した', descEn: 'Added your first creation' },
+      apprentice: { icon: '🔨', name: '見習い設置職人', nameEn: 'Apprentice Placer', desc: '累計5個の創作物を追加した', descEn: '5 creations added (lifetime)' },
+      skilled:    { icon: '🏗️', name: '熟練の設置職人', nameEn: 'Skilled Placer', desc: '累計15個の創作物を追加した', descEn: '15 creations added (lifetime)' },
+      master:     { icon: '🏛️', name: '創作の匠', nameEn: 'Master Craftsperson', desc: '累計30個の創作物を追加した', descEn: '30 creations added (lifetime)' },
       legend:     { icon: '👑', name: '伝説の創作者', nameEn: 'Legendary Creator', desc: '累計50個の創作物を追加した', descEn: '50 creations added (lifetime)' },
     } },
   nomacan: { storageKey: 'skyNomacanTitles_v1', namespaced: true, sourceKey: 'toolNomacan',
