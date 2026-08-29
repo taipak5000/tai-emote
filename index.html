@@ -2769,10 +2769,24 @@ const ACQUIRE_LOG_KEY = nsKey('emoteAcquireLog_v1');
 
 function acquireLogKey(emoteId, level) { return emoteId + '::' + level; }
 
+// キーはこのファイル内で常に acquireLogKey() により
+// "<emoteId(英数字・アンダースコア・ハイフン)>::<level(数字)>" の形式でのみ生成しているため、
+// それ以外の形式は不正な値（データ引継ぎ/バックアップの改ざん等）とみなして除外する。
+// renderAcquireLog() の onclick 属性へ key をそのまま埋め込んでいる箇所があるため、
+// ここで弾いておくことでXSSを防ぐ（pfIsSafeId と同じ考え方）。
+function alIsSafeKey(key) {
+  return typeof key === 'string' && /^[A-Za-z0-9_-]{1,64}::[0-9]{1,4}$/.test(key);
+}
+
 function loadAcquireLog() {
   try {
     const data = JSON.parse(localStorage.getItem(ACQUIRE_LOG_KEY));
-    return (data && typeof data === 'object') ? data : {};
+    if (!data || typeof data !== 'object') return {};
+    const safe = {};
+    Object.keys(data).forEach(key => {
+      if (alIsSafeKey(key)) safe[key] = data[key];
+    });
+    return safe;
   } catch (_) { return {}; }
 }
 function saveAcquireLog(data) {
