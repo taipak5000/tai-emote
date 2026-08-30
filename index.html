@@ -6,6 +6,18 @@
   <meta name="theme-color" content="#FF9500">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/app-icon-192.png">
+  <script>
+    // 📲 PWAオフライン対応: index.html本体・manifest.json・アイコンをアプリシェルとして
+    // キャッシュするService Workerを登録する(未対応ブラウザ・登録失敗時は静かに諦め、
+    // 他の機能には一切影響しない)。
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch((err) => {
+          console.error('service worker registration failed', err);
+        });
+      });
+    }
+  </script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="エモート管理">
@@ -57,6 +69,7 @@
       --focus-ring: #CC4B00;
       --green:     #34C759;
       --green-bg:  rgba(52,199,89,0.10);
+      --red:       #FF3B30;
       --text:      #1C1C1E;
       --text-2:    #8E8E93;
       --text-3:    #C7C7CC;
@@ -84,6 +97,7 @@
       --focus-ring: var(--orange);
       --green:     #30D158;
       --green-bg:  rgba(48,209,88,0.16);
+      --red:       #FF453A;
       --text:      #F2F2F7;
       --text-2:    #98989D;
       --text-3:    #636366;
@@ -723,6 +737,16 @@
       font-size: 10px; font-weight: 700; color: var(--text-2);
       max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
+    /* 🔴 ダッシュボードボタンの「まもなく終了」インジケーター（季節/イベント終了が3日以内の
+       ときだけ表示する小さな赤丸）。既存の再取得済みダッシュボードデータ(pfDashCache)を
+       流用するだけで、新規fetchは行わない（pfDashUpdateUrgentBadge()参照）。 */
+    .site-dock .site-dock-icon-wrap { position: relative; display: inline-flex; }
+    .site-dock .dock-urgent-dot {
+      display: none; position: absolute; top: -2px; right: -6px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--red); border: 1.5px solid var(--card);
+    }
+    .site-dock .dock-urgent-dot.show { display: block; }
   </style>
 </head>
 <body>
@@ -1131,7 +1155,10 @@
     <span class="site-dock-label" id="siteDockProfileLabel" data-i18n="dockProfileLabel">プロフィール</span>
   </button>
   <button type="button" onclick="pfDashOpen()">
-    <span class="site-dock-icon">🗓️</span>
+    <span class="site-dock-icon-wrap">
+      <span class="site-dock-icon">🗓️</span>
+      <span class="dock-urgent-dot" id="dockUrgentDot" aria-hidden="true" title="季節/イベントの終了が近づいています" data-i18n-title="dockUrgentTitle"></span>
+    </span>
     <span class="site-dock-label" data-i18n="dockDashboardLabel">ダッシュボード</span>
   </button>
   <button type="button" onclick="openSidebarMobile()">
@@ -1187,6 +1214,7 @@ const I18N = {
     dockDashboardLabel: 'ダッシュボード',
     dockToolsLabel: '他のツール',
     dockSettingsLabel: '表示設定',
+    dockUrgentTitle: '季節/イベントの終了が近づいています',
 
     pageTitle: 'エモート所持率管理',
 
@@ -1458,6 +1486,7 @@ const I18N = {
     dockDashboardLabel: 'Dashboard',
     dockToolsLabel: 'Other Tools',
     dockSettingsLabel: 'Settings',
+    dockUrgentTitle: 'A season or event is ending soon',
 
     pageTitle: 'Emote Collection Tracker',
 
@@ -2556,15 +2585,40 @@ function pfDashStartTimer() {
     if (!pfDashCache) return;
     const body = document.getElementById('dashBody');
     if (body) body.innerHTML = pfDashBuildHtml(pfDashCache);
+    pfDashUpdateUrgentBadge();
   }, 1000);
 }
 function pfDashStopTimer() {
   if (pfDashTimer) { clearInterval(pfDashTimer); pfDashTimer = null; }
 }
+// 🔴 サイトドックの「ダッシュボード」ボタンに表示する、終了間近インジケーター（小さな赤丸）。
+// 新規fetchは一切行わず、pfDashCache（実際にダッシュボードを開いた際に読み込まれるデータ）を
+// 流用するだけ。pfDashCacheが無い（未読み込み・fetch失敗）場合は何も表示しない＝安全側に倒す。
+const DOCK_URGENT_DAYS = 3;
+function pfDashUrgentEndDates() {
+  const data = pfDashCache;
+  if (!data) return [];
+  const dates = [];
+  if (data.season && data.season.name && data.season.endDate) dates.push(new Date(data.season.endDate));
+  pfDashActiveScheduledEvents(data.eventSchedule).forEach(ev => dates.push(new Date(ev.end)));
+  return dates;
+}
+function pfDashHasUrgentEnding() {
+  const now = new Date();
+  return pfDashUrgentEndDates().some(end => {
+    const ms = end - now;
+    return ms > 0 && ms <= DOCK_URGENT_DAYS * 86400000;
+  });
+}
+function pfDashUpdateUrgentBadge() {
+  const dot = document.getElementById('dockUrgentDot');
+  if (!dot) return;
+  dot.classList.toggle('show', pfDashHasUrgentEnding());
+}
 async function pfDashOpen() {
   document.getElementById('dashModalOverlay').classList.add('open');
   const body = document.getElementById('dashBody');
-  if (pfDashCache) { body.innerHTML = pfDashBuildHtml(pfDashCache); pfDashStartTimer(); return; }
+  if (pfDashCache) { body.innerHTML = pfDashBuildHtml(pfDashCache); pfDashStartTimer(); pfDashUpdateUrgentBadge(); return; }
   body.innerHTML = `<div class="pf-hint">${t('dashLoading')}</div>`;
   try {
     if (!pfDashLoading) pfDashLoading = pfDashLoadData();
@@ -2572,6 +2626,7 @@ async function pfDashOpen() {
     pfDashCache = data;
     body.innerHTML = pfDashBuildHtml(data);
     pfDashStartTimer();
+    pfDashUpdateUrgentBadge();
   } catch (e) {
     console.error('pfDashOpen', e);
     body.innerHTML = `<div class="dash-empty">${t('dashLoadFailed')}</div>`;
