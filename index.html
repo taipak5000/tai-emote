@@ -838,6 +838,15 @@
         </select>
       </div>
       <div class="control-row">
+        <span class="control-label" data-i18n="controlLabelSource">入手方法</span>
+        <select class="select-box" id="filterSource" onchange="renderList()">
+          <option value="all" data-i18n="filterSourceAll">すべての入手方法</option>
+          <option value="spirit" data-i18n="filterSourceSpirit">🕯️ 精霊から入手</option>
+          <option value="guide" data-i18n="filterSourceGuide">🧭 案内人から入手</option>
+          <option value="default" data-i18n="filterSourceDefault">🎁 デフォルト所持</option>
+        </select>
+      </div>
+      <div class="control-row">
         <span class="control-label" data-i18n="controlLabelSort">並び替え</span>
         <select class="select-box" id="sortOrder" onchange="renderList()">
           <option value="default" data-i18n="sortDefault">既定の順番</option>
@@ -1163,6 +1172,11 @@ const I18N = {
     controlLabelGuide: '種別',
     filterGuideAll: 'すべての種別',
     filterGuideOnly: '🧭 案内人のみ',
+    controlLabelSource: '入手方法',
+    filterSourceAll: 'すべての入手方法',
+    filterSourceSpirit: '🕯️ 精霊から入手',
+    filterSourceGuide: '🧭 案内人から入手',
+    filterSourceDefault: '🎁 デフォルト所持',
     controlLabelSort: '並び替え',
     sortDefault: '既定の順番',
     sortPctDesc: '所持率が高い順',
@@ -1421,6 +1435,11 @@ const I18N = {
     controlLabelGuide: 'Type',
     filterGuideAll: 'All types',
     filterGuideOnly: '🧭 Guide only',
+    controlLabelSource: 'Source',
+    filterSourceAll: 'All acquisition methods',
+    filterSourceSpirit: '🕯️ From a Spirit',
+    filterSourceGuide: '🧭 From a Season Guide',
+    filterSourceDefault: '🎁 Default (no spirit)',
     controlLabelSort: 'Sort',
     sortDefault: 'Default order',
     sortPctDesc: 'Highest completion first',
@@ -3811,6 +3830,7 @@ function getFilteredEmotes(data) {
   const filter = document.getElementById('filterStatus').value;
   const location = document.getElementById('filterLocation').value;
   const guideOnly = document.getElementById('filterGuide').value === 'guideOnly';
+  const source = document.getElementById('filterSource').value;
   return EMOTES_DATA.filter(e => {
     // 検索はエモート名（日英）に加えて、精霊名・エリア名（日英）にもマッチさせる
     // （精霊が存在しないエモートもあるため spirit/spiritEn は filter(Boolean) で除外）
@@ -3821,6 +3841,13 @@ function getFilteredEmotes(data) {
     }
     if (location !== 'all' && e.location !== location) return false;
     if (guideOnly && !e.isGuide) return false;
+    // 入手方法：spirit/isGuideから機械的に導出した3分類。
+    //   spirit  … 通常の精霊から入手（isGuideではない、spiritがある）
+    //   guide   … 案内人（AURORA等）から入手（isGuide === true。この場合もspiritは入っている）
+    //   default … 精霊を介さない初期所持エモート（spiritがnull。現状「座る」のみ）
+    if (source === 'spirit' && (!e.spirit || e.isGuide)) return false;
+    if (source === 'guide' && !e.isGuide) return false;
+    if (source === 'default' && e.spirit) return false;
     const ownedCount = (data[e.id] || []).length;
     if (filter === 'complete' && ownedCount !== e.maxLevel) return false;
     if (filter === 'partial' && (ownedCount === 0 || ownedCount === e.maxLevel)) return false;
@@ -3836,11 +3863,12 @@ function isFilterActive() {
   const filter = document.getElementById('filterStatus').value;
   const location = document.getElementById('filterLocation').value;
   const guide = document.getElementById('filterGuide').value;
-  return !!search || filter !== 'all' || location !== 'all' || guide !== 'all';
+  const source = document.getElementById('filterSource').value;
+  return !!search || filter !== 'all' || location !== 'all' || guide !== 'all' || source !== 'all';
 }
 
-// 「フィルターを全てクリア」ボタン用。名前検索・所持状態・エリア・種別・並び替えの
-// 5つの独立した絞り込み/並び替えコントロールを一括で既定値に戻し、一覧を再描画する。
+// 「フィルターを全てクリア」ボタン用。名前検索・所持状態・エリア・種別・入手方法・並び替えの
+// 6つの独立した絞り込み/並び替えコントロールを一括で既定値に戻し、一覧を再描画する。
 // これらのコントロールはlocalStorageやURLに永続化されていないため、DOM上の値を
 // リセットしてrenderList()を呼ぶだけで表示は完全に既定状態へ戻る。
 function clearAllFilters() {
@@ -3848,6 +3876,7 @@ function clearAllFilters() {
   document.getElementById('filterStatus').value = 'all';
   document.getElementById('filterLocation').value = 'all';
   document.getElementById('filterGuide').value = 'all';
+  document.getElementById('filterSource').value = 'all';
   document.getElementById('sortOrder').value = 'default';
   renderList();
 }
