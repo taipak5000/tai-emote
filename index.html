@@ -377,6 +377,11 @@
       padding: 7px 12px; border-radius: 999px; transition: background 0.15s, color 0.15s;
     }
     .view-toggle-btn.active { background: var(--card); color: var(--text); font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+    /* 🗂️ グリッドの列数（アイテム所持管理と同じ見た目・置き場所） */
+    .grid-cols-select {
+      background: var(--bg); border: none; padding: 6px 10px; border-radius: 999px;
+      font-size: 12px; color: var(--text-2); font-weight: 600; outline: none; flex-shrink: 0;
+    }
 
     /* ── Emote Grid（画像タイル形式・PNG追加後に使う想定） ───────── */
     .emote-grid {
@@ -954,7 +959,15 @@
       <span class="sec-label" data-i18n="listSectionLabel">エモート一覧</span>
       <span class="sec-label" id="listCountLabel"></span>
     </div>
-    <div class="list-header-row" style="padding-top:0;">
+    <div class="list-header-row" style="padding-top:0; justify-content:flex-end;">
+      <select class="grid-cols-select" id="gridColsSelect" onchange="setGridCols(this.value)" data-i18n-title="gridColsSelectLabel" data-i18n-aria-label="gridColsSelectLabel" aria-label="グリッドの列数">
+        <option value="auto" data-i18n="gridColsAuto">列数: 自動</option>
+        <option value="2" data-i18n="gridCols2">2列</option>
+        <option value="3" data-i18n="gridCols3">3列</option>
+        <option value="4" data-i18n="gridCols4">4列</option>
+        <option value="5" data-i18n="gridCols5">5列</option>
+        <option value="6" data-i18n="gridCols6">6列</option>
+      </select>
       <div class="view-toggle">
         <button type="button" class="view-toggle-btn" id="viewGridBtn" onclick="setViewMode('grid')" data-i18n="viewGridBtn">🔳 グリッド</button>
         <button type="button" class="view-toggle-btn" id="viewListBtn" onclick="setViewMode('list')" data-i18n="viewListBtn">📋 リスト</button>
@@ -1283,6 +1296,13 @@ const I18N = {
 
     listSectionLabel: 'エモート一覧',
     listCountTemplate: '{n} / {total}件',
+    gridColsSelectLabel: 'グリッドの列数',
+    gridColsAuto: '列数: 自動',
+    gridCols2: '2列',
+    gridCols3: '3列',
+    gridCols4: '4列',
+    gridCols5: '5列',
+    gridCols6: '6列',
     viewGridBtn: '🔳 グリッド',
     viewListBtn: '📋 リスト',
     emptyMessage: '条件に一致するエモートがありません。',
@@ -1555,6 +1575,13 @@ const I18N = {
 
     listSectionLabel: 'Emote List',
     listCountTemplate: '{n} / {total}',
+    gridColsSelectLabel: 'Grid columns',
+    gridColsAuto: 'Columns: Auto',
+    gridCols2: '2 columns',
+    gridCols3: '3 columns',
+    gridCols4: '4 columns',
+    gridCols5: '5 columns',
+    gridCols6: '6 columns',
     viewGridBtn: '🔳 Grid',
     viewListBtn: '📋 List',
     emptyMessage: 'No emotes match the current filter.',
@@ -4057,6 +4084,26 @@ function setViewMode(mode) {
   renderList();
 }
 
+// 🗂️ グリッドの列数（グリッド表示時のみ有効）：アイテム所持管理と同じ考え方の設定
+const GRID_COLS_KEY = 'emoteGridCols_v1';
+let gridCols = 'auto';
+try { gridCols = localStorage.getItem(GRID_COLS_KEY) || 'auto'; } catch (_) { gridCols = 'auto'; }
+
+// グリッドの列数を切り替える（"自動"の場合は幅に応じた自動折り返しに戻す）
+function setGridCols(val) {
+  gridCols = val;
+  try { localStorage.setItem(GRID_COLS_KEY, val); } catch (_) { /* noop */ }
+  applyGridCols();
+}
+
+// 選択中の列数をグリッドコンテナ・セレクトボックスに反映
+function applyGridCols() {
+  const container = document.getElementById('emoteGrid');
+  if (container) container.style.gridTemplateColumns = gridCols === 'auto' ? '' : `repeat(${gridCols}, 1fr)`;
+  const sel = document.getElementById('gridColsSelect');
+  if (sel) sel.value = gridCols;
+}
+
 // エリア絞り込みのプルダウンを、データに登場する順番のまま重複なしで作る
 // エリア絞り込みのoption値は常に元のJAロケーション名（データの一意キー）を使う。
 // 表示テキストのみ locationDisplay() でLANGに応じて切り替える。
@@ -4293,6 +4340,7 @@ document.addEventListener('DOMContentLoaded', () => {
   pfRenderBar();
   populateLocationFilter();
   recordCompletionSnapshotIfNeeded();
+  applyGridCols();
   renderList();
   initOneYearAgoBanner();
 });
