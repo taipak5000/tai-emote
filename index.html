@@ -544,13 +544,14 @@
     .bulk-own-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
     /* フィルターを全てクリアボタン：検索・絞り込み・並び替えの5コントロールを一括で既定値に
-       戻すための補助アクション。他の絞り込みコントロールと同じ--bgを背景にした地味な配色にし、
-       所持を変更する.bulk-own-btn（--blue-solid）とは視覚的に区別する。 */
+       戻すための補助アクション。アイテム所持管理と同じ、控えめな青文字の小さいピル型ボタンにし、
+       専用行の右寄せで配置する（他ツールとの表示位置統一）。 */
+    .control-reset-row { justify-content: flex-end; }
     .clear-filters-btn {
-      width: 100%; background: var(--bg); color: var(--text-2); border-radius: var(--r-sm);
-      padding: 9px 14px; font-size: 13px; font-weight: 600; text-align: center;
+      background: var(--bg); border: none; color: var(--blue); border-radius: var(--r-sm);
+      padding: 8px 14px; font-size: 13px; font-weight: 600; transition: background 0.15s;
     }
-    .clear-filters-btn:active { transform: scale(0.98); }
+    .clear-filters-btn:active { background: var(--sep); }
     .clear-filters-btn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
     .empty-message { text-align: center; padding: 40px; color: var(--text-2); font-size: 14px; background: var(--card); border-radius: var(--r); }
@@ -762,7 +763,6 @@
   <div class="nav-title" data-i18n="navTitle">🎭 エモート所持率管理</div>
   <div class="nav-right">
     <button type="button" class="lang-toggle-btn" id="langToggleBtn" onclick="toggleLang()">EN</button>
-    <button class="sidebar-toggle-btn" onclick="openSidebarMobile()" data-i18n="sidebarHamburger">☰ ツール</button>
   </div>
 </nav>
 
@@ -930,8 +930,8 @@
           <option value="pctAsc" data-i18n="sortPctAsc">所持率が低い順</option>
         </select>
       </div>
-      <div class="control-row">
-        <button type="button" class="clear-filters-btn" id="clearFiltersBtn" onclick="clearAllFilters()" data-i18n="clearFiltersBtn" data-i18n-title="clearFiltersBtnTitle">フィルターを全てクリア</button>
+      <div class="control-row control-reset-row">
+        <button type="button" class="clear-filters-btn" id="clearFiltersBtn" onclick="clearAllFilters()" data-i18n="clearFiltersBtn" data-i18n-title="clearFiltersBtnTitle">🧹 フィルターを全てクリア</button>
       </div>
       <div class="control-row" id="bulkOwnRow" style="display:none;">
         <button type="button" class="bulk-own-btn" id="bulkOwnFilteredBtn" onclick="bulkOwnFiltered()"></button>
@@ -1277,7 +1277,7 @@ const I18N = {
     sortDefault: '既定の順番',
     sortPctDesc: '所持率が高い順',
     sortPctAsc: '所持率が低い順',
-    clearFiltersBtn: 'フィルターを全てクリア',
+    clearFiltersBtn: '🧹 フィルターを全てクリア',
     clearFiltersBtnTitle: '名前検索・絞り込み・並び替えをすべて既定の状態に戻します',
     bulkOwnFilteredBtnTemplate: '✅ 絞り込み結果（{n}件）を全部所持にする',
     bulkOwnFilteredBtnTitle: '検索・絞り込みで表示されているエモートを、すべて全レベル所持済みにします',
@@ -1556,7 +1556,7 @@ const I18N = {
     sortDefault: 'Default order',
     sortPctDesc: 'Highest completion first',
     sortPctAsc: 'Lowest completion first',
-    clearFiltersBtn: 'Clear all filters',
+    clearFiltersBtn: '🧹 Clear all filters',
     clearFiltersBtnTitle: 'Resets the name search, filters, and sort order back to their defaults',
     bulkOwnFilteredBtnTemplate: '✅ Mark all {n} filtered emotes as owned',
     bulkOwnFilteredBtnTitle: 'Marks every level of every emote currently shown by the search/filter as owned.',
