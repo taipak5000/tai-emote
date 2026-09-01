@@ -320,8 +320,18 @@
       background: var(--card); border-radius: var(--r); padding: 16px; margin-top: 12px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.07);
     }
-    .completion-history-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-    .completion-history-title { font-size: 14px; font-weight: 700; }
+    /* 🔽 興味の薄い人も多い補助情報のため<details>化し、既定では折りたたんでおく
+       （閉じた状態でも現在値だけは要約として見えるよう、summary内に残す）。 */
+    .completion-history-card > summary {
+      list-style: none; cursor: pointer;
+    }
+    .completion-history-card > summary::-webkit-details-marker { display: none; }
+    .completion-history-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; gap: 8px; }
+    .completion-history-head::before {
+      content: '▸'; font-size: 11px; color: var(--text-2); flex-shrink: 0; transition: transform 0.15s;
+    }
+    .completion-history-card[open] .completion-history-head::before { transform: rotate(90deg); }
+    .completion-history-title { font-size: 14px; font-weight: 700; flex: 1; }
     .completion-history-current { font-size: 16px; font-weight: 800; color: var(--orange); font-variant-numeric: tabular-nums; }
     .completion-history-range { font-size: 11px; color: var(--text-2); margin-bottom: 2px; }
     .completion-spark { width: 100%; height: 56px; display: block; margin-top: 2px; }
@@ -868,15 +878,15 @@
     </div>
 
     <!-- 📈 コンプリート率の推移：日次スナップショット(completionHistory_v1)の簡易ビュー -->
-    <div class="completion-history-card" id="completionHistoryCard">
-      <div class="completion-history-head">
+    <details class="completion-history-card" id="completionHistoryCard">
+      <summary class="completion-history-head">
         <span class="completion-history-title" data-i18n="completionHistoryTitle">📈 コンプリート率の推移</span>
         <span class="completion-history-current" id="completionHistoryCurrent">–</span>
-      </div>
+      </summary>
       <div id="completionHistoryBody">
         <!-- JSで動的に生成 -->
       </div>
-    </div>
+    </details>
 
     <div class="titles-panel" id="titlesPanel">
       <div class="titles-panel-head">
