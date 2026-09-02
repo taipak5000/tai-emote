@@ -312,35 +312,6 @@
        印象を、アイコンを🔒に差し替え text-3 で淡くする形で表現する */
     .title-chip.locked { background: var(--bg); color: var(--text-3); font-weight: 600; }
 
-    /* ── 📈 コンプリート率の推移（日次スナップショットの簡易ビュー） ──
-       完全にwings（羽トラッカー）のcompletion-history-*と同じ構造・クラス名を踏襲し、
-       姉妹ツール間で見た目の一貫性を保つ（全体達成率カードがオレンジ基調のため、
-       強調色だけ--blueではなく--orangeに変えている）。 */
-    .completion-history-card {
-      background: var(--card); border-radius: var(--r); padding: 16px; margin-top: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-    }
-    /* 🔽 興味の薄い人も多い補助情報のため<details>化し、既定では折りたたんでおく
-       （閉じた状態でも現在値だけは要約として見えるよう、summary内に残す）。 */
-    .completion-history-card > summary {
-      list-style: none; cursor: pointer;
-    }
-    .completion-history-card > summary::-webkit-details-marker { display: none; }
-    .completion-history-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; gap: 8px; }
-    .completion-history-head::before {
-      content: '▸'; font-size: 11px; color: var(--text-2); flex-shrink: 0; transition: transform 0.15s;
-    }
-    .completion-history-card[open] .completion-history-head::before { transform: rotate(90deg); }
-    .completion-history-title { font-size: 14px; font-weight: 700; flex: 1; }
-    .completion-history-current { font-size: 16px; font-weight: 800; color: var(--orange); font-variant-numeric: tabular-nums; }
-    .completion-history-range { font-size: 11px; color: var(--text-2); margin-bottom: 2px; }
-    .completion-spark { width: 100%; height: 56px; display: block; margin-top: 2px; }
-    .completion-history-list { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
-    .completion-history-list li { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; }
-    .ch-date { color: var(--text-2); font-variant-numeric: tabular-nums; }
-    .ch-pct { font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
-    .completion-history-empty { font-size: 12.5px; color: var(--text-2); line-height: 1.6; }
-
     /* ── 🎉 「1年前の今日」バナー（入手履歴から自動検出。1日1回だけ出し、閉じたらその日は再表示しない） ── */
     .one-year-ago-banner {
       background: var(--orange-bg); color: var(--orange-d); border-radius: var(--r);
@@ -877,17 +848,6 @@
       <div class="cat-header-pct" id="guideHdrPct">--%</div>
     </div>
 
-    <!-- 📈 コンプリート率の推移：日次スナップショット(completionHistory_v1)の簡易ビュー -->
-    <details class="completion-history-card" id="completionHistoryCard">
-      <summary class="completion-history-head">
-        <span class="completion-history-title" data-i18n="completionHistoryTitle">📈 コンプリート率の推移</span>
-        <span class="completion-history-current" id="completionHistoryCurrent">–</span>
-      </summary>
-      <div id="completionHistoryBody">
-        <!-- JSで動的に生成 -->
-      </div>
-    </details>
-
     <div class="titles-panel" id="titlesPanel">
       <div class="titles-panel-head">
         <span class="sec-label" data-i18n="titlesSectionLabel">🏆 称号</span>
@@ -1245,10 +1205,6 @@ const I18N = {
     headerCountTemplate: '{owned} / {total} レベル所持',
     guideHeaderName: '案内人エモート',
 
-    completionHistoryTitle: '📈 コンプリート率の推移',
-    completionHistoryEmpty: 'まだ記録がありません。翌日以降にまた開くと記録が増えていきます。',
-    completionHistorySparkAriaTemplate: 'コンプリート率の推移グラフ（現在 {pct}）',
-
     oneYearAgoBannerTemplate: '🎉 {years}年前の今日、『{name}』を記録しました',
     oneYearAgoBannerMultiTemplate: '🎉 {years}年前の今日、『{name}』を記録しました',
     oneYearAgoBannerCloseLabel: '閉じる',
@@ -1523,10 +1479,6 @@ const I18N = {
     headerName: 'All Emotes',
     headerCountTemplate: '{owned} / {total} levels owned',
     guideHeaderName: 'Guide Emotes',
-
-    completionHistoryTitle: '📈 Completion Trend',
-    completionHistoryEmpty: 'No records yet. Come back tomorrow or later to start seeing your trend.',
-    completionHistorySparkAriaTemplate: 'Completion trend chart (currently {pct})',
 
     oneYearAgoBannerTemplate: '🎉 You logged “{name}” exactly {years} year ago today',
     oneYearAgoBannerMultiTemplate: '🎉 You logged “{name}” exactly {years} years ago today',
@@ -3269,49 +3221,6 @@ function recordCompletionSnapshotIfNeeded() {
   updateCompletionTrendMirror(history);
 }
 
-// 履歴の簡易ビュー（スパークライン＋直近リスト）。renderList()の末尾から毎回呼ぶが、
-// ここでは保存済みのスナップショットを読んで描画するだけ（絞り込み操作のたびに
-// 呼ばれても新しい行が増えたりはしない＝記録自体はrecordCompletionSnapshotIfNeeded()側の責務）。
-function renderCompletionHistory() {
-  const body = document.getElementById('completionHistoryBody');
-  const currentEl = document.getElementById('completionHistoryCurrent');
-  if (!body) return;
-  const history = loadCompletionHistory();
-  if (!history.length) {
-    if (currentEl) currentEl.textContent = '–';
-    body.innerHTML = `<div class="completion-history-empty">${t('completionHistoryEmpty')}</div>`;
-    return;
-  }
-  const last = history[history.length - 1];
-  if (currentEl) currentEl.textContent = formatPct(last.pct);
-
-  const pts = history.slice(-60); // スパークラインは直近60件（≒2ヶ月分）まで表示
-  const w = 280, h = 56, pad = 5;
-  const n = pts.length;
-  const stepX = n > 1 ? (w - pad * 2) / (n - 1) : 0;
-  const coords = pts.map((e, i) => {
-    const x = pad + stepX * i;
-    const y = pad + (h - pad * 2) * (1 - Math.max(0, Math.min(100, e.pct)) / 100);
-    return [x, y];
-  });
-  const polyPoints = coords.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
-  const [lastX, lastY] = coords[coords.length - 1];
-  const first = pts[0];
-
-  const recentListHtml = history.slice(-7).reverse().map(e =>
-    `<li><span class="ch-date">${escapeHtml(e.date)}</span><span class="ch-pct">${formatPct(e.pct)}</span></li>`
-  ).join('');
-
-  body.innerHTML = `
-    <div class="completion-history-range">${escapeHtml(first.date)} → ${escapeHtml(last.date)}</div>
-    <svg viewBox="0 0 ${w} ${h}" class="completion-spark" role="img" aria-label="${escapeAttr(t('completionHistorySparkAriaTemplate', { pct: formatPct(last.pct) }))}">
-      ${n > 1 ? `<polyline points="${polyPoints}" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>` : ''}
-      <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="3" fill="var(--orange)"></circle>
-    </svg>
-    <ul class="completion-history-list">${recentListHtml}</ul>
-  `;
-}
-
 /* ================================================================
    🎉 「1年前の今日」バナー
    入手履歴（emoteAcquireLog_v1）の中に、"at"のローカル日付が今日とちょうど同じ月日
@@ -4340,7 +4249,6 @@ function renderList() {
   document.getElementById('hdrPct').textContent = formatPct(stats.pct);
   renderTitles(stats);
   renderGuideStats(stats);
-  renderCompletionHistory();
 
   restoreFocusedControl(focusInfo);
 }
