@@ -4062,7 +4062,16 @@ function restoreFocusedControl(focusInfo) {
     ? `.${focusInfo.type}[data-emote-id="${focusInfo.emoteId}"][data-level="${focusInfo.level}"]`
     : `.${focusInfo.type}[data-emote-id="${focusInfo.emoteId}"]`;
   const el = document.querySelector(selector);
-  if (el) el.focus();
+  if (el) { el.focus(); return; }
+  // 絞り込み条件との不一致でカードごと一覧から消えた場合はselectorが何にもマッチせず、
+  // 何もしないとフォーカスがdocument.bodyに落ちてしまう。表示中の一覧/グリッド領域を
+  // プログラム的にフォーカス可能にして退避させ、キーボード操作の位置を維持する。
+  const isGrid = focusInfo.type === 'tile-lv-dot' || focusInfo.type === 'tile-own-all-btn';
+  const container = document.getElementById(isGrid ? 'emoteGrid' : 'emoteList');
+  if (container) {
+    if (!container.hasAttribute('tabindex')) container.setAttribute('tabindex', '-1');
+    container.focus();
+  }
 }
 
 // 検索・絞り込みの4条件（名前検索／所持状態／エリア／種別＝案内人のみ）を読み取り、
