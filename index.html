@@ -753,7 +753,7 @@
 
 <div class="pf-modal-overlay" id="pfModalOverlay" onclick="if(event.target===this) pfCloseModal()">
   <div class="pf-modal-card">
-    <h3 data-i18n="pfModalTitle">🗂️ プロフィール（保存枠）</h3>
+    <h3 data-i18n="pfModalTitle">プロフィール（保存枠）</h3>
     <div id="pfModalBody"></div>
     <div class="pf-add-row">
       <input type="text" class="pf-input" id="pfNewName" placeholder="例: サブ垢1" maxlength="30" data-i18n-placeholder="pfNewNamePlaceholder">
@@ -762,12 +762,12 @@
     <div class="pf-hint" data-i18n="pfSwitchHint">プロフィールを切り替えると、エモートの所持状況が切り替え先のプロフィールのものに入れ替わります（このブラウザ内にすべて保存されます）。</div>
     <div class="pf-currency-section">
       <div class="pf-currency-title" onclick="pfToggleCurrency()">
-        <span data-i18n="currencySectionLabel">💰 所持通貨</span>
+        <span data-i18n="currencySectionLabel">所持通貨</span>
         <span class="pf-currency-toggle-label" id="pfCurrencyToggleLabel">閉じる ▲</span>
       </div>
       <div id="pfCurrencyBody"></div>
     </div>
-    <button type="button" class="pf-icon-btn" style="width:100%; margin-top:10px; padding:8px;" onclick="dmOpenModal()" data-i18n="pfBackupOpenBtn">💾 データのバックアップ・復元・削除</button>
+    <button type="button" class="pf-icon-btn" style="width:100%; margin-top:10px; padding:8px;" onclick="dmOpenModal()" data-i18n="pfBackupOpenBtn">データのバックアップ・復元・削除</button>
     <button type="button" class="pf-close-btn" onclick="pfCloseModal()" data-i18n="pfCloseBtn">閉じる</button>
   </div>
 </div>
@@ -775,14 +775,14 @@
 <!-- ▸ データのバックアップ・復元・削除モーダル -->
 <div class="pf-modal-overlay" id="dmModalOverlay" onclick="if(event.target===this) dmCloseModal()">
   <div class="pf-modal-card">
-    <h3 data-i18n="backupModalTitle">💾 データのバックアップ・復元・削除</h3>
+    <h3 data-i18n="backupModalTitle">データのバックアップ・復元・削除</h3>
     <div class="pf-hint" style="margin:0 0 14px;" data-i18n="backupHint">このブラウザに保存されている taipak5000.github.io 系ツール（item・wings・companion 等）のデータをまとめて書き出し・読み込み・削除できます。全プロフィール分がまとめて対象になります。</div>
-    <button type="button" class="pf-add-btn" style="width:100%; margin-bottom:8px;" onclick="dmExport()" data-i18n="backupExportBtn">⬇️ データをエクスポート（ファイルに保存）</button>
+    <button type="button" class="pf-add-btn" style="width:100%; margin-bottom:8px;" onclick="dmExport()" data-i18n="backupExportBtn">データをエクスポート（ファイルに保存）</button>
     <input type="file" id="dmImportFile" accept="application/json" style="display:none" onchange="dmImportFileSelected(event)">
-    <button type="button" class="pf-icon-btn" style="width:100%; margin-bottom:8px; padding:8px;" onclick="document.getElementById('dmImportFile').click()" data-i18n="backupImportBtn">⬆️ ファイルからインポート</button>
+    <button type="button" class="pf-icon-btn" style="width:100%; margin-bottom:8px; padding:8px;" onclick="document.getElementById('dmImportFile').click()" data-i18n="backupImportBtn">ファイルからインポート</button>
     <div id="dmImportConfirmArea"></div>
     <div id="dmWipeArea">
-      <button type="button" class="pf-icon-btn pf-row-btn-danger" style="width:100%; padding:8px;" onclick="dmStartWipe()" data-i18n="backupWipeBtn">🗑️ 全データを削除</button>
+      <button type="button" class="pf-icon-btn pf-row-btn-danger" style="width:100%; padding:8px;" onclick="dmStartWipe()" data-i18n="backupWipeBtn">全データを削除</button>
     </div>
     <div id="dmStatus" class="pf-hint"></div>
     <button type="button" class="pf-close-btn" onclick="dmCloseModal()" data-i18n="pfCloseBtn">閉じる</button>
@@ -791,7 +791,7 @@
 
 <div class="pf-modal-overlay" id="dashModalOverlay" onclick="if(event.target===this) pfDashClose()">
   <div class="pf-modal-card">
-    <h3 data-i18n="dashModalTitle">🗓️ 今日・今週・今月</h3>
+    <h3 data-i18n="dashModalTitle">今日・今週・今月</h3>
     <div id="dashBody"><div class="pf-hint" data-i18n="dashLoading">読み込み中…</div></div>
     <button type="button" class="pf-close-btn" onclick="pfDashClose()" data-i18n="pfCloseBtn">閉じる</button>
   </div>
@@ -801,21 +801,21 @@
 
   <aside class="sidebar" id="sidebar">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-      <div class="sidebar-section-label" style="margin-bottom:0;" data-i18n="sidebarRelatedTools">🔗 関連ツール</div>
+      <div class="sidebar-section-label" style="margin-bottom:0;" data-i18n="sidebarRelatedTools">関連ツール</div>
       <button class="sidebar-close-btn" onclick="closeSidebarMobile()" data-i18n="sidebarClose">×</button>
     </div>
     <nav>
-      <a href="https://taipak5000.github.io/tai-item/" class="sidebar-nav-link" data-i18n="toolItem">📁 アイテム所持管理</a>
-      <a href="https://taipak5000.github.io/tai-emote/" class="sidebar-nav-link current-tool" data-i18n="toolEmote">🎭 エモート所持率管理</a>
-      <a href="https://taipak5000.github.io/share/" class="sidebar-nav-link" data-i18n="toolShare">📍 創作物管理ツール</a>
-      <a href="https://taipak5000.github.io/tai-nomacan/" class="sidebar-nav-link" data-i18n="toolNomacan">🕯️ ノマキャン計算機</a>
-      <a href="https://taipak5000.github.io/star-candle/" class="sidebar-nav-link" data-i18n="toolStarCandle">🕯️ 星のキャンドル計算機</a>
-      <a href="https://taipak5000.github.io/companion/" class="sidebar-nav-link" data-i18n="toolCompanion">✨ 精霊同行ツール</a>
-      <a href="https://taipak5000.github.io/wings/" class="sidebar-nav-link" data-i18n="toolWings">🪽 羽トラッカー</a>
-      <a href="https://taipak5000.github.io/tai-score/" class="sidebar-nav-link"><span class="tool-badge-test">test</span><span data-i18n="toolScore">🎵 楽譜づくり</span></a>
-      <a href="https://taipak5000.github.io/tai-transfer/" class="sidebar-nav-link" data-i18n="toolDataTransfer">🔄 データ引継ぎ</a>
-      <a href="https://taipak5000.github.io/tai-info/" class="sidebar-nav-link" data-i18n="toolInfo">⚙️ 設定・更新情報</a>
-      <a href="https://taipak5000.github.io/skyzztai-profile/" class="sidebar-nav-link" data-i18n="toolProfile">👤 作者プロフィール</a>
+      <a href="https://taipak5000.github.io/tai-item/" class="sidebar-nav-link" data-i18n="toolItem">アイテム所持管理</a>
+      <a href="https://taipak5000.github.io/tai-emote/" class="sidebar-nav-link current-tool" data-i18n="toolEmote">エモート所持率管理</a>
+      <a href="https://taipak5000.github.io/share/" class="sidebar-nav-link" data-i18n="toolShare">創作物管理ツール</a>
+      <a href="https://taipak5000.github.io/tai-nomacan/" class="sidebar-nav-link" data-i18n="toolNomacan">ノマキャン計算機</a>
+      <a href="https://taipak5000.github.io/star-candle/" class="sidebar-nav-link" data-i18n="toolStarCandle">星のキャンドル計算機</a>
+      <a href="https://taipak5000.github.io/companion/" class="sidebar-nav-link" data-i18n="toolCompanion">精霊同行ツール</a>
+      <a href="https://taipak5000.github.io/wings/" class="sidebar-nav-link" data-i18n="toolWings">羽トラッカー</a>
+      <a href="https://taipak5000.github.io/tai-score/" class="sidebar-nav-link"><span class="tool-badge-test">test</span><span data-i18n="toolScore">楽譜づくり</span></a>
+      <a href="https://taipak5000.github.io/tai-transfer/" class="sidebar-nav-link" data-i18n="toolDataTransfer">データ引継ぎ</a>
+      <a href="https://taipak5000.github.io/tai-info/" class="sidebar-nav-link" data-i18n="toolInfo">設定・更新情報</a>
+      <a href="https://taipak5000.github.io/skyzztai-profile/" class="sidebar-nav-link" data-i18n="toolProfile">作者プロフィール</a>
     </nav>
   </aside>
 
@@ -850,7 +850,7 @@
 
     <div class="titles-panel" id="titlesPanel">
       <div class="titles-panel-head">
-        <span class="sec-label" data-i18n="titlesSectionLabel">🏆 称号</span>
+        <span class="sec-label" data-i18n="titlesSectionLabel">称号</span>
         <span class="titles-count" id="titlesCount">0 / 0</span>
       </div>
       <div class="titles-chip-row" id="titlesChipRow"></div>
@@ -859,7 +859,7 @@
     <div class="control-panel">
       <div class="control-row">
         <span class="control-label" data-i18n="controlLabelSearch">名前検索</span>
-        <input type="text" class="select-box search-input" id="searchName" placeholder="🔍 エモート名で絞り込み..." oninput="renderList()" data-i18n-placeholder="searchPlaceholder">
+        <input type="text" class="select-box search-input" id="searchName" placeholder="エモート名で絞り込み..." oninput="renderList()" data-i18n-placeholder="searchPlaceholder">
       </div>
       <div class="control-row">
         <span class="control-label" data-i18n="controlLabelFilter">絞り込み</span>
@@ -880,16 +880,16 @@
         <span class="control-label" data-i18n="controlLabelGuide">種別</span>
         <select class="select-box" id="filterGuide" onchange="renderList()">
           <option value="all" data-i18n="filterGuideAll">すべての種別</option>
-          <option value="guideOnly" data-i18n="filterGuideOnly">🧭 案内人のみ</option>
+          <option value="guideOnly" data-i18n="filterGuideOnly">案内人のみ</option>
         </select>
       </div>
       <div class="control-row">
         <span class="control-label" data-i18n="controlLabelSource">入手方法</span>
         <select class="select-box" id="filterSource" onchange="renderList()">
           <option value="all" data-i18n="filterSourceAll">すべての入手方法</option>
-          <option value="spirit" data-i18n="filterSourceSpirit">🕯️ 精霊から入手</option>
-          <option value="guide" data-i18n="filterSourceGuide">🧭 案内人から入手</option>
-          <option value="default" data-i18n="filterSourceDefault">🎁 デフォルト所持</option>
+          <option value="spirit" data-i18n="filterSourceSpirit">精霊から入手</option>
+          <option value="guide" data-i18n="filterSourceGuide">案内人から入手</option>
+          <option value="default" data-i18n="filterSourceDefault">デフォルト所持</option>
         </select>
       </div>
       <div class="control-row">
@@ -901,7 +901,7 @@
         </select>
       </div>
       <div class="control-row control-reset-row">
-        <button type="button" class="clear-filters-btn" id="clearFiltersBtn" onclick="clearAllFilters()" data-i18n="clearFiltersBtn" data-i18n-title="clearFiltersBtnTitle">🧹 フィルターを全てクリア</button>
+        <button type="button" class="clear-filters-btn" id="clearFiltersBtn" onclick="clearAllFilters()" data-i18n="clearFiltersBtn" data-i18n-title="clearFiltersBtnTitle">フィルターを全てクリア</button>
       </div>
       <div class="control-row" id="bulkOwnRow" style="display:none;">
         <button type="button" class="bulk-own-btn" id="bulkOwnFilteredBtn" onclick="bulkOwnFiltered()"></button>
@@ -910,7 +910,7 @@
 
     <p class="sec-label" style="padding:22px 4px 8px;" data-i18n="shareSectionLabel">達成率をシェア</p>
     <button type="button" class="feature-btn twitter" onclick="shareOverallOnTwitter()">
-      <span class="feature-icon">📤🖼️</span>
+      <span class="feature-icon">📤</span>
       <span class="feature-label" data-i18n="shareTwitterBtn">Xで画像を共有</span>
       <span class="feature-desc" data-i18n="shareTwitterDesc">所持率を画像にしてXへ投稿できます（画像の保存も同時にできます）</span>
     </button>
@@ -939,8 +939,8 @@
         <option value="6" data-i18n="gridCols6">6列</option>
       </select>
       <div class="view-toggle">
-        <button type="button" class="view-toggle-btn" id="viewGridBtn" onclick="setViewMode('grid')" data-i18n="viewGridBtn">🔳 グリッド</button>
-        <button type="button" class="view-toggle-btn" id="viewListBtn" onclick="setViewMode('list')" data-i18n="viewListBtn">📋 リスト</button>
+        <button type="button" class="view-toggle-btn" id="viewGridBtn" onclick="setViewMode('grid')" data-i18n="viewGridBtn">グリッド</button>
+        <button type="button" class="view-toggle-btn" id="viewListBtn" onclick="setViewMode('list')" data-i18n="viewListBtn">リスト</button>
       </div>
     </div>
 
@@ -954,7 +954,7 @@
 <div class="modal-overlay" id="customizeModal" onclick="if(event.target===this)closeModal('customizeModal')">
   <div class="modal-card">
     <div class="modal-header">
-      <span class="modal-title" data-i18n="customizeModalTitle">🎨 画像をカスタマイズ</span>
+      <span class="modal-title" data-i18n="customizeModalTitle">画像をカスタマイズ</span>
       <button class="modal-close" onclick="closeModal('customizeModal')">✕</button>
     </div>
 
@@ -971,7 +971,7 @@
     <textarea id="customizeComment" class="customize-comment-input" maxlength="120" placeholder="例）プレイヤーネーム：〇〇（未入力の場合は通常の文言になります）" data-i18n-placeholder="customizeCommentPlaceholder"></textarea>
 
     <div class="action-row" style="margin-top:16px;">
-      <button class="action-btn twitter full" onclick="shareOverallOnTwitter(true)" data-i18n="customizeShareBtn">📤🖼️ この設定でXへ画像を共有</button>
+      <button class="action-btn twitter full" onclick="shareOverallOnTwitter(true)" data-i18n="customizeShareBtn">この設定でXへ画像を共有</button>
     </div>
   </div>
 </div>
@@ -980,22 +980,21 @@
 <div class="modal-overlay" id="imagePreviewModal" onclick="if(event.target===this)closeModal('imagePreviewModal')">
   <div class="modal-card">
     <div class="modal-header">
-      <span class="modal-title" id="previewModalTitle">🖼️ 画像を保存</span>
+      <span class="modal-title" id="previewModalTitle">画像を保存</span>
       <button class="modal-close" onclick="closeModal('imagePreviewModal')">✕</button>
     </div>
 
     <div class="hint" style="margin-top:0; display:flex; gap:8px; align-items:flex-start; font-size:12.5px; color:var(--text-2);">
-      <span>👆</span>
       <span id="previewHintText">画像を長押し（PCの場合は右クリック）して「画像を保存」を選んでください</span>
     </div>
 
     <img id="previewImg" class="preview-img" src="" alt="保存用の画像" data-i18n-alt="previewImgAlt" />
 
     <div class="action-row">
-      <a id="previewDownloadLink" class="action-btn primary full" href="" download="" data-i18n="previewDownloadBtn">⬇️ ダウンロード</a>
+      <a id="previewDownloadLink" class="action-btn primary full" href="" download="" data-i18n="previewDownloadBtn">ダウンロード</a>
     </div>
     <div class="action-row" id="previewTwitterRow" style="display:none;">
-      <a id="previewTwitterLink" class="action-btn twitter full" href="" target="_blank" rel="noopener noreferrer" data-i18n="previewTwitterBtn">📤 Xの投稿画面を開く</a>
+      <a id="previewTwitterLink" class="action-btn twitter full" href="" target="_blank" rel="noopener noreferrer" data-i18n="previewTwitterBtn">Xの投稿画面を開く</a>
     </div>
   </div>
 </div>
@@ -1004,12 +1003,11 @@
 <div class="modal-overlay" id="iconCustomModal" onclick="if(event.target===this)closeModal('iconCustomModal')">
   <div class="modal-card">
     <div class="modal-header">
-      <span class="modal-title" data-i18n="iconModalTitle">🎨 ホーム画面アイコンをカスタマイズ</span>
+      <span class="modal-title" data-i18n="iconModalTitle">ホーム画面アイコンをカスタマイズ</span>
       <button class="modal-close" onclick="closeModal('iconCustomModal')">✕</button>
     </div>
 
     <div class="hint" style="margin-top:0; display:flex; gap:8px; align-items:flex-start;">
-      <span>💡</span>
       <span data-i18n="iconInstructions">
         スマホの「ホーム画面に追加」をしたときのアイコンを、好きな絵文字や画像に変更できます。<br>
         <b>追加する前に</b>設定してください。追加した後に変更しても、既に追加済みのアイコンは自動更新されません（変更したい場合は一度削除して追加し直してください）。
@@ -1017,8 +1015,8 @@
     </div>
 
     <div style="display:flex; gap:8px; margin:16px 0 14px;">
-      <button type="button" class="action-btn" id="iconModeEmojiBtn" onclick="pfIconSetMode('emoji')" data-i18n="iconEmojiModeBtn">😀 絵文字</button>
-      <button type="button" class="action-btn" id="iconModeImageBtn" onclick="pfIconSetMode('image')" data-i18n="iconImageModeBtn">🖼️ 画像</button>
+      <button type="button" class="action-btn" id="iconModeEmojiBtn" onclick="pfIconSetMode('emoji')" data-i18n="iconEmojiModeBtn">絵文字</button>
+      <button type="button" class="action-btn" id="iconModeImageBtn" onclick="pfIconSetMode('image')" data-i18n="iconImageModeBtn">画像</button>
     </div>
 
     <div id="iconEmojiPanel">
@@ -1040,7 +1038,7 @@
         <button type="button" onclick="pfIconPickSwatch('#32ADE6')" style="width:32px; height:32px; border-radius:50%; background:#32ADE6; border:2px solid transparent;"></button>
         <button type="button" onclick="pfIconPickSwatch('#48484A')" style="width:32px; height:32px; border-radius:50%; background:#48484A; border:2px solid transparent;"></button>
       </div>
-      <p style="font-size:11.5px; color:var(--text-2); margin:0 0 6px;" data-i18n="iconFreeColorHint">🎨 タップして好きな色を自由に選ぶこともできます</p>
+      <p style="font-size:11.5px; color:var(--text-2); margin:0 0 6px;" data-i18n="iconFreeColorHint">タップして好きな色を自由に選ぶこともできます</p>
       <input type="color" id="iconBgColorInput" value="#FF9500" oninput="pfIconUpdatePreview()" style="width:100%; height:40px; border:none; border-radius:var(--r-sm); background:none;">
     </div>
 
@@ -1066,12 +1064,11 @@
 <div class="modal-overlay" id="acquireLogModal" onclick="if(event.target===this)closeModal('acquireLogModal')">
   <div class="modal-card">
     <div class="modal-header">
-      <span class="modal-title" data-i18n="acquireLogModalTitle">📅 入手履歴</span>
+      <span class="modal-title" data-i18n="acquireLogModalTitle">入手履歴</span>
       <button class="modal-close" onclick="closeModal('acquireLogModal')">✕</button>
     </div>
 
     <div class="hint" style="margin-top:0; display:flex; gap:8px; align-items:flex-start; font-size:12.5px; color:var(--text-2);">
-      <span>💡</span>
       <span data-i18n="acquireLogHint">所持レベルにチェックを入れた日時を自動で記録します。チェックを外すと記録も消えます。</span>
     </div>
 
@@ -1083,17 +1080,17 @@
 <div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeSettingsModal()">
   <div class="modal-card">
     <div class="modal-header">
-      <span class="modal-title" data-i18n="settingsModalTitle">⚙️ 表示設定</span>
+      <span class="modal-title" data-i18n="settingsModalTitle">表示設定</span>
       <button class="modal-close" onclick="closeSettingsModal()">✕</button>
     </div>
 
-    <div class="customize-section-label" style="margin-top:0;" data-i18n="settingsDisplaySectionLabel">🌙 表示</div>
+    <div class="customize-section-label" style="margin-top:0;" data-i18n="settingsDisplaySectionLabel">表示</div>
     <div class="settings-row">
       <span data-i18n="settingsDarkModeLabel">テーマ</span>
       <button type="button" class="action-btn secondary" id="settingsThemeToggleBtn" onclick="toggleTheme()"></button>
     </div>
 
-    <div class="customize-section-label" data-i18n="settingsShortcutsSectionLabel">⌨️ キーボードショートカット</div>
+    <div class="customize-section-label" data-i18n="settingsShortcutsSectionLabel">キーボードショートカット</div>
     <label class="customize-toggle-opt">
       <input type="checkbox" id="settingsShortcutsEnabled" onchange="onSettingsShortcutsToggle(this.checked)">
       <span data-i18n="settingsShortcutsEnableLabel">ショートカットを有効にする</span>
@@ -1105,10 +1102,10 @@
       <div class="settings-shortcut-row"><kbd class="settings-kbd">Esc</kbd><span data-i18n="settingsShortcutCloseModal">開いているウィンドウを閉じる</span></div>
     </div>
 
-    <div class="customize-section-label" data-i18n="settingsCustomizeSectionLabel">🎨 表示のカスタマイズ</div>
-    <button type="button" class="action-btn secondary full" onclick="closeSettingsModal(); openModal('iconCustomModal');" data-i18n="settingsCustomizeBtn">🎨 カスタマイズ</button>
+    <div class="customize-section-label" data-i18n="settingsCustomizeSectionLabel">表示のカスタマイズ</div>
+    <button type="button" class="action-btn secondary full" onclick="closeSettingsModal(); openModal('iconCustomModal');" data-i18n="settingsCustomizeBtn">カスタマイズ</button>
 
-    <div class="customize-section-label" data-i18n="settingsLangSectionLabel">🌐 言語 / Language</div>
+    <div class="customize-section-label" data-i18n="settingsLangSectionLabel">言語 / Language</div>
     <div class="action-row" style="margin-top:0;">
       <button type="button" class="action-btn" id="settingsLangJaBtn" onclick="setLang('ja')">日本語</button>
       <button type="button" class="action-btn" id="settingsLangEnBtn" onclick="setLang('en')">English</button>
@@ -1128,7 +1125,7 @@
     <a href="https://sky-children-of-the-light.fandom.com/wiki/Expressions" target="_blank" rel="noopener noreferrer" style="color: var(--blue);" data-i18n="footerWikiEmoteEn">Expressions (Sky Wiki 英語)</a>
   </span><br>
   <span style="color:var(--text-2); font-size:12px; margin-top:4px; display:inline-block;">
-    <a href="https://taipak5000.github.io/tai-info/" target="_blank" rel="noopener noreferrer" style="color: var(--blue);" data-i18n="footerInfoLink">⚙️ 設定・更新情報・クレジット・プライバシーポリシー</a>
+    <a href="https://taipak5000.github.io/tai-info/" target="_blank" rel="noopener noreferrer" style="color: var(--blue);" data-i18n="footerInfoLink">設定・更新情報・クレジット・プライバシーポリシー</a>
   </span>
 </footer>
 
@@ -1174,22 +1171,22 @@ const I18N = {
   ja: {
     navTitle: '🎭 エモート所持率管理',
     sidebarHamburger: '☰ ツール',
-    sidebarRelatedTools: '🔗 関連ツール',
+    sidebarRelatedTools: '関連ツール',
     sidebarClose: '×',
-    toolItem: '📁 アイテム所持管理',
-    toolEmote: '🎭 エモート所持率管理',
-    toolShare: '📍 創作物管理ツール',
-    toolNomacan: '🕯️ ノマキャン計算機',
-    toolStarCandle: '🕯️ 星のキャンドル計算機',
-    toolCompanion: '✨ 精霊同行ツール',
-    toolWings: '🪽 羽トラッカー',
-    toolDataTransfer: '🔄 データ引継ぎ',
-    toolInfo: '⚙️ 設定・更新情報',
-    toolProfile: '👤 作者プロフィール',
+    toolItem: 'アイテム所持管理',
+    toolEmote: 'エモート所持率管理',
+    toolShare: '創作物管理ツール',
+    toolNomacan: 'ノマキャン計算機',
+    toolStarCandle: '星のキャンドル計算機',
+    toolCompanion: '精霊同行ツール',
+    toolWings: '羽トラッカー',
+    toolDataTransfer: 'データ引継ぎ',
+    toolInfo: '設定・更新情報',
+    toolProfile: '作者プロフィール',
     // 🏆 プロフィール切替モーダルの称号一覧にのみ登場するツール名（サイドバーの
     // 関連ツール一覧には未掲載＝spirit-catalogはまだ非公開のため意図的にリンクしていない）
-    toolSpiritCatalog: '🌳 姉妹サイト',
-    toolScore: '🎵 楽譜づくり',
+    toolSpiritCatalog: '姉妹サイト',
+    toolScore: '楽譜づくり',
     langToggleBtn: 'EN',
 
     dockAriaLabel: 'クイックメニュー',
@@ -1209,21 +1206,21 @@ const I18N = {
     oneYearAgoBannerMultiTemplate: '🎉 {years}年前の今日、『{name}』を記録しました',
     oneYearAgoBannerCloseLabel: '閉じる',
 
-    titlesSectionLabel: '🏆 称号',
+    titlesSectionLabel: '称号',
     titlesCountTemplate: '{earned} / {total} 個解除',
     titleUnlockToastTemplate: '🏆 称号「{name}」を獲得！',
     titleUnlockToastMultiTemplate: '🏆 称号を{n}個獲得！ {names}',
     titleLockedName: '？？？',
     titleLockedHint: '称号は条件を満たすと明らかになります',
 
-    acquireLogModalTitle: '📅 入手履歴',
+    acquireLogModalTitle: '入手履歴',
     acquireLogHint: '所持レベルにチェックを入れた日時を自動で記録します。チェックを外すと記録も消えます。',
     acquireLogEmpty: 'まだ記録がありません。<br>エモートのレベルに所持チェックを入れると、ここに記録されます。',
     acquireLogCountTemplate: '記録件数：{n}件',
     acquireLogRemoveBtnLabel: '記録を削除',
 
     controlLabelSearch: '検索',
-    searchPlaceholder: '🔍 名前・精霊・エリアで絞り込み...',
+    searchPlaceholder: '名前・精霊・エリアで絞り込み...',
     controlLabelFilter: '絞り込み',
     filterStatusAll: 'すべての所持状態',
     filterStatusComplete: 'コンプリート済みのみ',
@@ -1233,17 +1230,17 @@ const I18N = {
     filterAreaAll: 'すべてのエリア',
     controlLabelGuide: '種別',
     filterGuideAll: 'すべての種別',
-    filterGuideOnly: '🧭 案内人のみ',
+    filterGuideOnly: '案内人のみ',
     controlLabelSource: '入手方法',
     filterSourceAll: 'すべての入手方法',
-    filterSourceSpirit: '🕯️ 精霊から入手',
-    filterSourceGuide: '🧭 案内人から入手',
-    filterSourceDefault: '🎁 デフォルト所持',
+    filterSourceSpirit: '精霊から入手',
+    filterSourceGuide: '案内人から入手',
+    filterSourceDefault: 'デフォルト所持',
     controlLabelSort: '並び替え',
     sortDefault: '既定の順番',
     sortPctDesc: '所持率が高い順',
     sortPctAsc: '所持率が低い順',
-    clearFiltersBtn: '🧹 フィルターを全てクリア',
+    clearFiltersBtn: 'フィルターを全てクリア',
     clearFiltersBtnTitle: '名前検索・絞り込み・並び替えをすべて既定の状態に戻します',
     bulkOwnFilteredBtnTemplate: '✅ 絞り込み結果（{n}件）を全部所持にする',
     bulkOwnFilteredBtnTitle: '検索・絞り込みで表示されているエモートを、すべて全レベル所持済みにします',
@@ -1253,11 +1250,11 @@ const I18N = {
     recentBadgeTitleTemplate: '{date} に入手',
 
     shareSectionLabel: '達成率をシェア',
-    shareTwitterBtn: '📤🖼️ Xで画像を共有',
+    shareTwitterBtn: 'Xで画像を共有',
     shareTwitterDesc: '所持率を画像にしてXへ投稿できます（画像の保存も同時にできます）',
-    shareCustomizeBtn: '🎨 カスタマイズして共有',
+    shareCustomizeBtn: 'カスタマイズして共有',
     shareCustomizeDesc: '背景テーマ・コメントを自分好みに設定してから保存/共有できます',
-    acquireLogFeatureBtn: '📅 入手履歴',
+    acquireLogFeatureBtn: '入手履歴',
     acquireLogFeatureDesc: '所持チェックを入れた日時の一覧を確認できます',
 
     listSectionLabel: 'エモート一覧',
@@ -1269,8 +1266,8 @@ const I18N = {
     gridCols4: '4列',
     gridCols5: '5列',
     gridCols6: '6列',
-    viewGridBtn: '🔳 グリッド',
-    viewListBtn: '📋 リスト',
+    viewGridBtn: 'グリッド',
+    viewListBtn: 'リスト',
     emptyMessage: '条件に一致するエモートがありません。',
     emoteLevelCountTemplate: '{owned} / {total} レベル所持',
     emoteCompleteLabel: '✓ コンプリート',
@@ -1281,11 +1278,11 @@ const I18N = {
 
     genericCancel: 'キャンセル',
     pfCloseBtn: '閉じる',
-    pfModalTitle: '🗂️ プロフィール（保存枠）',
+    pfModalTitle: 'プロフィール（保存枠）',
     pfNewNamePlaceholder: '例: サブ垢1',
     pfAddBtn: '追加',
     pfSwitchHint: 'プロフィールを切り替えると、エモートの所持状況が切り替え先のプロフィールのものに入れ替わります（このブラウザ内にすべて保存されます）。',
-    pfBackupOpenBtn: '💾 データのバックアップ・復元・削除',
+    pfBackupOpenBtn: 'データのバックアップ・復元・削除',
     pfBarActiveSuffix: 'に切替中（タップで切替）',
     pfDashBtnTitle: '今日・今週・今月ダッシュボード',
     pfAccountColorTitle: 'アカウントカラー',
@@ -1301,7 +1298,7 @@ const I18N = {
     pfTitlesToggleTemplate: '🏆 {n}個の称号',
     pfTitlesEmpty: 'まだ称号がありません。各ツールで実績を解除すると、ここに表示されます。',
 
-    currencySectionLabel: '💰 所持通貨',
+    currencySectionLabel: '所持通貨',
     currencyToggleOpen: '開く ▼',
     currencyToggleClose: '閉じる ▲',
     currencyCandle: 'キャンドル',
@@ -1310,7 +1307,7 @@ const I18N = {
     currencySeasonCandle: 'シーズンキャンドル',
     currencyGiftPass: 'ギフトパス',
 
-    dashModalTitle: '🗓️ 今日・今週・今月',
+    dashModalTitle: '今日・今週・今月',
     dashLoading: '読み込み中…',
     dashLoadFailed: '読み込みに失敗しました',
     dashSectionDaily: 'デイリー',
@@ -1354,11 +1351,11 @@ const I18N = {
     realmWasteland: '捨てられた地',
     realmVault: '書庫',
 
-    backupModalTitle: '💾 データのバックアップ・復元・削除',
+    backupModalTitle: 'データのバックアップ・復元・削除',
     backupHint: 'このブラウザに保存されている taipak5000.github.io 系ツール（item・wings・companion 等）のデータをまとめて書き出し・読み込み・削除できます。全プロフィール分がまとめて対象になります。',
-    backupExportBtn: '⬇️ データをエクスポート（ファイルに保存）',
-    backupImportBtn: '⬆️ ファイルからインポート',
-    backupWipeBtn: '🗑️ 全データを削除',
+    backupExportBtn: 'データをエクスポート（ファイルに保存）',
+    backupImportBtn: 'ファイルからインポート',
+    backupWipeBtn: '全データを削除',
     backupExportSuccessTemplate: '書き出しました（{n}件のキー）。',
     backupImportFileReadError: 'ファイルの読み込みに失敗しました（JSON形式ではありません）。',
     backupImportFileInvalid: 'このツールで書き出したファイルではないようです。',
@@ -1369,54 +1366,54 @@ const I18N = {
     backupWipeExecuteBtn: '完全に削除する',
     backupWipeSuccess: '削除しました。ページを再読み込みします…',
 
-    iconModalTitle: '🎨 ホーム画面アイコンをカスタマイズ',
+    iconModalTitle: 'ホーム画面アイコンをカスタマイズ',
     iconInstructions: 'スマホの「ホーム画面に追加」をしたときのアイコンを、好きな絵文字や画像に変更できます。<br><b>追加する前に</b>設定してください。追加した後に変更しても、既に追加済みのアイコンは自動更新されません（変更したい場合は一度削除して追加し直してください）。',
-    iconEmojiModeBtn: '😀 絵文字',
-    iconImageModeBtn: '🖼️ 画像',
+    iconEmojiModeBtn: '絵文字',
+    iconImageModeBtn: '画像',
     iconEmojiLabel: '絵文字',
     iconBgColorLabel: '背景色',
-    iconFreeColorHint: '🎨 タップして好きな色を自由に選ぶこともできます',
+    iconFreeColorHint: 'タップして好きな色を自由に選ぶこともできます',
     iconUploadImageLabel: '画像をアップロード',
     iconPreviewLabel: 'プレビュー',
     iconResetBtn: 'デフォルトに戻す',
     iconSaveBtn: '保存して適用',
     iconSaveStatusSelectImage: '画像を選択してください',
     iconSaveStatusFailed: '保存に失敗しました(容量オーバーの可能性があります)',
-    iconSaveStatusSuccess: '✅ 保存しました。これでホーム画面に追加すると反映されます',
+    iconSaveStatusSuccess: '保存しました。これでホーム画面に追加すると反映されます',
     iconSaveStatusReset: 'デフォルトのアイコンに戻しました',
 
-    settingsModalTitle: '⚙️ 表示設定',
-    settingsDisplaySectionLabel: '🌙 表示',
+    settingsModalTitle: '表示設定',
+    settingsDisplaySectionLabel: '表示',
     settingsDarkModeLabel: 'テーマ',
-    settingsThemeToggleToDark: '🌙 ダーク',
-    settingsThemeToggleToLight: '☀️ ライト',
-    settingsThemeToggleToSystem: '🖥️ システム',
+    settingsThemeToggleToDark: 'ダーク',
+    settingsThemeToggleToLight: 'ライト',
+    settingsThemeToggleToSystem: 'システム',
     settingsThemeAriaLight: '現在のテーマ: ライト（クリックでダークに切り替え）',
     settingsThemeAriaDark: '現在のテーマ: ダーク（クリックでシステムに従うへ切り替え）',
     settingsThemeAriaSystem: '現在のテーマ: システムに従う（クリックでライトに切り替え）',
-    settingsLangSectionLabel: '🌐 言語 / Language',
-    settingsShortcutsSectionLabel: '⌨️ キーボードショートカット',
+    settingsLangSectionLabel: '言語 / Language',
+    settingsShortcutsSectionLabel: 'キーボードショートカット',
     settingsShortcutsEnableLabel: 'ショートカットを有効にする',
     settingsShortcutOpenSettings: 'この設定を開く',
     settingsShortcutToggleDark: 'テーマ切替（ライト/ダーク/システム）',
     settingsShortcutCloseModal: '開いているウィンドウを閉じる',
-    settingsCustomizeSectionLabel: '🎨 表示のカスタマイズ',
-    settingsCustomizeBtn: '🎨 カスタマイズ',
+    settingsCustomizeSectionLabel: '表示のカスタマイズ',
+    settingsCustomizeBtn: 'カスタマイズ',
 
-    customizeModalTitle: '🎨 画像をカスタマイズ',
+    customizeModalTitle: '画像をカスタマイズ',
     customizeThemeLabel: '背景テーマ',
     customizeDisplayOptionsLabel: '表示オプション',
     customizeShowIconsLabel: '所持しているエモートのアイコン一覧を載せる',
     customizeCommentLabel: 'コメント（任意）',
     customizeCommentPlaceholder: '例）プレイヤーネーム：〇〇（未入力の場合は通常の文言になります）',
-    customizeShareBtn: '📤🖼️ この設定でXへ画像を共有',
+    customizeShareBtn: 'この設定でXへ画像を共有',
 
-    previewModalTitleSave: '🖼️ 画像を保存',
-    previewModalTitleSaveShare: '🖼️ 画像を保存してXへ投稿',
+    previewModalTitleSave: '画像を保存',
+    previewModalTitleSaveShare: '画像を保存してXへ投稿',
     previewHintSave: '画像を長押し（PCの場合は右クリック）して「画像を保存」を選んでください',
     previewHintSaveShare: '① 下の「ダウンロード」で画像を保存 → ② 「Xの投稿画面を開く」を押して、保存した画像を添付して投稿してください',
-    previewDownloadBtn: '⬇️ ダウンロード',
-    previewTwitterBtn: '📤 Xの投稿画面を開く',
+    previewDownloadBtn: 'ダウンロード',
+    previewTwitterBtn: 'Xの投稿画面を開く',
     previewImgAlt: '保存用の画像',
 
     footerDisclaimer: 'このサイトはSky 星を紡ぐ子どもたちの非公式ファンサイトです。thatgamecompanyは一切関与していません。',
@@ -1425,7 +1422,7 @@ const I18N = {
     footerRefImageLabel: '参考・画像引用元:',
     footerWikiEmoteJa: '感情表現 (Sky Wiki 日本語)',
     footerWikiEmoteEn: 'Expressions (Sky Wiki 英語)',
-    footerInfoLink: '⚙️ 設定・更新情報・クレジット・プライバシーポリシー',
+    footerInfoLink: '設定・更新情報・クレジット・プライバシーポリシー',
 
     imageGenerating: '画像を生成中…',
     imageSavedToast: '画像を保存しました！',
@@ -1451,20 +1448,20 @@ const I18N = {
   en: {
     navTitle: '🎭 Emote Collection',
     sidebarHamburger: '☰ Tools',
-    sidebarRelatedTools: '🔗 Related Tools',
+    sidebarRelatedTools: 'Related Tools',
     sidebarClose: '×',
-    toolItem: '📁 Item Collection',
-    toolEmote: '🎭 Emote Collection',
-    toolShare: '📍 Creation Manager',
-    toolNomacan: '🕯️ Nomacan Calculator',
-    toolStarCandle: '🕯️ Star Candle Calculator',
-    toolCompanion: '✨ Spirit Companion Tool',
-    toolWings: '🪽 Wing Tracker',
-    toolDataTransfer: '🔄 Data Transfer',
-    toolInfo: '⚙️ Settings & Updates',
-    toolProfile: '👤 Creator Profile',
-    toolSpiritCatalog: '🌳 Sibling Site',
-    toolScore: '🎵 Sheet Music Maker',
+    toolItem: 'Item Collection',
+    toolEmote: 'Emote Collection',
+    toolShare: 'Creation Manager',
+    toolNomacan: 'Nomacan Calculator',
+    toolStarCandle: 'Star Candle Calculator',
+    toolCompanion: 'Spirit Companion Tool',
+    toolWings: 'Wing Tracker',
+    toolDataTransfer: 'Data Transfer',
+    toolInfo: 'Settings & Updates',
+    toolProfile: 'Creator Profile',
+    toolSpiritCatalog: 'Sibling Site',
+    toolScore: 'Sheet Music Maker',
     langToggleBtn: '日本語',
 
     dockAriaLabel: 'Quick menu',
@@ -1484,21 +1481,21 @@ const I18N = {
     oneYearAgoBannerMultiTemplate: '🎉 You logged “{name}” exactly {years} years ago today',
     oneYearAgoBannerCloseLabel: 'Dismiss',
 
-    titlesSectionLabel: '🏆 Titles',
+    titlesSectionLabel: 'Titles',
     titlesCountTemplate: '{earned} / {total} unlocked',
     titleUnlockToastTemplate: '🏆 Title unlocked: {name}!',
     titleUnlockToastMultiTemplate: '🏆 {n} titles unlocked! {names}',
     titleLockedName: '？？？',
     titleLockedHint: 'Unlocks when you meet its condition',
 
-    acquireLogModalTitle: '📅 Acquisition History',
+    acquireLogModalTitle: 'Acquisition History',
     acquireLogHint: 'Records the date and time you checked off each level as owned. Unchecking a level removes its record.',
     acquireLogEmpty: 'No records yet.<br>Checking off an emote level as owned will add it here.',
     acquireLogCountTemplate: '{n} record(s)',
     acquireLogRemoveBtnLabel: 'Delete record',
 
     controlLabelSearch: 'Search',
-    searchPlaceholder: '🔍 Filter by name, spirit, or area...',
+    searchPlaceholder: 'Filter by name, spirit, or area...',
     controlLabelFilter: 'Filter',
     filterStatusAll: 'All ownership status',
     filterStatusComplete: 'Complete only',
@@ -1508,17 +1505,17 @@ const I18N = {
     filterAreaAll: 'All areas',
     controlLabelGuide: 'Type',
     filterGuideAll: 'All types',
-    filterGuideOnly: '🧭 Guide only',
+    filterGuideOnly: 'Guide only',
     controlLabelSource: 'Source',
     filterSourceAll: 'All acquisition methods',
-    filterSourceSpirit: '🕯️ From a Spirit',
-    filterSourceGuide: '🧭 From a Season Guide',
-    filterSourceDefault: '🎁 Default (no spirit)',
+    filterSourceSpirit: 'From a Spirit',
+    filterSourceGuide: 'From a Season Guide',
+    filterSourceDefault: 'Default (no spirit)',
     controlLabelSort: 'Sort',
     sortDefault: 'Default order',
     sortPctDesc: 'Highest completion first',
     sortPctAsc: 'Lowest completion first',
-    clearFiltersBtn: '🧹 Clear all filters',
+    clearFiltersBtn: 'Clear all filters',
     clearFiltersBtnTitle: 'Resets the name search, filters, and sort order back to their defaults',
     bulkOwnFilteredBtnTemplate: '✅ Mark all {n} filtered emotes as owned',
     bulkOwnFilteredBtnTitle: 'Marks every level of every emote currently shown by the search/filter as owned.',
@@ -1528,11 +1525,11 @@ const I18N = {
     recentBadgeTitleTemplate: 'Acquired {date}',
 
     shareSectionLabel: 'Share your completion rate',
-    shareTwitterBtn: '📤🖼️ Share image on X',
+    shareTwitterBtn: 'Share image on X',
     shareTwitterDesc: 'Turn your completion rate into an image and post it to X (the image is saved automatically too)',
-    shareCustomizeBtn: '🎨 Customize & share',
+    shareCustomizeBtn: 'Customize & share',
     shareCustomizeDesc: 'Set your own background theme and comment before saving or sharing',
-    acquireLogFeatureBtn: '📅 Acquisition Log',
+    acquireLogFeatureBtn: 'Acquisition Log',
     acquireLogFeatureDesc: 'See a timeline of when you checked off each level as owned',
 
     listSectionLabel: 'Emote List',
@@ -1544,8 +1541,8 @@ const I18N = {
     gridCols4: '4 columns',
     gridCols5: '5 columns',
     gridCols6: '6 columns',
-    viewGridBtn: '🔳 Grid',
-    viewListBtn: '📋 List',
+    viewGridBtn: 'Grid',
+    viewListBtn: 'List',
     emptyMessage: 'No emotes match the current filter.',
     emoteLevelCountTemplate: '{owned} / {total} levels owned',
     emoteCompleteLabel: '✓ Complete',
@@ -1556,7 +1553,7 @@ const I18N = {
 
     genericCancel: 'Cancel',
     pfCloseBtn: 'Close',
-    pfModalTitle: '🗂️ Profiles',
+    pfModalTitle: 'Profiles',
     pfNewNamePlaceholder: 'e.g. Sub Account 1',
     pfAddBtn: 'Add',
     pfSwitchHint: 'Switching profiles swaps your owned-emote records to the selected profile\'s data (everything is stored locally in this browser).',
@@ -1575,7 +1572,7 @@ const I18N = {
     pfTitlesToggleTemplate: '🏆 {n} title(s)',
     pfTitlesEmpty: 'No titles yet. Unlock achievements in any of the tools to see them here.',
 
-    currencySectionLabel: '💰 Owned Currency',
+    currencySectionLabel: 'Owned Currency',
     currencyToggleOpen: 'Open ▼',
     currencyToggleClose: 'Close ▲',
     currencyCandle: 'Candles',
@@ -1584,7 +1581,7 @@ const I18N = {
     currencySeasonCandle: 'Season Candles',
     currencyGiftPass: 'Gift Pass',
 
-    dashModalTitle: '🗓️ Today / This Week / This Month',
+    dashModalTitle: 'Today / This Week / This Month',
     dashLoading: 'Loading…',
     dashLoadFailed: 'Failed to load',
     dashSectionDaily: 'Daily',
@@ -1628,11 +1625,11 @@ const I18N = {
     realmWasteland: 'Wasteland',
     realmVault: 'Vault',
 
-    backupModalTitle: '💾 Backup / Restore / Erase Data',
+    backupModalTitle: 'Backup / Restore / Erase Data',
     backupHint: 'Back up, restore, or erase all locally-stored data for the taipak5000.github.io tool suite (item, wings, companion, etc.) at once. This covers all profiles together.',
-    backupExportBtn: '⬇️ Export data (save to file)',
-    backupImportBtn: '⬆️ Import from file',
-    backupWipeBtn: '🗑️ Erase all data',
+    backupExportBtn: 'Export data (save to file)',
+    backupImportBtn: 'Import from file',
+    backupWipeBtn: 'Erase all data',
     backupExportSuccessTemplate: 'Exported ({n} keys).',
     backupImportFileReadError: 'Failed to read file (not valid JSON).',
     backupImportFileInvalid: 'This doesn\'t look like a file exported from this tool.',
@@ -1643,54 +1640,54 @@ const I18N = {
     backupWipeExecuteBtn: 'Erase everything',
     backupWipeSuccess: 'Erased. Reloading…',
 
-    iconModalTitle: '🎨 Customize Home Screen Icon',
+    iconModalTitle: 'Customize Home Screen Icon',
     iconInstructions: 'You can change the icon used when adding this site to your phone\'s home screen. Set this up before adding it — changing it afterward won\'t update an icon that\'s already been added (remove and re-add it if you want to change it later).',
-    iconEmojiModeBtn: '😀 Emoji',
-    iconImageModeBtn: '🖼️ Image',
+    iconEmojiModeBtn: 'Emoji',
+    iconImageModeBtn: 'Image',
     iconEmojiLabel: 'Emoji',
     iconBgColorLabel: 'Background Color',
-    iconFreeColorHint: '🎨 Or tap below to pick any color freely',
+    iconFreeColorHint: 'Or tap below to pick any color freely',
     iconUploadImageLabel: 'Upload Image',
     iconPreviewLabel: 'Preview',
     iconResetBtn: 'Reset to Default',
     iconSaveBtn: 'Save & Apply',
     iconSaveStatusSelectImage: 'Please select an image',
     iconSaveStatusFailed: 'Failed to save (storage may be full)',
-    iconSaveStatusSuccess: '✅ Saved. This will apply the next time you add this to your home screen',
+    iconSaveStatusSuccess: 'Saved. This will apply the next time you add this to your home screen',
     iconSaveStatusReset: 'Reset to the default icon',
 
-    settingsModalTitle: '⚙️ Display Settings',
-    settingsDisplaySectionLabel: '🌙 Display',
+    settingsModalTitle: 'Display Settings',
+    settingsDisplaySectionLabel: 'Display',
     settingsDarkModeLabel: 'Theme',
-    settingsThemeToggleToDark: '🌙 Dark',
-    settingsThemeToggleToLight: '☀️ Light',
-    settingsThemeToggleToSystem: '🖥️ System',
+    settingsThemeToggleToDark: 'Dark',
+    settingsThemeToggleToLight: 'Light',
+    settingsThemeToggleToSystem: 'System',
     settingsThemeAriaLight: 'Current theme: Light (click to switch to Dark)',
     settingsThemeAriaDark: 'Current theme: Dark (click to switch to Follow System)',
     settingsThemeAriaSystem: 'Current theme: Follow System (click to switch to Light)',
-    settingsLangSectionLabel: '🌐 Language',
-    settingsShortcutsSectionLabel: '⌨️ Keyboard Shortcuts',
+    settingsLangSectionLabel: 'Language',
+    settingsShortcutsSectionLabel: 'Keyboard Shortcuts',
     settingsShortcutsEnableLabel: 'Enable keyboard shortcuts',
     settingsShortcutOpenSettings: 'Open this settings panel',
     settingsShortcutToggleDark: 'Cycle theme (Light/Dark/System)',
     settingsShortcutCloseModal: 'Close the open window',
-    settingsCustomizeSectionLabel: '🎨 Customize Appearance',
-    settingsCustomizeBtn: '🎨 Customize',
+    settingsCustomizeSectionLabel: 'Customize Appearance',
+    settingsCustomizeBtn: 'Customize',
 
-    customizeModalTitle: '🎨 Customize Image',
+    customizeModalTitle: 'Customize Image',
     customizeThemeLabel: 'Background Theme',
     customizeDisplayOptionsLabel: 'Display Options',
     customizeShowIconsLabel: 'Include a grid of your owned emote icons',
     customizeCommentLabel: 'Comment (optional)',
     customizeCommentPlaceholder: 'e.g. Player name: XX (leave blank to use the default text)',
-    customizeShareBtn: '📤🖼️ Share image on X with these settings',
+    customizeShareBtn: 'Share image on X with these settings',
 
-    previewModalTitleSave: '🖼️ Save Image',
-    previewModalTitleSaveShare: '🖼️ Save Image & Post to X',
+    previewModalTitleSave: 'Save Image',
+    previewModalTitleSaveShare: 'Save Image & Post to X',
     previewHintSave: 'Press and hold the image (or right-click on PC) and choose "Save Image"',
     previewHintSaveShare: '① Save the image with "Download" below → ② Tap "Open X post screen" and attach the saved image to your post',
-    previewDownloadBtn: '⬇️ Download',
-    previewTwitterBtn: '📤 Open X post screen',
+    previewDownloadBtn: 'Download',
+    previewTwitterBtn: 'Open X post screen',
     previewImgAlt: 'Image to save',
 
     footerDisclaimer: 'This is an unofficial fan site for Sky: Children of the Light. thatgamecompany is not involved in any way.',
@@ -1699,7 +1696,7 @@ const I18N = {
     footerRefImageLabel: 'References / image credits:',
     footerWikiEmoteJa: 'Expressions (Sky Wiki Japanese)',
     footerWikiEmoteEn: 'Expressions (Sky Wiki English)',
-    footerInfoLink: '⚙️ Settings / What\'s New / Credits / Privacy Policy',
+    footerInfoLink: 'Settings / What\'s New / Credits / Privacy Policy',
 
     imageGenerating: 'Generating image…',
     imageSavedToast: 'Image saved!',
@@ -2229,7 +2226,7 @@ function pfRenderBar() {
   const bar = document.getElementById('pfBar');
   if (bar) {
     bar.innerHTML = `
-      <span class="pf-bar-text" onclick="pfOpenModal()">🗂️ <b>${escapeHtml(pfDisplayName(profile))}</b> ${t('pfBarActiveSuffix')}</span>
+      <span class="pf-bar-text" onclick="pfOpenModal()"><b>${escapeHtml(pfDisplayName(profile))}</b> ${t('pfBarActiveSuffix')}</span>
       <button type="button" class="pf-dash-btn" onclick="pfDashOpen()" title="${escapeAttr(t('pfDashBtnTitle'))}">🗓️</button>`;
   }
   // 🧭 画面下部ドックの「プロフィール」ボタンにも、現在アクティブなプロフィール名を表示する
@@ -2675,7 +2672,7 @@ function pfRenderModal() {
       <div class="pf-row ${isActive ? 'active' : ''}" style="flex-wrap: wrap;">
         <input type="color" class="pf-color-input" value="${colorVal}" title="${escapeAttr(t('pfAccountColorTitle'))}"
           onchange="pfSetProfileColor('${p.id}', this.value)">
-        <span class="pf-row-name" onclick="switchProfile('${p.id}')">${isActive ? '✅ ' : ''}${escapeHtml(pfDisplayName(p))}</span>
+        <span class="pf-row-name" onclick="switchProfile('${p.id}')">${escapeHtml(pfDisplayName(p))}</span>
         ${p.color ? `<button type="button" class="pf-icon-btn pf-color-clear-btn" title="${escapeAttr(t('pfResetColorTitle'))}" onclick="pfClearProfileColor('${p.id}')">↺</button>` : ''}
         <button type="button" class="pf-icon-btn" title="${escapeAttr(t('pfRenameTitle'))}" onclick="pfStartRename('${p.id}')">✏️</button>
         ${list.length > 1 ? `<button type="button" class="pf-icon-btn" title="${escapeAttr(t('pfDeleteBtn'))}" onclick="pfStartDelete('${p.id}')">🗑️</button>` : ''}
