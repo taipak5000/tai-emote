@@ -125,14 +125,6 @@
     /* サイドバー内の<nav>はリンクを縦積みにする（上のセレクタが波及しないよう明示的に指定） */
     .sidebar nav { display: flex; flex-direction: column; }
     .nav-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
-    .sidebar-toggle-btn {
-      background: var(--card); border: 1px solid var(--sep); border-radius: var(--r-sm);
-      padding: 6px 12px; font-size: 13px; font-weight: 600; color: var(--text);
-    }
-    /* 🖥️ デスクトップレイアウト統一: 下部ドックの「他のツール」ボタンと同じ関連ツール
-       オーバーレイを開くだけのこのヘッダー側ボタンは、ドックが常時表示される850px以上の
-       幅では重複導線になるため非表示にする（wings/data-transfer/tai-info等と同じ基準）。 */
-    @media (min-width: 850px) { .sidebar-toggle-btn { visibility: hidden; } }
     .nav-right { display: flex; align-items: center; gap: 8px; }
     .lang-toggle-btn {
       background: var(--card); border: 1px solid var(--sep); border-radius: var(--r-sm);
@@ -538,7 +530,6 @@
     .empty-message { text-align: center; padding: 40px; color: var(--text-2); font-size: 14px; background: var(--card); border-radius: var(--r); }
 
     /* ── 達成率シェア（アイテム所持率管理と同じ仕組み） ─────── */
-    .feature-row { display: flex; gap: 10px; flex-wrap: wrap; }
     .feature-btn {
       flex: 1; min-width: 140px; width: 100%; box-sizing: border-box;
       background: var(--card); border-radius: var(--r);
@@ -1170,7 +1161,6 @@ function L(obj) {
 const I18N = {
   ja: {
     navTitle: '🎭 エモート所持率管理',
-    sidebarHamburger: '☰ ツール',
     sidebarRelatedTools: '関連ツール',
     sidebarClose: '×',
     toolItem: 'アイテム所持管理',
@@ -1276,7 +1266,6 @@ const I18N = {
     ownAllUndoBtn: '↺ 所持解除',
     ownAllUndoBtnTitle: 'このエモートの所持レベルをすべて解除する',
 
-    genericCancel: 'キャンセル',
     pfCloseBtn: '閉じる',
     pfModalTitle: 'プロフィール（保存枠）',
     pfNewNamePlaceholder: '例: サブ垢1',
@@ -1319,7 +1308,6 @@ const I18N = {
     dashNoShardToday: '本日は闇の破片の出現はありません',
     dashRedShard: '赤闇',
     dashBlackShard: '黒闇',
-    dashShardErupts: 'が出現',
     dashShardLineTemplate: '{color}（<b>{realm}・{location}</b>）が出現：',
     dashGrandCandle: '大キャンドル',
     dashChangesIn: '次の変更まで',
@@ -1449,7 +1437,6 @@ const I18N = {
   },
   en: {
     navTitle: '🎭 Emote Collection',
-    sidebarHamburger: '☰ Tools',
     sidebarRelatedTools: 'Related Tools',
     sidebarClose: '×',
     toolItem: 'Item Collection',
@@ -1553,7 +1540,6 @@ const I18N = {
     ownAllUndoBtn: '↺ Clear',
     ownAllUndoBtnTitle: 'Clear all owned levels for this emote',
 
-    genericCancel: 'Cancel',
     pfCloseBtn: 'Close',
     pfModalTitle: 'Profiles',
     pfNewNamePlaceholder: 'e.g. Sub Account 1',
@@ -1595,7 +1581,6 @@ const I18N = {
     dashNoShardToday: 'No shard eruptions today',
     dashRedShard: 'Red Shard',
     dashBlackShard: 'Black Shard',
-    dashShardErupts: ' erupts',
     dashShardLineTemplate: '{color} (<b>{realm} · {location}</b>) erupts: ',
     dashGrandCandle: 'Grand Candle',
     dashChangesIn: 'Changes in',
@@ -1799,9 +1784,6 @@ function currentThemeMode() {
 }
 function applyThemeToDOM(isDark) {
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-}
-function isDarkMode() {
-  return document.documentElement.getAttribute('data-theme') === 'dark';
 }
 // ライト → ダーク → システム追従 → ライト … の順で切り替える
 function toggleTheme() {
