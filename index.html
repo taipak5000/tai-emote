@@ -749,10 +749,8 @@
       animation: none;
       transition: transform 0.32s cubic-bezier(0.25, 1, 0.5, 1);
     }
-    @media (max-width: 849px) {
-      .pf-modal-overlay.open .pf-modal-card, .modal-overlay.open .modal-card {
-        animation: sheetSlideUp 0.32s cubic-bezier(0.25, 1, 0.5, 1);
-      }
+    .pf-modal-overlay.open .pf-modal-card, .modal-overlay.open .modal-card {
+      animation: sheetSlideUp 0.32s cubic-bezier(0.25, 1, 0.5, 1);
     }
     .pf-modal-card.is-dragging, .modal-card.is-dragging,
     .pf-modal-card.js-anim, .modal-card.js-anim { transition: none; animation: none; cursor: grabbing; user-select: none; }
@@ -761,17 +759,6 @@
       width: 36px; height: 5px; border-radius: 3px; background: rgba(60, 60, 67, 0.3);
     }
     [data-theme="dark"] .pf-modal-card::before, [data-theme="dark"] .modal-card::before { background: rgba(235, 235, 245, 0.3); }
-    @media (min-width: 850px) {
-      .pf-modal-overlay, .modal-overlay { align-items: center; padding: 24px; background: rgba(0, 0, 0, 0.45); }
-      .pf-modal-overlay.open, .modal-overlay.open { animation: iosFade 0.25s cubic-bezier(0.25, 1, 0.5, 1); }
-      .pf-modal-card, .modal-card {
-        max-width: 440px; border-radius: 18px; max-height: 84vh;
-        touch-action: auto; will-change: auto;
-        animation: iosSheetIn 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-      }
-      .pf-modal-card::before, .modal-card::before { display: none; }
-    }
-    @keyframes iosSheetIn { from { opacity: 0; transform: scale(0.94) translateY(8px); filter: blur(6px); } to { opacity: 1; transform: none; filter: blur(0); } }
     @keyframes iosFade { from { opacity: 0; } to { opacity: 1; } }
     @keyframes sheetSlideUp { from { transform: translate3d(0, 100%, 0); } to { transform: translate3d(0, 0, 0); } }
 
@@ -4345,7 +4332,6 @@ document.addEventListener('DOMContentLoaded', () => {
   var OPEN_CLASS = 'open';
   var OVERLAY_SEL = '.pf-modal-overlay, .modal-overlay';
   var CARD_SEL = '.pf-modal-card, .modal-card';
-  var MOBILE = window.matchMedia('(max-width: 849px)');
   var REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)');
   var sheets = {};
   var active = null;
@@ -4439,7 +4425,7 @@ document.addEventListener('DOMContentLoaded', () => {
     s.y = 0; s.v = 0;
   }
   function onVisibilityChange(overlay, visible) {
-    if (!MOBILE.matches || REDUCE_MOTION.matches) return;
+    if (REDUCE_MOTION.matches) return;
     var s = stateFor(overlay);
     if (!s.card) return;
     if (s.dragging) return;
@@ -4482,7 +4468,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return !!(el && el.closest && el.closest('input, select, textarea, button, a, label, [contenteditable], [role="button"], input[type="range"]'));
   }
   document.addEventListener('pointerdown', function (e) {
-    if (!MOBILE.matches || REDUCE_MOTION.matches) return;
+    if (REDUCE_MOTION.matches) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     var card = e.target && e.target.closest ? e.target.closest(CARD_SEL) : null;
     if (!card) return;
@@ -4538,17 +4524,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   document.addEventListener('pointerup', release);
   document.addEventListener('pointercancel', release);
-
-  function onLayoutChange(e) {
-    if (e.matches) return;
-    active = null;
-    Object.keys(sheets).forEach(function (key) {
-      var s = sheets[key];
-      stopAnim(s); s.dragging = false; if (s.card) { s.card.classList.remove('is-dragging'); } finishHide(s);
-    });
-  }
-  if (MOBILE.addEventListener) MOBILE.addEventListener('change', onLayoutChange);
-  else if (MOBILE.addListener) MOBILE.addListener(onLayoutChange);
 })();
 </script>
 </body>
