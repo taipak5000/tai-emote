@@ -1089,7 +1089,7 @@
   <div class="modal-card">
     <div class="modal-header">
       <span class="modal-title" data-i18n="customizeModalTitle">画像をカスタマイズ</span>
-      <button class="modal-close" onclick="closeModal('customizeModal')"><svg class="inline-icon" width="16" height="16"><use href="#i-close"/></svg></button>
+      <button class="modal-close" onclick="closeModal('customizeModal')"><span class="icon-chip" style="width:22px; height:22px;"><svg width="16" height="16"><use href="#i-close"/></svg></span></button>
     </div>
 
     <div class="customize-section-label" data-i18n="customizeThemeLabel">背景テーマ</div>
@@ -1115,7 +1115,7 @@
   <div class="modal-card">
     <div class="modal-header">
       <span class="modal-title" id="previewModalTitle">画像を保存</span>
-      <button class="modal-close" onclick="closeModal('imagePreviewModal')"><svg class="inline-icon" width="16" height="16"><use href="#i-close"/></svg></button>
+      <button class="modal-close" onclick="closeModal('imagePreviewModal')"><span class="icon-chip" style="width:22px; height:22px;"><svg width="16" height="16"><use href="#i-close"/></svg></span></button>
     </div>
 
     <div class="hint" style="margin-top:0; display:flex; gap:8px; align-items:flex-start; font-size:12.5px; color:var(--text-2);">
@@ -1138,7 +1138,7 @@
   <div class="modal-card">
     <div class="modal-header">
       <span class="modal-title" data-i18n="iconModalTitle">ホーム画面アイコンをカスタマイズ</span>
-      <button class="modal-close" onclick="closeModal('iconCustomModal')"><svg class="inline-icon" width="16" height="16"><use href="#i-close"/></svg></button>
+      <button class="modal-close" onclick="closeModal('iconCustomModal')"><span class="icon-chip" style="width:22px; height:22px;"><svg width="16" height="16"><use href="#i-close"/></svg></span></button>
     </div>
 
     <div class="hint" style="margin-top:0; display:flex; gap:8px; align-items:flex-start;">
@@ -1199,7 +1199,7 @@
   <div class="modal-card">
     <div class="modal-header">
       <span class="modal-title" data-i18n="acquireLogModalTitle">入手履歴</span>
-      <button class="modal-close" onclick="closeModal('acquireLogModal')"><svg class="inline-icon" width="16" height="16"><use href="#i-close"/></svg></button>
+      <button class="modal-close" onclick="closeModal('acquireLogModal')"><span class="icon-chip" style="width:22px; height:22px;"><svg width="16" height="16"><use href="#i-close"/></svg></span></button>
     </div>
 
     <div class="hint" style="margin-top:0; display:flex; gap:8px; align-items:flex-start; font-size:12.5px; color:var(--text-2);">
@@ -1215,16 +1215,16 @@
   <div class="modal-card">
     <div class="modal-header">
       <span class="modal-title" data-i18n="settingsModalTitle">表示設定</span>
-      <button class="modal-close" onclick="closeSettingsModal()"><svg class="inline-icon" width="16" height="16"><use href="#i-close"/></svg></button>
+      <button class="modal-close" onclick="closeSettingsModal()"><span class="icon-chip" style="width:22px; height:22px;"><svg width="16" height="16"><use href="#i-close"/></svg></span></button>
     </div>
 
-    <div class="customize-section-label" style="margin-top:0;" data-i18n="settingsDisplaySectionLabel">表示</div>
+    <div class="customize-section-label" style="margin-top:0;" data-i18n="settingsDisplaySectionLabel"><svg class="inline-icon" width="15" height="15"><use href="#i-monitor"/></svg> 表示</div>
     <div class="settings-row">
       <span data-i18n="settingsDarkModeLabel">テーマ</span>
       <button type="button" class="action-btn secondary" id="settingsThemeToggleBtn" onclick="toggleTheme()"></button>
     </div>
 
-    <div class="customize-section-label" data-i18n="settingsShortcutsSectionLabel">キーボードショートカット</div>
+    <div class="customize-section-label" data-i18n="settingsShortcutsSectionLabel"><svg class="inline-icon" width="15" height="15"><use href="#i-keyboard"/></svg> キーボードショートカット</div>
     <label class="customize-toggle-opt">
       <input type="checkbox" id="settingsShortcutsEnabled" onchange="onSettingsShortcutsToggle(this.checked)">
       <span data-i18n="settingsShortcutsEnableLabel">ショートカットを有効にする</span>
@@ -1236,10 +1236,10 @@
       <div class="settings-shortcut-row"><kbd class="settings-kbd">Esc</kbd><span data-i18n="settingsShortcutCloseModal">開いているウィンドウを閉じる</span></div>
     </div>
 
-    <div class="customize-section-label" data-i18n="settingsCustomizeSectionLabel">表示のカスタマイズ</div>
+    <div class="customize-section-label" data-i18n="settingsCustomizeSectionLabel"><svg class="inline-icon" width="15" height="15"><use href="#i-palette"/></svg> 表示のカスタマイズ</div>
     <button type="button" class="action-btn secondary full" onclick="closeSettingsModal(); openModal('iconCustomModal');" data-i18n="settingsCustomizeBtn">カスタマイズ</button>
 
-    <div class="customize-section-label" data-i18n="settingsLangSectionLabel">言語 / Language</div>
+    <div class="customize-section-label" data-i18n="settingsLangSectionLabel"><svg class="inline-icon" width="15" height="15"><use href="#i-globe"/></svg> 言語 / Language</div>
     <div class="action-row" style="margin-top:0;">
       <button type="button" class="action-btn" id="settingsLangJaBtn" onclick="setLang('ja')">日本語</button>
       <button type="button" class="action-btn" id="settingsLangEnBtn" onclick="setLang('en')">English</button>
@@ -1265,22 +1265,22 @@
 
 <nav class="site-dock" data-i18n-aria-label="dockAriaLabel" aria-label="クイックメニュー">
   <button type="button" onclick="pfOpenModal()">
-    <span class="site-dock-icon"><svg class="inline-icon" width="20" height="20"><use href="#i-folder"/></svg></span>
+    <span class="site-dock-icon"><span class="icon-chip" style="width:28px; height:28px;"><svg width="22" height="22"><use href="#i-folder"/></svg></span></span>
     <span class="site-dock-label" id="siteDockProfileLabel" data-i18n="dockProfileLabel">プロフィール</span>
   </button>
   <button type="button" onclick="pfDashOpen()">
     <span class="site-dock-icon-wrap">
-      <span class="site-dock-icon"><svg class="inline-icon" width="20" height="20"><use href="#i-calendar"/></svg></span>
+      <span class="site-dock-icon"><span class="icon-chip" style="width:28px; height:28px;"><svg width="22" height="22"><use href="#i-calendar"/></svg></span></span>
       <span class="dock-urgent-dot" id="dockUrgentDot" aria-hidden="true" title="季節/イベントの終了が近づいています" data-i18n-title="dockUrgentTitle"></span>
     </span>
     <span class="site-dock-label" data-i18n="dockDashboardLabel">ダッシュボード</span>
   </button>
   <button type="button" onclick="openSidebarMobile()">
-    <span class="site-dock-icon"><svg class="inline-icon" width="20" height="20"><use href="#i-menu"/></svg></span>
+    <span class="site-dock-icon"><span class="icon-chip" style="width:28px; height:28px;"><svg width="22" height="22"><use href="#i-menu"/></svg></span></span>
     <span class="site-dock-label" data-i18n="dockToolsLabel">他のツール</span>
   </button>
   <button type="button" onclick="openSettingsModal()">
-    <span class="site-dock-icon"><svg class="inline-icon" width="20" height="20"><use href="#i-settings"/></svg></span>
+    <span class="site-dock-icon"><span class="icon-chip" style="width:28px; height:28px;"><svg width="22" height="22"><use href="#i-settings"/></svg></span></span>
     <span class="site-dock-label" data-i18n="dockSettingsLabel">表示設定</span>
   </button>
 </nav>
@@ -1305,7 +1305,7 @@ const I18N = {
   ja: {
     navTitle: '<svg class="inline-icon" width="19" height="19"><use href="#i-masks"/></svg> エモート所持率管理',
     sidebarRelatedTools: '関連ツール',
-    sidebarClose: '<svg class="inline-icon" width="14" height="14"><use href="#i-close"/></svg>',
+    sidebarClose: '<span class="icon-chip" style="width:22px; height:22px;"><svg width="16" height="16"><use href="#i-close"/></svg></span>',
     toolItem: 'アイテム所持管理',
     toolEmote: 'エモート所持率管理',
     toolShare: '創作物管理ツール',
@@ -1516,7 +1516,7 @@ const I18N = {
     iconSaveStatusReset: 'デフォルトのアイコンに戻しました',
 
     settingsModalTitle: '表示設定',
-    settingsDisplaySectionLabel: '表示',
+    settingsDisplaySectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-monitor"/></svg> 表示',
     settingsDarkModeLabel: 'テーマ',
     settingsThemeToggleToDark: 'ダーク',
     settingsThemeToggleToLight: 'ライト',
@@ -1524,13 +1524,13 @@ const I18N = {
     settingsThemeAriaLight: '現在のテーマ: ライト（クリックでダークに切り替え）',
     settingsThemeAriaDark: '現在のテーマ: ダーク（クリックでシステムに従うへ切り替え）',
     settingsThemeAriaSystem: '現在のテーマ: システムに従う（クリックでライトに切り替え）',
-    settingsLangSectionLabel: '言語 / Language',
-    settingsShortcutsSectionLabel: 'キーボードショートカット',
+    settingsLangSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-globe"/></svg> 言語 / Language',
+    settingsShortcutsSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-keyboard"/></svg> キーボードショートカット',
     settingsShortcutsEnableLabel: 'ショートカットを有効にする',
     settingsShortcutOpenSettings: 'この設定を開く',
     settingsShortcutToggleDark: 'テーマ切替（ライト/ダーク/システム）',
     settingsShortcutCloseModal: '開いているウィンドウを閉じる',
-    settingsCustomizeSectionLabel: '表示のカスタマイズ',
+    settingsCustomizeSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-palette"/></svg> 表示のカスタマイズ',
     settingsCustomizeBtn: 'カスタマイズ',
 
     customizeModalTitle: '画像をカスタマイズ',
@@ -1581,7 +1581,7 @@ const I18N = {
   en: {
     navTitle: '<svg class="inline-icon" width="19" height="19"><use href="#i-masks"/></svg> Emote Collection',
     sidebarRelatedTools: 'Related Tools',
-    sidebarClose: '<svg class="inline-icon" width="14" height="14"><use href="#i-close"/></svg>',
+    sidebarClose: '<span class="icon-chip" style="width:22px; height:22px;"><svg width="16" height="16"><use href="#i-close"/></svg></span>',
     toolItem: 'Item Collection',
     toolEmote: 'Emote Collection',
     toolShare: 'Creation Manager',
@@ -1789,7 +1789,7 @@ const I18N = {
     iconSaveStatusReset: 'Reset to the default icon',
 
     settingsModalTitle: 'Display Settings',
-    settingsDisplaySectionLabel: 'Display',
+    settingsDisplaySectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-monitor"/></svg> Display',
     settingsDarkModeLabel: 'Theme',
     settingsThemeToggleToDark: 'Dark',
     settingsThemeToggleToLight: 'Light',
@@ -1797,13 +1797,13 @@ const I18N = {
     settingsThemeAriaLight: 'Current theme: Light (click to switch to Dark)',
     settingsThemeAriaDark: 'Current theme: Dark (click to switch to Follow System)',
     settingsThemeAriaSystem: 'Current theme: Follow System (click to switch to Light)',
-    settingsLangSectionLabel: 'Language',
-    settingsShortcutsSectionLabel: 'Keyboard Shortcuts',
+    settingsLangSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-globe"/></svg> Language',
+    settingsShortcutsSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-keyboard"/></svg> Keyboard Shortcuts',
     settingsShortcutsEnableLabel: 'Enable keyboard shortcuts',
     settingsShortcutOpenSettings: 'Open this settings panel',
     settingsShortcutToggleDark: 'Cycle theme (Light/Dark/System)',
     settingsShortcutCloseModal: 'Close the open window',
-    settingsCustomizeSectionLabel: 'Customize Appearance',
+    settingsCustomizeSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-palette"/></svg> Customize Appearance',
     settingsCustomizeBtn: 'Customize',
 
     customizeModalTitle: 'Customize Image',
@@ -3417,7 +3417,7 @@ function initOneYearAgoBanner() {
   slot.innerHTML = `
     <div class="one-year-ago-banner" id="oneYearAgoBanner" role="status">
       <span class="oya-text">${msg}</span>
-      <button class="oya-close" type="button" onclick="dismissOneYearAgoBanner()" aria-label="${escapeAttr(t('oneYearAgoBannerCloseLabel'))}"><svg class="inline-icon" width="14" height="14"><use href="#i-close"/></svg></button>
+      <button class="oya-close" type="button" onclick="dismissOneYearAgoBanner()" aria-label="${escapeAttr(t('oneYearAgoBannerCloseLabel'))}"><span class="icon-chip" style="width:22px; height:22px;"><svg width="16" height="16"><use href="#i-close"/></svg></span></button>
     </div>`;
 }
 
