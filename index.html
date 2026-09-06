@@ -217,6 +217,11 @@
     .pf-row-confirm-text { flex: 1 1 100%; font-size: 13px; color: var(--text); line-height: 1.5; }
     .pf-row-btn-ok { background: var(--blue-solid); color: #fff; border: none; }
     .pf-row-btn-danger { background: #ff3b30; color: #fff; border: none; }
+    /* .pf-icon-btn:hover の背景色（明度の低いvar(--sep)）が.pf-row-btn-ok/dangerの
+       白文字と衝突し、ホバー時に文字が読めなくなる（白文字にほぼ白～薄灰色の背景）のを防ぐ。
+       セレクタを合成して詳細度を上げることでこちらを優先させる（!important不使用）。 */
+    .pf-icon-btn.pf-row-btn-ok:hover { background: var(--blue-solid); color: #fff; }
+    .pf-icon-btn.pf-row-btn-danger:hover { background: #ff3b30; color: #fff; }
 
     /* 🏆 プロフィール行ごとの「全ツール横断の称号」展開トグル。.pf-row-confirm-textと同じ
        flex-basis:100%のテクニック（上のコメント参照）で、.pf-row内に折り返して差し込む。 */
@@ -2209,6 +2214,16 @@ function pfSaveCurrencyField(field, rawValue) {
     localStorage.setItem(key, JSON.stringify(extra));
   }
 }
+// 所持通貨欄はユーザーが自由な数値を入力できるため、極端に大きい値を入れると
+// 素のNumber→文字列変換では "1e+24" のような指数表記になってしまう
+// （Number#toFixedも1e21以上では同じく指数表記に戻ってしまうため使えない）。
+// toLocaleStringはグループ区切りを切っても指数表記にならず桁を全展開するので、
+// number input のvalue属性として妥当な素の数字文字列を得るために使う。
+function pfPlainNumberForInput(n) {
+  n = Number(n);
+  if (!Number.isFinite(n)) return '0';
+  return n.toLocaleString('en-US', { useGrouping: false, maximumFractionDigits: 0 });
+}
 function pfRenderCurrency() {
   const body = document.getElementById('pfCurrencyBody');
   if (!body) return;
@@ -2216,7 +2231,7 @@ function pfRenderCurrency() {
   body.innerHTML = PF_CURRENCY_FIELDS.map(f => `
     <div class="pf-currency-row">
       <span class="pf-currency-label">${f.icon} ${t(f.labelKey)}</span>
-      <input type="number" min="0" class="pf-currency-input" value="${c[f.key]}"
+      <input type="number" min="0" class="pf-currency-input" value="${pfPlainNumberForInput(c[f.key])}"
         onchange="pfSaveCurrencyField('${f.key}', this.value)">
     </div>`).join('');
   pfSyncCurrencyToggleUI();
