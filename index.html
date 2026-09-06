@@ -214,7 +214,7 @@
        必ず自分の行いっぱいに広がる＝ボタン列より先に単独で折り返される。素の flex:1
        （flex-basis:0%相当）だと横幅の希望値が0扱いになり、ボタンと同じ行に押し込まれて
        極端に狭い縦長カラムになってしまっていたため。 */
-    .pf-row-confirm-text { flex: 1 1 100%; font-size: 13px; color: var(--text); line-height: 1.4; }
+    .pf-row-confirm-text { flex: 1 1 100%; font-size: 13px; color: var(--text); line-height: 1.5; }
     .pf-row-btn-ok { background: var(--blue-solid); color: #fff; border: none; }
     .pf-row-btn-danger { background: #ff3b30; color: #fff; border: none; }
 
@@ -289,6 +289,12 @@
     .cat-header-name { font-size: 18px; font-weight: 700; }
     .cat-header-count { font-size: 13px; color: var(--text-2); margin-top: 2px; }
     .cat-header-pct { font-size: 24px; font-weight: 800; color: var(--orange); }
+    /* 🔢 数字と単位のコントラスト：%（単位）は本体の数字より小さく・軽くして、数字自体が
+       パッと見の主役として読めるようにする（cat-header-pctのような大きな％表示に使う）。 */
+    .pct-unit { font-size: 0.55em; font-weight: 600; opacity: 0.72; margin-left: 1px; }
+    /* 🔢 数字と単位のコントラスト（本文サイズ）：件数・所持数などの小さな読み上げ行で、
+       数字部分だけ色濃く・太くして単位（レベル所持／件／個解除 等）と差をつける。 */
+    .stat-num { color: var(--text); font-weight: 700; }
 
     /* ── 🧭 案内人エモートの達成率パネル ─────────────────────
        全体達成率カード（.cat-header-card）と全く同じ見た目を流用し、isGuideな
@@ -552,7 +558,7 @@
     .feature-btn:active { transform: scale(0.965); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
     .feature-icon  { font-size: 26px; }
     .feature-label { font-size: 14px; font-weight: 700; color: var(--text); }
-    .feature-desc  { font-size: 11px; color: var(--text-2); line-height: 1.45; }
+    .feature-desc  { font-size: 11px; color: var(--text-2); line-height: 1.5; }
     .feature-btn.twitter { background: #000; }
     .feature-btn.twitter .feature-label { color: #fff; }
     .feature-btn.twitter .feature-desc  { color: rgba(255,255,255,0.68); }
@@ -660,7 +666,7 @@
     }
     .customize-toggle-opt {
       display: flex; align-items: center; gap: 8px; font-size: 13.5px;
-      color: var(--text); padding: 8px 2px;
+      color: var(--text); padding: 8px 2px; line-height: 1.5;
     }
     .customize-toggle-opt input { width: 17px; height: 17px; flex-shrink: 0; accent-color: var(--orange); }
 
@@ -699,7 +705,7 @@
     .exp-lv-dot.is-owned { background: var(--green); border-color: var(--green); }
 
     footer {
-      text-align: center; padding: 24px 16px; color: var(--text-2); font-size: 13px;
+      text-align: left; padding: 24px 16px; color: var(--text-2); font-size: 13px;
       border-top: 1px solid var(--sep); margin-top: 40px; line-height: 1.6;
     }
 
@@ -1253,17 +1259,17 @@
   </div>
 </div>
 
-<footer style="text-align:center; padding:24px 16px; color:var(--text-2); font-size:13px; border-top:1px solid var(--sep); margin-top:40px; line-height:1.6;">
+<footer style="text-align:left; padding:24px 16px; color:var(--text-2); font-size:13px; border-top:1px solid var(--sep); margin-top:40px; line-height:1.6;">
   <span data-i18n="footerDisclaimer">このサイトはSky 星を紡ぐ子どもたちの非公式ファンサイトです。thatgamecompanyは一切関与していません。</span><br>
-  <span data-i18n="footerCreditLabel">作成・ご意見:</span> <a href="https://x.com/Skyzztai" target="_blank" rel="noopener noreferrer" style="color:var(--blue); text-decoration:none; font-weight:bold;">@Skyzztai</a>　／　<a href="https://odaibako.net/u/Skyzztai" target="_blank" rel="noopener noreferrer" style="color:var(--blue); text-decoration:none; font-weight:bold;" data-i18n="footerRequestForm">リクエストフォーム</a><br>
+  <span data-i18n="footerCreditLabel">作成・ご意見:</span> <a href="https://x.com/Skyzztai" target="_blank" rel="noopener noreferrer" style="color:var(--blue); text-decoration:underline; font-weight:bold;">@Skyzztai</a>　／　<a href="https://odaibako.net/u/Skyzztai" target="_blank" rel="noopener noreferrer" style="color:var(--blue); text-decoration:underline; font-weight:bold;" data-i18n="footerRequestForm">リクエストフォーム</a><br>
   <span style="color:var(--text-2); font-size:12px; margin-top:4px; display:inline-block;">
     <span data-i18n="footerRefImageLabel">参考・画像引用元:</span>
-    <a href="https://sky-children-of-the-light.fandom.com/ja/wiki/%E6%84%9F%E6%83%85%E8%A1%A8%E7%8F%BE" target="_blank" rel="noopener noreferrer" style="color: var(--blue);" data-i18n="footerWikiEmoteJa">感情表現 (Sky Wiki 日本語)</a>
+    <a href="https://sky-children-of-the-light.fandom.com/ja/wiki/%E6%84%9F%E6%83%85%E8%A1%A8%E7%8F%BE" target="_blank" rel="noopener noreferrer" style="color: var(--blue); text-decoration: underline;" data-i18n="footerWikiEmoteJa">感情表現 (Sky Wiki 日本語)</a>
     ／
-    <a href="https://sky-children-of-the-light.fandom.com/wiki/Expressions" target="_blank" rel="noopener noreferrer" style="color: var(--blue);" data-i18n="footerWikiEmoteEn">Expressions (Sky Wiki 英語)</a>
+    <a href="https://sky-children-of-the-light.fandom.com/wiki/Expressions" target="_blank" rel="noopener noreferrer" style="color: var(--blue); text-decoration: underline;" data-i18n="footerWikiEmoteEn">Expressions (Sky Wiki 英語)</a>
   </span><br>
   <span style="color:var(--text-2); font-size:12px; margin-top:4px; display:inline-block;">
-    <a href="https://taipak5000.github.io/tai-info/" target="_blank" rel="noopener noreferrer" style="color: var(--blue);" data-i18n="footerInfoLink">設定・更新情報・クレジット・プライバシーポリシー</a>
+    <a href="https://taipak5000.github.io/tai-info/" target="_blank" rel="noopener noreferrer" style="color: var(--blue); text-decoration: underline;" data-i18n="footerInfoLink">設定・更新情報・クレジット・プライバシーポリシー</a>
   </span>
 </footer>
 
@@ -1336,7 +1342,7 @@ const I18N = {
     pageTitle: 'エモート所持率管理',
 
     headerName: 'エモート全体',
-    headerCountTemplate: '{owned} / {total} レベル所持',
+    headerCountTemplate: '<b class="stat-num">{owned}</b> / <b class="stat-num">{total}</b> レベル所持',
     guideHeaderName: '案内人エモート',
 
     oneYearAgoBannerTemplate: '<svg class="inline-icon" width="14" height="14"><use href="#i-sparkle"/></svg> {years}年前の今日、『{name}』を記録しました',
@@ -1344,7 +1350,7 @@ const I18N = {
     oneYearAgoBannerCloseLabel: '閉じる',
 
     titlesSectionLabel: '称号',
-    titlesCountTemplate: '{earned} / {total} 個解除',
+    titlesCountTemplate: '<b class="stat-num">{earned}</b> / <b class="stat-num">{total}</b> 個解除',
     titleUnlockToastTemplate: '称号「{name}」を獲得！',
     titleUnlockToastMultiTemplate: '称号を{n}個獲得！ {names}',
     titleLockedName: '？？？',
@@ -1353,7 +1359,7 @@ const I18N = {
     acquireLogModalTitle: '入手履歴',
     acquireLogHint: '所持レベルにチェックを入れた日時を自動で記録します。チェックを外すと記録も消えます。',
     acquireLogEmpty: 'まだ記録がありません。<br>エモートのレベルに所持チェックを入れると、ここに記録されます。',
-    acquireLogCountTemplate: '記録件数：{n}件',
+    acquireLogCountTemplate: '記録件数：<b class="stat-num">{n}</b>件',
     acquireLogRemoveBtnLabel: '記録を削除',
 
     controlLabelSearch: '検索',
@@ -1395,7 +1401,7 @@ const I18N = {
     acquireLogFeatureDesc: '所持チェックを入れた日時の一覧を確認できます',
 
     listSectionLabel: 'エモート一覧',
-    listCountTemplate: '{n} / {total}件',
+    listCountTemplate: '<b class="stat-num">{n}</b> / <b class="stat-num">{total}</b>件',
     gridColsSelectLabel: 'グリッドの列数',
     gridColsAuto: '列数: 自動',
     gridCols2: '2列',
@@ -1406,7 +1412,7 @@ const I18N = {
     viewGridBtn: 'グリッド',
     viewListBtn: 'リスト',
     emptyMessage: '条件に一致するエモートがありません。',
-    emoteLevelCountTemplate: '{owned} / {total} レベル所持',
+    emoteLevelCountTemplate: '<b class="stat-num">{owned}</b> / <b class="stat-num">{total}</b> レベル所持',
     emoteCompleteLabel: '<svg class="inline-icon ok" width="13" height="13"><use href="#i-check"/></svg> コンプリート',
     ownAllBtn: '<svg class="inline-icon ok" width="13" height="13"><use href="#i-check"/></svg> 全部所持',
     ownAllBtnTitle: 'このエモートの全レベルを所持済みにする',
@@ -1610,7 +1616,7 @@ const I18N = {
     pageTitle: 'Emote Collection Tracker',
 
     headerName: 'All Emotes',
-    headerCountTemplate: '{owned} / {total} levels owned',
+    headerCountTemplate: '<b class="stat-num">{owned}</b> / <b class="stat-num">{total}</b> levels owned',
     guideHeaderName: 'Guide Emotes',
 
     oneYearAgoBannerTemplate: '<svg class="inline-icon" width="14" height="14"><use href="#i-sparkle"/></svg> You logged “{name}” exactly {years} year ago today',
@@ -1618,7 +1624,7 @@ const I18N = {
     oneYearAgoBannerCloseLabel: 'Dismiss',
 
     titlesSectionLabel: 'Titles',
-    titlesCountTemplate: '{earned} / {total} unlocked',
+    titlesCountTemplate: '<b class="stat-num">{earned}</b> / <b class="stat-num">{total}</b> unlocked',
     titleUnlockToastTemplate: 'Title unlocked: {name}!',
     titleUnlockToastMultiTemplate: '{n} titles unlocked! {names}',
     titleLockedName: '？？？',
@@ -1627,7 +1633,7 @@ const I18N = {
     acquireLogModalTitle: 'Acquisition History',
     acquireLogHint: 'Records the date and time you checked off each level as owned. Unchecking a level removes its record.',
     acquireLogEmpty: 'No records yet.<br>Checking off an emote level as owned will add it here.',
-    acquireLogCountTemplate: '{n} record(s)',
+    acquireLogCountTemplate: '<b class="stat-num">{n}</b> record(s)',
     acquireLogRemoveBtnLabel: 'Delete record',
 
     controlLabelSearch: 'Search',
@@ -1669,7 +1675,7 @@ const I18N = {
     acquireLogFeatureDesc: 'See a timeline of when you checked off each level as owned',
 
     listSectionLabel: 'Emote List',
-    listCountTemplate: '{n} / {total}',
+    listCountTemplate: '<b class="stat-num">{n}</b> / <b class="stat-num">{total}</b>',
     gridColsSelectLabel: 'Grid columns',
     gridColsAuto: 'Columns: Auto',
     gridCols2: '2 columns',
@@ -1680,7 +1686,7 @@ const I18N = {
     viewGridBtn: 'Grid',
     viewListBtn: 'List',
     emptyMessage: 'No emotes match the current filter.',
-    emoteLevelCountTemplate: '{owned} / {total} levels owned',
+    emoteLevelCountTemplate: '<b class="stat-num">{owned}</b> / <b class="stat-num">{total}</b> levels owned',
     emoteCompleteLabel: '<svg class="inline-icon ok" width="13" height="13"><use href="#i-check"/></svg> Complete',
     ownAllBtn: '<svg class="inline-icon ok" width="13" height="13"><use href="#i-check"/></svg> Own All',
     ownAllBtnTitle: 'Mark all levels of this emote as owned',
@@ -3213,6 +3219,11 @@ function formatPct(pct) {
   if (pct >= 100) return '100%';
   return pct.toFixed(1) + '%';
 }
+// 🔢 数字と単位のコントラスト用：formatPct()の結果の「%」だけ.pct-unitで小さく・軽く
+// 見せるHTML版（ツイート本文などプレーンテキストが必要な箇所では素のformatPct()を使う）。
+function formatPctHtml(pct) {
+  return formatPct(pct).replace('%', '<span class="pct-unit">%</span>');
+}
 
 /* ================================================================
    🏆 称号（実績）
@@ -3280,7 +3291,7 @@ function renderTitles(stats) {
   const countEl = document.getElementById('titlesCount');
   if (!row || !countEl) return;
   const earnedCount = TITLES.filter(x => earned[x.id]).length;
-  countEl.textContent = t('titlesCountTemplate', { earned: earnedCount, total: TITLES.length });
+  countEl.innerHTML = t('titlesCountTemplate', { earned: earnedCount, total: TITLES.length });
   row.innerHTML = TITLES.map(title => {
     const got = earned[title.id];
     if (!got) {
@@ -3301,8 +3312,8 @@ function renderGuideStats(stats) {
   if (!card) return;
   if (stats.guideTotalLv === 0) { card.style.display = 'none'; return; }
   card.style.display = 'flex';
-  document.getElementById('guideHdrCount').textContent = t('headerCountTemplate', { owned: stats.guideOwnedLv, total: stats.guideTotalLv });
-  document.getElementById('guideHdrPct').textContent = formatPct(stats.guidePct);
+  document.getElementById('guideHdrCount').innerHTML = t('headerCountTemplate', { owned: stats.guideOwnedLv, total: stats.guideTotalLv });
+  document.getElementById('guideHdrPct').innerHTML = formatPctHtml(stats.guidePct);
 }
 
 /* ================================================================
@@ -4387,7 +4398,7 @@ function renderList() {
   document.getElementById('viewListBtn').classList.toggle('active', viewMode === 'list');
   document.getElementById('viewGridBtn').classList.toggle('active', viewMode === 'grid');
 
-  document.getElementById('listCountLabel').textContent = t('listCountTemplate', { n: filtered.length, total: EMOTES_DATA.length });
+  document.getElementById('listCountLabel').innerHTML = t('listCountTemplate', { n: filtered.length, total: EMOTES_DATA.length });
 
   // 絞り込み結果の一括所持ボタン：検索・絞り込みが有効で、かつ対象が1件以上ある間だけ表示する
   const bulkOwnRow = document.getElementById('bulkOwnRow');
@@ -4400,8 +4411,8 @@ function renderList() {
   }
 
   const stats = getStats();
-  document.getElementById('hdrCount').textContent = t('headerCountTemplate', { owned: stats.owned, total: stats.total });
-  document.getElementById('hdrPct').textContent = formatPct(stats.pct);
+  document.getElementById('hdrCount').innerHTML = t('headerCountTemplate', { owned: stats.owned, total: stats.total });
+  document.getElementById('hdrPct').innerHTML = formatPctHtml(stats.pct);
   renderTitles(stats);
   renderGuideStats(stats);
 
