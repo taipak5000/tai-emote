@@ -287,7 +287,7 @@
     /* ── Header Banner（全体達成率） ─────────────── */
     .cat-header-card {
       background: var(--card); border-radius: var(--r); padding: 20px; margin-top: 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07); display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 0.5px 1px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between; gap: 16px;
     }
     .cat-header-info { display: flex; align-items: center; gap: 12px; }
     .cat-header-icon { width: 44px; height: 44px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
@@ -312,7 +312,7 @@
     /* ── 🏆 称号（実績）パネル ─────────────────────── */
     .titles-panel {
       background: var(--card); border-radius: var(--r); padding: 14px 16px; margin-top: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 0.5px 1px rgba(0,0,0,0.04);
     }
     .titles-panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
     .titles-count { font-size: 12px; font-weight: 700; color: var(--text-2); }
@@ -345,7 +345,7 @@
     /* ── Filter / Search ─────────────────────── */
     .control-panel {
       background: var(--card); border-radius: var(--r); padding: 16px; margin-top: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07); display: flex; flex-direction: column; gap: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 0.5px 1px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 12px;
     }
     .control-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
     .control-label { font-size: 12px; font-weight: 600; color: var(--text-2); min-width: 60px; }
@@ -389,7 +389,7 @@
     .emote-tile-frame {
       position: relative; aspect-ratio: 1 / 1; overflow: hidden;
       background: var(--card); border-radius: var(--r-sm);
-      border: 2px solid transparent; box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      border: 2px solid transparent; box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 0.5px 1px rgba(0,0,0,0.04);
     }
     .emote-tile-frame.is-complete { border-color: var(--green); }
     .emote-tile-img-wrap {
@@ -470,7 +470,7 @@
     .emote-list { display: flex; flex-direction: column; gap: 8px; }
     .emote-card {
       background: var(--card); border-radius: var(--r); padding: 14px 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07); display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 0.5px 1px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between; gap: 12px;
       flex-wrap: wrap; transition: background 0.2s;
     }
     .emote-card.is-complete { background: rgba(52,199,89,0.05); }
@@ -931,6 +931,27 @@
   <div class="pf-modal-card">
     <h3 data-i18n="dashModalTitle">今日・今週・今月</h3>
     <div id="dashBody"><div class="pf-hint" data-i18n="dashLoading">読み込み中…</div></div>
+    <div class="dash-section">
+      <p class="dash-section-label" data-i18n="dashReminderSectionLabel"><svg class="inline-icon" width="15" height="15"><use href="#i-bell"/></svg> 通知リマインダー</p>
+      <div class="dash-row" style="align-items:center;">
+        <span class="dash-row-icon icon-chip" style="width:22px; height:22px;"><svg width="17" height="17"><use href="#i-bell"/></svg></span>
+        <span class="dash-row-text" data-i18n="dashReminderCheckboxLabel">季節・イベントの終了やリセットが近づいたら通知する</span>
+        <input type="checkbox" id="dashReminderCheckbox" style="width:19px; height:19px; flex-shrink:0; cursor:pointer;"
+          onchange="pfReminderToggle(this.checked)">
+      </div>
+      <div class="dash-row" style="align-items:center;">
+        <span class="dash-row-icon icon-chip" style="width:22px; height:22px;"><svg width="17" height="17"><use href="#i-clock"/></svg></span>
+        <span class="dash-row-text" data-i18n="dashReminderTimingLabel">通知するタイミング</span>
+        <select id="dashReminderMinutes" class="pf-icon-btn" onchange="pfReminderSaveMinutes(this.value)">
+          <option value="10" data-i18n="dashReminderOption10">10分前</option>
+          <option value="30" data-i18n="dashReminderOption30">30分前</option>
+          <option value="60" data-i18n="dashReminderOption60">1時間前</option>
+          <option value="180" data-i18n="dashReminderOption180">3時間前</option>
+          <option value="1440" data-i18n="dashReminderOption1440">1日前</option>
+        </select>
+      </div>
+      <div class="pf-hint" id="dashReminderStatus"></div>
+    </div>
     <button type="button" class="pf-close-btn" onclick="pfDashClose()" data-i18n="pfCloseBtn">閉じる</button>
   </div>
 </div>
@@ -1476,6 +1497,22 @@ const I18N = {
     dashDayUnit: '日',
     labelSep: '：',
 
+    dashReminderSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-bell"/></svg> 通知リマインダー',
+    dashReminderCheckboxLabel: '季節・イベントの終了やリセットが近づいたら通知する',
+    dashReminderTimingLabel: '通知するタイミング',
+    dashReminderOption10: '10分前',
+    dashReminderOption30: '30分前',
+    dashReminderOption60: '1時間前',
+    dashReminderOption180: '3時間前',
+    dashReminderOption1440: '1日前',
+    dashReminderStatusUnsupported: 'この端末・ブラウザは通知に対応していません',
+    dashReminderStatusBlocked: 'ブラウザの通知が拒否されています。ブラウザの設定から許可すると使えます',
+    dashReminderStatusEnabled: '有効：終了・リセットが近づくとこの端末に通知します（このページを開いている間のみ）',
+    dashReminderNotifTitle: 'まもなく終了',
+    dashReminderNotifBodyTemplate: '{label} — 残り {countdown}',
+    dashReminderDailyResetLabel: 'デイリーリセット（大キャンドル交代）',
+    dashReminderEdenResetLabel: '原罪：週間リセット',
+
     realmPrairie: '草原',
     realmForest: '雨林',
     realmValley: '峡谷',
@@ -1748,6 +1785,22 @@ const I18N = {
     dashDayUnit: 'd',
     labelSep: ': ',
 
+    dashReminderSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-bell"/></svg> Reminder Notifications',
+    dashReminderCheckboxLabel: 'Notify me when a season, event, or reset is about to end',
+    dashReminderTimingLabel: 'Remind me',
+    dashReminderOption10: '10 min before',
+    dashReminderOption30: '30 min before',
+    dashReminderOption60: '1 hour before',
+    dashReminderOption180: '3 hours before',
+    dashReminderOption1440: '1 day before',
+    dashReminderStatusUnsupported: 'Notifications are not supported on this device/browser',
+    dashReminderStatusBlocked: 'Notifications are blocked. Allow them in your browser settings to use this.',
+    dashReminderStatusEnabled: 'Enabled: you’ll get a notification as it approaches (only while this page is open)',
+    dashReminderNotifTitle: 'Ending soon',
+    dashReminderNotifBodyTemplate: '{label} — {countdown} left',
+    dashReminderDailyResetLabel: 'Daily reset (Grand Candle change)',
+    dashReminderEdenResetLabel: 'Eye of Eden: weekly reset',
+
     realmPrairie: 'Prairie',
     realmForest: 'Forest',
     realmValley: 'Valley',
@@ -1889,6 +1942,7 @@ function setLang(lang) {
   if (document.getElementById('pfModalOverlay').classList.contains('open')) { pfRenderModal(); pfRenderCurrency(); }
   if (document.getElementById('dashModalOverlay').classList.contains('open') && pfDashCache) {
     document.getElementById('dashBody').innerHTML = pfDashBuildHtml(pfDashCache);
+    pfSyncReminderUI();
   }
   if (document.getElementById('acquireLogModal').classList.contains('open')) renderAcquireLog();
   // 🎉「1年前の今日」バナーが表示中なら、言語切替後のテキストで再描画する
@@ -2741,6 +2795,7 @@ function pfDashStopTimer() {
 }
 async function pfDashOpen() {
   document.getElementById('dashModalOverlay').classList.add('open');
+  pfSyncReminderUI(); // ブラウザ側の通知許可状態が変わっている可能性があるため開くたびに再同期
   const body = document.getElementById('dashBody');
   if (pfDashCache) { body.innerHTML = pfDashBuildHtml(pfDashCache); pfDashStartTimer(); return; }
   body.innerHTML = `<div class="pf-hint">${t('dashLoading')}</div>`;
@@ -2759,6 +2814,166 @@ function pfDashClose() {
   document.getElementById('dashModalOverlay').classList.remove('open');
   pfDashStopTimer();
 }
+
+/* ================================================================
+   🔔 ダッシュボードのカウントダウンに対する通知リマインダー（任意オプトイン）。
+   ページを開きっぱなしにしない前提のツールのため、Service Worker等での
+   バックグラウンド配信までは行わず、「ページを開いている間、一定間隔で
+   残り時間をチェックしてNotification APIで知らせる」というシンプルな
+   実装に留めている。通知許可のリクエストは、ユーザーが設定を明示的にONに
+   した時だけ行い、ページ読み込み時に勝手に許可を求めることはしない。
+   （tai-item/profiles.jsの同名サブシステムの移植。キー名は意図的に共有の
+   sky_dash_reminder_* 名前空間のまま――同じ概念の機能なので衝突しない）
+   ================================================================ */
+const PF_REMINDER_ENABLED_KEY = 'sky_dash_reminder_enabled';
+const PF_REMINDER_MINUTES_KEY = 'sky_dash_reminder_minutes';
+const PF_REMINDER_NOTIFIED_KEY = 'sky_dash_reminder_notified_v1';
+const PF_REMINDER_CHECK_INTERVAL_MS = 60 * 1000;
+
+function pfReminderEnabled() {
+  return localStorage.getItem(PF_REMINDER_ENABLED_KEY) === '1';
+}
+function pfReminderMinutes() {
+  const v = parseInt(localStorage.getItem(PF_REMINDER_MINUTES_KEY), 10);
+  return Number.isFinite(v) && v > 0 ? v : 30;
+}
+function pfReminderSaveMinutes(value) {
+  const v = parseInt(value, 10);
+  localStorage.setItem(PF_REMINDER_MINUTES_KEY, String(Number.isFinite(v) && v > 0 ? v : 30));
+  pfReminderCheckNow(); // しきい値を変えたら、既に条件を満たす対象がないか即座に確認する
+}
+
+// 通知済みの対象（"id@目標時刻"）を記録し、同じ対象へ何度も通知を送らないようにする。
+// 古いエントリが無限に溜まらないよう直近200件だけ保持する
+function pfReminderNotifiedSet() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(PF_REMINDER_NOTIFIED_KEY) || '[]'));
+  } catch (e) {
+    return new Set();
+  }
+}
+function pfReminderMarkNotified(key) {
+  const set = pfReminderNotifiedSet();
+  set.add(key);
+  localStorage.setItem(PF_REMINDER_NOTIFIED_KEY, JSON.stringify([...set].slice(-200)));
+}
+
+// 通知対象にする候補（デイリーリセット／原罪週間リセット／季節終了／期間限定イベント終了）を
+// pfDashBuildHtml()と同じデータソース（pfDashLoadData()の戻り値）から
+// 「ラベル＋目標時刻」の配列として抽出する。pfDashCountdown()と違いこちらはHTMLを
+// 含まないプレーンな文字列のラベルだけを持つ（Notification APIの本文にそのまま使うため）
+function pfDashReminderTargets(data) {
+  const targets = [
+    { id: 'daily-reset', label: t('dashReminderDailyResetLabel'), target: pfDashNextPacificMidnight() },
+    { id: 'eden-weekly-reset', label: t('dashReminderEdenResetLabel'), target: pfDashNextEdenResetTarget() },
+  ];
+  if (data.season && data.season.name && data.season.endDate) {
+    const end = new Date(data.season.endDate);
+    if (new Date() < end) targets.push({ id: 'season-end', label: dashEventName(data.season.name), target: end });
+  }
+  pfDashActiveScheduledEvents(data.eventSchedule).forEach((ev, i) => {
+    targets.push({ id: `event-${i}-${ev.name}`, label: dashEventName(ev.name), target: new Date(ev.end) });
+  });
+  return targets;
+}
+
+async function pfReminderCheckNow() {
+  if (!pfReminderEnabled()) return;
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+  try {
+    if (!pfDashCache) {
+      if (!pfDashLoading) pfDashLoading = pfDashLoadData();
+      pfDashCache = await pfDashLoading;
+    }
+  } catch (e) { console.error('pfReminderCheckNow', e); return; }
+
+  const thresholdMs = pfReminderMinutes() * 60000;
+  const notified = pfReminderNotifiedSet();
+  pfDashReminderTargets(pfDashCache).forEach(target => {
+    const msLeft = target.target - new Date();
+    if (msLeft <= 0 || msLeft > thresholdMs) return;
+    // 🕐 pfDashNextPacificMidnight/pfDashNextEdenResetTargetは太平洋時間への変換の都合上、
+    // 呼ぶたびに秒未満の端数が最大約1秒ぶれる。target.getTime()をそのまま鍵にすると
+    // 60秒ごとの再チェックで実質同一の対象が毎回「新規」判定されてしまうため、
+    // 分単位に丸めて重複判定を安定させる（この丸めはチェック間隔=60秒と同じ粒度なので十分）
+    const key = `${target.id}@${Math.round(target.target.getTime() / 60000)}`;
+    if (notified.has(key)) return;
+    pfReminderMarkNotified(key);
+    try {
+      new Notification(t('dashReminderNotifTitle'), {
+        body: t('dashReminderNotifBodyTemplate', { label: target.label, countdown: pfDashCountdown(target.target) }),
+        tag: key,
+      });
+    } catch (e) { console.error('pfReminderCheckNow notify', e); }
+  });
+}
+
+let pfReminderTimer = null;
+function pfReminderStartTimer() {
+  if (pfReminderTimer) return;
+  pfReminderTimer = setInterval(pfReminderCheckNow, PF_REMINDER_CHECK_INTERVAL_MS);
+}
+function pfReminderStopTimer() {
+  if (pfReminderTimer) { clearInterval(pfReminderTimer); pfReminderTimer = null; }
+}
+
+// 設定ON時のみ、権限を明示的にリクエストする（ページ読み込み時に勝手には求めない）
+async function pfReminderToggle(checked) {
+  if (checked) {
+    if (typeof Notification === 'undefined') {
+      localStorage.setItem(PF_REMINDER_ENABLED_KEY, '0');
+      pfSyncReminderUI();
+      return;
+    }
+    let perm = Notification.permission;
+    if (perm === 'default') perm = await Notification.requestPermission();
+    if (perm !== 'granted') {
+      localStorage.setItem(PF_REMINDER_ENABLED_KEY, '0');
+      pfSyncReminderUI();
+      return;
+    }
+    localStorage.setItem(PF_REMINDER_ENABLED_KEY, '1');
+    pfReminderStartTimer();
+    pfReminderCheckNow();
+  } else {
+    localStorage.setItem(PF_REMINDER_ENABLED_KEY, '0');
+    pfReminderStopTimer();
+  }
+  pfSyncReminderUI();
+}
+
+// ダッシュボードモーダル内のリマインダーUI（チェックボックス・タイミング選択・状態文言）を
+// 現在の保存値／通知許可状態に同期させる
+function pfSyncReminderUI() {
+  const cb = document.getElementById('dashReminderCheckbox');
+  if (!cb) return;
+  const sel = document.getElementById('dashReminderMinutes');
+  const status = document.getElementById('dashReminderStatus');
+  const enabled = pfReminderEnabled();
+  cb.checked = enabled;
+  if (sel) sel.value = String(pfReminderMinutes());
+  if (status) {
+    if (typeof Notification === 'undefined') {
+      status.textContent = t('dashReminderStatusUnsupported');
+    } else if (Notification.permission === 'denied') {
+      status.textContent = t('dashReminderStatusBlocked');
+    } else if (enabled) {
+      status.textContent = t('dashReminderStatusEnabled');
+    } else {
+      status.textContent = '';
+    }
+  }
+}
+
+// ページ読み込み時：以前オプトインしていて、かつ既に許可が下りている場合だけ
+// （＝新たな許可リクエストは絶対に発生させない）自動でチェックを再開する
+function pfReminderInit() {
+  if (pfReminderEnabled() && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+    pfReminderCheckNow();
+    pfReminderStartTimer();
+  }
+}
+
 function pfRenderModal() {
   const list = ensureProfilesInit();
   const activeId = getActiveProfileId();
@@ -4410,6 +4625,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderList();
   initOneYearAgoBanner();
 });
+
+// 🔔 通知リマインダー：既にオプトイン＆許可済みの場合だけ静かに再開する
+// （新規の許可リクエストはここでは絶対に発生しない）
+document.addEventListener('DOMContentLoaded', pfReminderInit);
 </script>
 
 <script>
