@@ -188,11 +188,15 @@
        aspect-ratio:1のセルを持つ7列グリッドに上限を付けないと、デスクトップ幅では
        セル1つが70px超まで膨らみ、11pxの日付数字と4pxのドットだけが浮いた不格好な
        見た目になる。コンパクトなカレンダーとして違和感のないサイズで頭打ちにする。
-       ただし上限をdetails全体（.dash-calendar）にかけると、開閉トグルのサマリー行
-       だけが他の.dash-row系兄弟要素（デイリー/今日/今週/今月）より狭く中央寄せされ、
-       閉じた状態（初期状態）でも幅の違う浮島のように見えてしまう。そのため上限は
-       グリッド本体と凡例（.dash-cal-grid/.dash-cal-legend）だけにかけ、サマリー行は
-       兄弟要素と同じ幅のまま揃える。 */
+       【round2の反省】以前はこの上限を.dash-cal-grid/.dash-cal-legend「コンテナ自体」の
+       max-width+margin:auto で実現していた。閉じた状態のサマリー行は対象外だったため
+       閉状態の浮島は解消されたが、展開すると今度はグリッド/凡例コンテナ自体が
+       兄弟要素（サマリー行や他の.dash-row系セクション）より狭く中央寄せされて残り、
+       展開直後から同じ浮島に見える回帰を生んでいた。正しくは「コンテナ幅」ではなく
+       「セル1つのサイズ」だけを頭打ちにするべきなので、グリッドコンテナ自体は
+       兄弟要素と同じ幅のまま（max-width/marginを付けない）にし、列トラック側に
+       minmax(0, 45px)で上限を付けて余白をjustify-content:centerで中央に逃がす。
+       これなら広い画面でもコンテナの外枠は兄弟要素と揃い、セルだけが頭打ちになる。 */
     .dash-calendar-summary {
       display: flex; align-items: center; gap: 6px; cursor: pointer; list-style: none;
       font-size: 12.5px; font-weight: 600; color: var(--text); padding: 9px 11px;
@@ -204,9 +208,8 @@
     .dash-calendar[open] .dash-calendar-summary { border-radius: var(--r-sm) var(--r-sm) 0 0; }
     .dash-calendar[open] .dash-calendar-chevron { transform: rotate(90deg); }
     .dash-cal-grid {
-      display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
+      display: grid; grid-template-columns: repeat(7, minmax(0, 45px)); justify-content: center; gap: 3px;
       padding: 10px 11px; background: var(--bg); border-radius: 0 0 var(--r-sm) var(--r-sm);
-      max-width: 360px; margin: 0 auto;
     }
     .dash-cal-dow { text-align: center; font-size: 10px; font-weight: 700; color: var(--text-2); padding-bottom: 4px; }
     .dash-cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 6px; gap: 2px; }
@@ -219,7 +222,7 @@
        ドットにだけ白いリングを足して背景色に関わらず視認できるようにする。 */
     .dash-cal-day.is-today { background: var(--blue-solid); }
     .dash-cal-day.is-today .dash-cal-daynum { color: #fff; font-weight: 700; }
-    .dash-cal-dots { display: flex; gap: 2px; height: 4px; }
+    .dash-cal-dots { display: flex; gap: 4px; height: 4px; }
     .dash-cal-dot { width: 4px; height: 4px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
     /* ライトモードのグリッド背景(--bg: #F2F2F7)に対する非テキストコントラスト(WCAG 1.4.11、
        3:1必須)を自前で実測したところ、素の配色は season 1.72:1 / candle 2.51:1 / revisit 2.23:1
@@ -233,13 +236,26 @@
     .dash-cal-dot.event { background: #db2777; }
     .dash-cal-dot.candle { background: #c2410c; }
     .dash-cal-dot.revisit { background: #0f766e; }
-    /* 今日のセル内に複数ドットが並ぶ場合、白リングの太さがドット間の隙間(2px)に対して
-       大きすぎると隣接するリング同士が重なって白い塊に見えてしまう回帰が起きうる。
-       スプレッドを1px（=リング自体の実効半径+1pxのみ）に抑えているため、6pxの
-       ドット間中心距離に対してリング同士は接するだけで重ならない。 */
+    /* 今日のセル内に複数ドットが並ぶ場合、白リングの太さがドット間の隙間に対して
+       大きすぎると隣接するリング同士が重なって白い塊に見えてしまう。
+       【round2の反省】隙間を2pxのまま据え置いていたため、ドット幅4px+片側1pxリング×2＝
+       実効直径6pxの円同士が中心間距離6px（4px幅+2px隙間）でちょうど「接するだけ」になり、
+       アンチエイリアシングで実質繋がって見える回帰が3カテゴリ以上の日で再発していた。
+       隙間を4pxに広げ、中心間距離を8pxにすることでリング外周間に実測2px相当の
+       はっきりした背景色の隙間ができ、3〜4個並んでも塊に見えなくなる。 */
     .dash-cal-day.is-today .dash-cal-dot { box-shadow: 0 0 0 1px rgba(255,255,255,0.9); }
-    .dash-cal-legend { display: flex; flex-wrap: wrap; gap: 10px; padding: 8px 2px 2px; font-size: 10.5px; color: var(--text-2);
-      max-width: 360px; margin: 0 auto; }
+    /* ダークモードのカテゴリドット4色（108-111行目）は素の黒背景に対する視認性のため
+       明るい配色（黄/ピンク/オレンジ/ティール）に戻しているが、is-today内のリングは
+       常に白固定だったため、今日のセルの背景(--blue-solid、テーマ共通で同じ濃さ)に
+       対してではなく「ドット本体 vs すぐ隣接するリング」のペアで見ると、season以外
+       ほぼ淡色同士でWCAG 1.4.11の3:1を満たせていなかった（実測 season 1.65:1 /
+       candle 2.42:1 / revisit 2.15:1 / event 3.04:1）。ライトモードの暗い配色は
+       白リングとの相性が良く4:1超だったため、round2はライトモードの組み合わせだけで
+       確認して見落としていた。ダークモードだけリングを黒寄りに変えると、明るいドット
+       配色との相性が良くなり（実測 event 5.65:1 / candle 7.12:1 / revisit 8.01:1 /
+       season 10.4:1）、かつリング自体も背景の--blue-solidに対し3.44:1を確保できる。 */
+    :root[data-theme="dark"] .dash-cal-day.is-today .dash-cal-dot { box-shadow: 0 0 0 1px rgba(0,0,0,0.9); }
+    .dash-cal-legend { display: flex; flex-wrap: wrap; gap: 10px; padding: 8px 2px 2px; font-size: 10.5px; color: var(--text-2); }
     .dash-cal-legend span { display: inline-flex; align-items: center; gap: 4px; }
     .dash-cal-legend .dash-cal-dot { width: 6px; height: 6px; }
     .pf-modal-overlay {
