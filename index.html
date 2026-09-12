@@ -102,6 +102,13 @@
       --text-2:    #98989D;
       --text-3:    #636366;
     }
+    /* カレンダーのカテゴリドット4色はダークモードでは素の配色のまま黒背景に対し3:1を
+       十分満たす（実測: 後述の下書き参照）ため、ここで元の彩度の高い配色に戻す。
+       ライトモード側（:root既定値）だけ254行目付近で3:1確保のため暗く上書きしている。 */
+    :root[data-theme="dark"] .dash-cal-dot.season { background: #eab308; }
+    :root[data-theme="dark"] .dash-cal-dot.event { background: #ec4899; }
+    :root[data-theme="dark"] .dash-cal-dot.candle { background: #f97316; }
+    :root[data-theme="dark"] .dash-cal-dot.revisit { background: #14b8a6; }
 
     .inline-icon { stroke: var(--orange); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -3px; color: var(--orange); }
     .inline-icon.warn { stroke: var(--red); color: var(--red); }
@@ -180,8 +187,12 @@
     /* .pf-modal-card は560px以上のビューポートでmax-width:600pxまで広がる（798-808行目）。
        aspect-ratio:1のセルを持つ7列グリッドに上限を付けないと、デスクトップ幅では
        セル1つが70px超まで膨らみ、11pxの日付数字と4pxのドットだけが浮いた不格好な
-       見た目になる。コンパクトなカレンダーとして違和感のないサイズで頭打ちにする。 */
-    .dash-calendar { max-width: 360px; margin: 0 auto; }
+       見た目になる。コンパクトなカレンダーとして違和感のないサイズで頭打ちにする。
+       ただし上限をdetails全体（.dash-calendar）にかけると、開閉トグルのサマリー行
+       だけが他の.dash-row系兄弟要素（デイリー/今日/今週/今月）より狭く中央寄せされ、
+       閉じた状態（初期状態）でも幅の違う浮島のように見えてしまう。そのため上限は
+       グリッド本体と凡例（.dash-cal-grid/.dash-cal-legend）だけにかけ、サマリー行は
+       兄弟要素と同じ幅のまま揃える。 */
     .dash-calendar-summary {
       display: flex; align-items: center; gap: 6px; cursor: pointer; list-style: none;
       font-size: 12.5px; font-weight: 600; color: var(--text); padding: 9px 11px;
@@ -195,6 +206,7 @@
     .dash-cal-grid {
       display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
       padding: 10px 11px; background: var(--bg); border-radius: 0 0 var(--r-sm) var(--r-sm);
+      max-width: 360px; margin: 0 auto;
     }
     .dash-cal-dow { text-align: center; font-size: 10px; font-weight: 700; color: var(--text-2); padding-bottom: 4px; }
     .dash-cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 6px; gap: 2px; }
@@ -209,12 +221,25 @@
     .dash-cal-day.is-today .dash-cal-daynum { color: #fff; font-weight: 700; }
     .dash-cal-dots { display: flex; gap: 2px; height: 4px; }
     .dash-cal-dot { width: 4px; height: 4px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-    .dash-cal-dot.season { background: #eab308; }
-    .dash-cal-dot.event { background: #ec4899; }
-    .dash-cal-dot.candle { background: #f97316; }
-    .dash-cal-dot.revisit { background: #14b8a6; }
+    /* ライトモードのグリッド背景(--bg: #F2F2F7)に対する非テキストコントラスト(WCAG 1.4.11、
+       3:1必須)を自前で実測したところ、素の配色は season 1.72:1 / candle 2.51:1 / revisit 2.23:1
+       と軒並み未達（event のみ3.16:1でギリギリ達成）だった。is-today内の白リングは"今日"の
+       セルだけの対策で、通常セル（グリッドの大半）は無対策のまま残っていたため、4色とも
+       彩度を保ちつつ暗くした配色に変更し、いずれも3:1を上回るようにした
+       （実測: season 4.5:1 / event 4.12:1 / candle 4.64:1 / revisit 4.91:1）。
+       ダークモードは元々ほぼ黒の背景に対し素の配色のままで3:1を満たすため、83行目付近の
+       :root[data-theme="dark"]ブロックで元の配色に戻している。 */
+    .dash-cal-dot.season { background: #b45309; }
+    .dash-cal-dot.event { background: #db2777; }
+    .dash-cal-dot.candle { background: #c2410c; }
+    .dash-cal-dot.revisit { background: #0f766e; }
+    /* 今日のセル内に複数ドットが並ぶ場合、白リングの太さがドット間の隙間(2px)に対して
+       大きすぎると隣接するリング同士が重なって白い塊に見えてしまう回帰が起きうる。
+       スプレッドを1px（=リング自体の実効半径+1pxのみ）に抑えているため、6pxの
+       ドット間中心距離に対してリング同士は接するだけで重ならない。 */
     .dash-cal-day.is-today .dash-cal-dot { box-shadow: 0 0 0 1px rgba(255,255,255,0.9); }
-    .dash-cal-legend { display: flex; flex-wrap: wrap; gap: 10px; padding: 8px 2px 2px; font-size: 10.5px; color: var(--text-2); }
+    .dash-cal-legend { display: flex; flex-wrap: wrap; gap: 10px; padding: 8px 2px 2px; font-size: 10.5px; color: var(--text-2);
+      max-width: 360px; margin: 0 auto; }
     .dash-cal-legend span { display: inline-flex; align-items: center; gap: 4px; }
     .dash-cal-legend .dash-cal-dot { width: 6px; height: 6px; }
     .pf-modal-overlay {
@@ -2971,7 +2996,7 @@ function pfDashRebuildBody(body, data) {
   }
   if (hadFocus) {
     const summary = body.querySelector('.dash-calendar-summary');
-    if (summary) summary.focus();
+    if (summary) summary.focus({ preventScroll: true });
   }
 }
 function pfDashStartTimer() {
@@ -2990,7 +3015,7 @@ async function pfDashOpen() {
   document.getElementById('dashModalOverlay').classList.add('open');
   pfSyncReminderUI(); // ブラウザ側の通知許可状態が変わっている可能性があるため開くたびに再同期
   const body = document.getElementById('dashBody');
-  if (pfDashCache) { body.innerHTML = pfDashBuildHtml(pfDashCache); pfDashStartTimer(); return; }
+  if (pfDashCache) { pfDashRebuildBody(body, pfDashCache); pfDashStartTimer(); return; }
   body.innerHTML = `<div class="pf-hint">${t('dashLoading')}</div>`;
   try {
     if (!pfDashLoading) pfDashLoading = pfDashLoadData();
@@ -4970,7 +4995,7 @@ document.addEventListener('DOMContentLoaded', pfReminderInit);
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'], subtree: true, attributeOldValue: true });
 
   function isInteractive(el) {
-    return !!(el && el.closest && el.closest('input, select, textarea, button, a, label, [contenteditable], [role="button"], input[type="range"]'));
+    return !!(el && el.closest && el.closest('input, select, textarea, button, a, label, summary, [contenteditable], [role="button"], input[type="range"]'));
   }
   document.addEventListener('pointerdown', function (e) {
     if (REDUCE_MOTION.matches) return;
