@@ -204,6 +204,11 @@
     }
     .dash-calendar-summary::-webkit-details-marker { display: none; }
     .dash-calendar-summary::marker { content: ''; }
+    /* キーボード操作時の可視フォーカスリング（.select-box:focus等と同じ--focus-ringトークンを使用）。
+       他のカード/モーダル内の操作可能要素には全てfocus-visibleが付いているが、カレンダーの
+       <summary>トグルだけ機能追加時に付け忘れられており、ブラウザ既定の薄いアウトラインしか
+       出ずダークモードでほぼ見えなかった。 */
+    .dash-calendar-summary:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: var(--r-sm); }
     .dash-calendar-chevron { margin-left: auto; font-size: 13px; color: var(--text-2); transition: transform 0.2s ease; }
     .dash-calendar[open] .dash-calendar-summary { border-radius: var(--r-sm) var(--r-sm) 0 0; }
     .dash-calendar[open] .dash-calendar-chevron { transform: rotate(90deg); }
@@ -2845,6 +2850,17 @@ function pfDashCalendarHtml(data) {
   const marks = pfDashCalendarMarks(data, year, month);
   const todayKey = `${year}-${month}-${now.getDate()}`;
   const CAT_ORDER = ['season', 'event', 'candle', 'revisit'];
+  // 各日のカテゴリは丸ドットの色だけで示されており、スクリーンリーダー利用者やドットの
+  // 色が区別しづらい利用者には情報が一切伝わらない（凡例と違いテキストが無い）。凡例と同じ
+  // ラベル文言を使って日付+カテゴリの説明文を組み立て、セルのtitle/aria-labelに付与する
+  // （見た目は変えず、支援技術・マウスホバー向けのテキスト等価物を追加するだけ）。
+  const CAT_LABELS = {
+    season: t('dashCalLegendSeason'), event: t('dashCalLegendEvent'),
+    candle: t('dashCalLegendCandle'), revisit: t('dashCalLegendRevisit'),
+  };
+  const monthNameOnly = LANG === 'en'
+    ? new Intl.DateTimeFormat('en-US', { month: 'long' }).format(now)
+    : `${month + 1}月`;
 
   const dow = LANG === 'en' ? ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] : ['日', '月', '火', '水', '木', '金', '土'];
   let cellsHtml = '';
@@ -2853,11 +2869,15 @@ function pfDashCalendarHtml(data) {
     const key = `${year}-${month}-${d}`;
     const cats = marks.get(key);
     const isToday = key === todayKey;
+    const catList = cats ? CAT_ORDER.filter(c => cats.has(c)).map(c => CAT_LABELS[c]) : [];
+    const dayLabel = (LANG === 'en' ? `${monthNameOnly} ${d}` : `${monthNameOnly}${d}日`)
+      + (catList.length ? `: ${catList.join(', ')}` : '');
+    const dayLabelAttr = escapeHtml(dayLabel);
     // ドットが0個の日でも<span>自体は常に描画する（中身だけ空にする）。ここを条件で
     // 丸ごと省略すると、1行(日付のみ)と2行(日付+ドット)でflex中央寄せの結果位置が変わり、
     // ドットのある日とない日で日付の縦位置がズレてしまうため。
     const dotsHtml = `<span class="dash-cal-dots">${CAT_ORDER.filter(c => cats && cats.has(c)).map(c => `<i class="dash-cal-dot ${c}"></i>`).join('')}</span>`;
-    cellsHtml += `<div class="dash-cal-day${isToday ? ' is-today' : ''}"><span class="dash-cal-daynum">${d}</span>${dotsHtml}</div>`;
+    cellsHtml += `<div class="dash-cal-day${isToday ? ' is-today' : ''}" title="${dayLabelAttr}" aria-label="${dayLabelAttr}"><span class="dash-cal-daynum">${d}</span>${dotsHtml}</div>`;
   }
   const monthLabel = LANG === 'en'
     ? new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(now)
@@ -3037,6 +3057,11 @@ async function pfDashOpen() {
     if (!pfDashLoading) pfDashLoading = pfDashLoadData();
     const data = await pfDashLoading;
     pfDashCache = data;
+    // 🩹 フェッチ待ちの間にダッシュボードが閉じられている可能性がある（開いて即座に
+    // 閉じた等）。キャッシュ自体は次回開いた時のために保存しつつ、見えていない
+    // #dashBodyの再構築とタイマー起動はスキップする（放置するとタイマーだけが
+    // 起動してしまい、再度開かれるまでバックグラウンドで毎秒動き続けるリークになる）。
+    if (!document.getElementById('dashModalOverlay').classList.contains('open')) return;
     body.innerHTML = pfDashBuildHtml(data);
     pfDashStartTimer();
   } catch (e) {
