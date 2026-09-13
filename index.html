@@ -814,7 +814,7 @@
     .pf-modal-overlay.open, .modal-overlay.open { animation: iosFade 0.32s cubic-bezier(0.25, 1, 0.5, 1); }
     .pf-modal-overlay.is-closing, .modal-overlay.is-closing { display: flex; pointer-events: none; }
     .pf-modal-card, .modal-card {
-      width: 100%; max-width: 100%; max-height: 88vh; max-height: 88dvh;
+      width: 100%; max-width: 720px; max-height: 88vh; max-height: 88dvh;
       border-radius: 20px 20px 0 0;
       box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.25);
       position: relative; overscroll-behavior: contain;
@@ -822,10 +822,12 @@
       animation: none;
       transition: transform 0.32s cubic-bezier(0.25, 1, 0.5, 1);
     }
-    @media (min-width: 560px) {
-      .pf-modal-card, .modal-card { max-width: 600px; }
-      #settingsModal .modal-card { max-width: 360px; }
-    }
+    /* 🖥️ デスクトップレイアウト統一: item/wings/companion等と同じ720px→(850pxで)960pxの
+       ワイド基準に統一する（旧: このサイト独自だった560pxで600pxという値を是正）。
+       Settingsモーダルだけは、この統一とは独立した本サイト従来からの判断として
+       360pxに狭めたままにする（他の姉妹サイトの大半とも一致する設計のため維持）。 */
+    @media (min-width: 850px) { .pf-modal-card, .modal-card { max-width: 960px; } }
+    @media (min-width: 560px) { #settingsModal .modal-card { max-width: 360px; } }
     .pf-modal-overlay.open .pf-modal-card, .modal-overlay.open .modal-card {
       animation: sheetSlideUp 0.32s cubic-bezier(0.25, 1, 0.5, 1);
     }
@@ -2348,16 +2350,22 @@ function pfSyncCurrencyToggleUI() {
 }
 
 function pfOpenModal() {
+  // 既に開いている場合は何もしない（ここでガードしないとtrapPush側のトリガー参照が
+  // モーダル内の要素で上書きされ、閉じたときにフォーカスの戻し先を見失う）
+  if (document.getElementById('pfModalOverlay').classList.contains('open')) return;
+  pfCloseOtherTopLevelOverlays('pfModalOverlay');
   pfEditingId = null;
   pfDeletingId = null;
   pfRenderModal();
   pfRenderCurrency();
   document.getElementById('pfModalOverlay').classList.add('open');
+  trapPush('pfModalOverlay', document.querySelector('#pfModalOverlay .pf-modal-card'));
 }
 function pfCloseModal() {
   pfEditingId = null;
   pfDeletingId = null;
   document.getElementById('pfModalOverlay').classList.remove('open');
+  trapPop('pfModalOverlay');
 }
 
 /* ================================================================
@@ -2367,14 +2375,19 @@ function pfCloseModal() {
    companion・spirit-catalog 等すべてのデータが対象になる。
    ================================================================ */
 function dmOpenModal() {
+  // 🪆 プロフィールモーダルの中から開かれるネストしたモーダルのため、他のトップ
+  // レベルオーバーレイを閉じる必要はない（trapPushがスタックに積むので、閉じる
+  // ときは自動的にプロフィールモーダルのトラップへ戻る）。
   document.getElementById('dmStatus').textContent = '';
   document.getElementById('dmImportConfirmArea').innerHTML = '';
   dmWipeConfirming = false;
   dmRenderWipeArea();
   document.getElementById('dmModalOverlay').classList.add('open');
+  trapPush('dmModalOverlay', document.querySelector('#dmModalOverlay .pf-modal-card'));
 }
 function dmCloseModal() {
   document.getElementById('dmModalOverlay').classList.remove('open');
+  trapPop('dmModalOverlay');
 }
 
 function dmExport() {
@@ -3061,7 +3074,12 @@ function pfDashStopTimer() {
   if (pfDashTimer) { clearInterval(pfDashTimer); pfDashTimer = null; }
 }
 async function pfDashOpen() {
+  // 既に開いている場合は何もしない（ここでガードしないとtrapPush側のトリガー参照が
+  // モーダル内の要素で上書きされ、閉じたときにフォーカスの戻し先を見失う）
+  if (document.getElementById('dashModalOverlay').classList.contains('open')) return;
+  pfCloseOtherTopLevelOverlays('dashModalOverlay');
   document.getElementById('dashModalOverlay').classList.add('open');
+  trapPush('dashModalOverlay', document.querySelector('#dashModalOverlay .pf-modal-card'));
   pfSyncReminderUI(); // ブラウザ側の通知許可状態が変わっている可能性があるため開くたびに再同期
   const body = document.getElementById('dashBody');
   if (pfDashCache) { pfDashRebuildBody(body, pfDashCache); pfDashStartTimer(); return; }
@@ -3085,6 +3103,7 @@ async function pfDashOpen() {
 function pfDashClose() {
   document.getElementById('dashModalOverlay').classList.remove('open');
   pfDashStopTimer();
+  trapPop('dashModalOverlay');
 }
 
 /* ================================================================
@@ -3338,12 +3357,18 @@ function pfConfirmDeleteInline(id) { pfDeletingId = null; deleteProfile(id); }
    サイドバー開閉（モバイル）
    ================================================================ */
 function openSidebarMobile() {
+  // 既に開いている場合は何もしない（ここでガードしないとtrapPush側のトリガー参照が
+  // ドロワー内の要素で上書きされ、閉じたときにフォーカスの戻し先を見失う）
+  if (document.getElementById('sidebar').classList.contains('mobile-open')) return;
+  pfCloseOtherTopLevelOverlays('sidebar');
   document.getElementById('sidebar').classList.add('mobile-open');
   document.getElementById('sidebarOverlay').classList.add('show');
+  trapPush('sidebar', document.getElementById('sidebar'));
 }
 function closeSidebarMobile() {
   document.getElementById('sidebar').classList.remove('mobile-open');
   document.getElementById('sidebarOverlay').classList.remove('show');
+  trapPop('sidebar');
 }
 
 /* ================================================================
@@ -4029,10 +4054,98 @@ function pfCollectCrossToolTitles(profileId) {
 }
 
 /* ================================================================
+   ♿ 全モーダル共通のフォーカストラップ（wingsのtrapPush/trapPopと同じ仕組み）。
+   開いている間はTab/Shift+Tabがモーダルの外＝背後のページへ逃げないようにし、
+   閉じたら開く前にフォーカスしていたトリガー要素へ戻す。スタック方式のため、
+   プロフィールモーダルの上からバックアップモーダルを開く…のような多重ネスト
+   にも自動的に対応できる。
+   ================================================================ */
+const trapStack = [];
+let trapListenerAttached = false;
+
+// モーダル内でTab移動の対象になる要素（表示されているものだけ）を取得する
+function trapFocusableEls(container) {
+  const all = container.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  );
+  return Array.prototype.filter.call(all, el => el.offsetParent !== null);
+}
+
+// Tabキーがモーダルの外（＝背後のページ）に出ていかないよう、スタック最上段の
+// カードの先頭/末尾要素で折り返す
+function trapKeydown(e) {
+  if (e.key !== 'Tab' || !trapStack.length) return;
+  const card = trapStack[trapStack.length - 1].card;
+  const focusable = trapFocusableEls(card);
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (e.shiftKey) {
+    if (document.activeElement === first || !card.contains(document.activeElement)) {
+      e.preventDefault();
+      last.focus();
+    }
+  } else {
+    if (document.activeElement === last || !card.contains(document.activeElement)) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+}
+
+// overlayIdをキーにカードへフォーカスを移し、Tabトラップのスタックに積む。同じ
+// overlayIdが既にスタックにある（＝多重呼び出し）場合は何もしない
+// （トリガー参照の上書き防止。各open関数側のガードと同じ考え方）。
+function trapPush(overlayId, card) {
+  if (!card || trapStack.some(s => s.overlayId === overlayId)) return;
+  trapStack.push({ overlayId, card, prevFocusEl: document.activeElement });
+  if (!trapListenerAttached) {
+    document.addEventListener('keydown', trapKeydown, true);
+    trapListenerAttached = true;
+  }
+  const focusable = trapFocusableEls(card);
+  (focusable[0] || card).focus();
+}
+
+// overlayIdをスタックから取り除き、そのモーダルを開く前にフォーカスしていた要素
+// （トリガー）へフォーカスを戻す。document.contains()は、トリガーが別のオーバーレイの
+// 再描画等で既にDOMから失われていた場合に備えた安全策。
+function trapPop(overlayId) {
+  const idx = trapStack.findIndex(s => s.overlayId === overlayId);
+  if (idx === -1) return;
+  const [entry] = trapStack.splice(idx, 1);
+  if (!trapStack.length && trapListenerAttached) {
+    document.removeEventListener('keydown', trapKeydown, true);
+    trapListenerAttached = false;
+  }
+  if (entry.prevFocusEl && typeof entry.prevFocusEl.focus === 'function' && document.contains(entry.prevFocusEl)) {
+    entry.prevFocusEl.focus();
+  }
+}
+
+// プロフィール／ダッシュボード／表示設定／「他のツール」ドロワーの4つは下部ドックや
+// 「?」ショートカットからいつでも独立して開けるため、他のどれかが開いたままもう1つを
+// 開くとオーバーレイ同士が重なってしまう。開く前に、開こうとしているもの以外を閉じておく
+// （各close関数は未オープン時は何もしない安全な関数）。バックアップモーダル等、これらの
+// 中から更に開くネストしたモーダルはここでは対象にしない（意図的なネスト表示のため）。
+function pfCloseOtherTopLevelOverlays(exceptId) {
+  if (exceptId !== 'settingsModal' && document.getElementById('settingsModal').classList.contains('open')) closeSettingsModal();
+  if (exceptId !== 'dashModalOverlay' && document.getElementById('dashModalOverlay').classList.contains('open')) pfDashClose();
+  if (exceptId !== 'pfModalOverlay' && document.getElementById('pfModalOverlay').classList.contains('open')) pfCloseModal();
+  if (exceptId !== 'sidebar' && document.getElementById('sidebar').classList.contains('mobile-open')) closeSidebarMobile();
+}
+
+/* ================================================================
    汎用モーダル・トースト（アイテム所持率管理と同じ仕組み）
    ================================================================ */
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  trapPush(id, document.querySelector('#' + id + ' .modal-card'));
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  trapPop(id);
+}
 
 /* ================================================================
    📅 入手履歴モーダル
@@ -4101,6 +4214,11 @@ function renderAcquireLog() {
 
 // ── ⚙️ 表示設定モーダル（ダークモード切替／キーボードショートカット設定） ──
 function openSettingsModal() {
+  // 既に開いている場合は何もしない（「?」ショートカットは他のモーダルが開いているか
+  // 確認せず呼ばれるため、ここでガードしないとtrapPush側のトリガー参照がモーダル内の
+  // 要素で上書きされ、閉じたときにフォーカスの戻し先を見失う）
+  if (document.getElementById('settingsModal').classList.contains('open')) return;
+  pfCloseOtherTopLevelOverlays('settingsModal');
   updateSettingsModalUI();
   openModal('settingsModal');
 }
