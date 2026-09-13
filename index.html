@@ -3110,6 +3110,15 @@ async function pfDashOpen() {
     if (!document.getElementById('dashModalOverlay').classList.contains('open')) return;
     body.innerHTML = pfDashBuildHtml(data);
     pfDashStartTimer();
+    // 🩹 trapPush()の初期フォーカスはこのawait前（＝読み込み中プレースホルダのみで
+    // カレンダーsummary等の実コンテンツがまだ存在しない状態）に走ってしまっている
+    // ため、フェッチ完了で実コンテンツに差し替わった今、改めて先頭のフォーカス可能
+    // 要素へフォーカスし直す（companionダッシュボードと同種の初期フォーカス競合対策）。
+    const dashCard = document.querySelector('#dashModalOverlay .pf-modal-card');
+    if (dashCard) {
+      const dashFocusable = trapFocusableEls(dashCard);
+      (dashFocusable[0] || dashCard).focus();
+    }
   } catch (e) {
     console.error('pfDashOpen', e);
     body.innerHTML = `<div class="dash-empty">${t('dashLoadFailed')}</div>`;
@@ -4081,7 +4090,7 @@ let trapListenerAttached = false;
 // モーダル内でTab移動の対象になる要素（表示されているものだけ）を取得する
 function trapFocusableEls(container) {
   const all = container.querySelectorAll(
-    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])'
   );
   return Array.prototype.filter.call(all, el => el.offsetParent !== null);
 }
@@ -4138,16 +4147,22 @@ function trapPop(overlayId) {
   }
 }
 
-// プロフィール／ダッシュボード／表示設定／「他のツール」ドロワーの4つは下部ドックや
-// 「?」ショートカットからいつでも独立して開けるため、他のどれかが開いたままもう1つを
-// 開くとオーバーレイ同士が重なってしまう。開く前に、開こうとしているもの以外を閉じておく
-// （各close関数は未オープン時は何もしない安全な関数）。バックアップモーダル等、これらの
-// 中から更に開くネストしたモーダルはここでは対象にしない（意図的なネスト表示のため）。
+// プロフィール／ダッシュボード／表示設定／「他のツール」ドロワー／カスタマイズ共有／
+// 入手履歴／画像保存プレビューの7つは、メイン画面の各所（下部ドック・サイドバーの
+// ボタン・「?」ショートカット）からいつでも独立して開けるため、他のどれかが開いた
+// ままもう1つを開くとオーバーレイ同士が重なってしまう。開く前に、開こうとしている
+// もの以外を閉じておく（各close関数は未オープン時は何もしない安全な関数）。
+// バックアップモーダル・ホーム画面アイコンカスタマイズモーダルは、それぞれ
+// プロフィールモーダル・表示設定モーダルの中からのみ開かれる意図的なネスト
+// （後者は開く前に親のモーダルを自分で閉じる）のため、ここでは対象にしない。
 function pfCloseOtherTopLevelOverlays(exceptId) {
   if (exceptId !== 'settingsModal' && document.getElementById('settingsModal').classList.contains('open')) closeSettingsModal();
   if (exceptId !== 'dashModalOverlay' && document.getElementById('dashModalOverlay').classList.contains('open')) pfDashClose();
   if (exceptId !== 'pfModalOverlay' && document.getElementById('pfModalOverlay').classList.contains('open')) pfCloseModal();
   if (exceptId !== 'sidebar' && document.getElementById('sidebar').classList.contains('mobile-open')) closeSidebarMobile();
+  if (exceptId !== 'customizeModal' && document.getElementById('customizeModal').classList.contains('open')) closeModal('customizeModal');
+  if (exceptId !== 'acquireLogModal' && document.getElementById('acquireLogModal').classList.contains('open')) closeModal('acquireLogModal');
+  if (exceptId !== 'imagePreviewModal' && document.getElementById('imagePreviewModal').classList.contains('open')) closeModal('imagePreviewModal');
 }
 
 /* ================================================================
@@ -4169,6 +4184,7 @@ function closeModal(id) {
    所持状態（OWNED_KEY側）には一切触れない。
    ================================================================ */
 function openAcquireLog() {
+  pfCloseOtherTopLevelOverlays('acquireLogModal');
   openModal('acquireLogModal');
   renderAcquireLog();
 }
@@ -4554,6 +4570,7 @@ function saveShareCustomize(theme, showIcons) {
 
 function openCustomizeModal() {
   if (getStats().total === 0) return;
+  pfCloseOtherTopLevelOverlays('customizeModal');
   const saved = loadShareCustomize();
   document.getElementById('themeSwatchRow').innerHTML = Object.keys(SHARE_THEMES).map(key => `
     <button type="button" class="theme-swatch ${key === saved.theme ? 'selected' : ''}" data-theme="${key}"
@@ -4708,6 +4725,7 @@ async function tryShareImage(canvas, filename, text) {
 }
 
 function openImagePreview(dataUrl, filename, shareText) {
+  pfCloseOtherTopLevelOverlays('imagePreviewModal');
   document.getElementById('previewImg').src = dataUrl;
   const link = document.getElementById('previewDownloadLink');
   link.href = dataUrl;
