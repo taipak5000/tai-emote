@@ -778,7 +778,12 @@
        position/top/border-bottom等はここで明示的に上書きする（top:autoが特に必須。
        指定しないと上部navのtop:0が漏れて全画面高さになってしまう）。 */
     .site-dock {
-      display: flex; position: fixed; top: auto; left: 0; right: 0; bottom: 0; z-index: 90;
+      /* 🩹 z-index: オーバーレイ背景(.pf-modal-overlay/.modal-overlay:1000 / .sidebar-overlay:499)
+         より低いままだと、オーバーレイが開いている間ドックがクリックを奪われ、別のドック
+         アイコンをタップしても「現在のオーバーレイを閉じるだけ」になり、意図したオーバーレイ
+         への一発切り替えができなかった。ドックは常にクリック可能であるべきなので、全オーバー
+         レイ背景より上に置く。 */
+      display: flex; position: fixed; top: auto; left: 0; right: 0; bottom: 0; z-index: 1001;
       padding: 6px 10px calc(8px + env(safe-area-inset-bottom));
       background: var(--card); border-bottom: none;
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -4163,6 +4168,13 @@ function pfCloseOtherTopLevelOverlays(exceptId) {
   if (exceptId !== 'customizeModal' && document.getElementById('customizeModal').classList.contains('open')) closeModal('customizeModal');
   if (exceptId !== 'acquireLogModal' && document.getElementById('acquireLogModal').classList.contains('open')) closeModal('acquireLogModal');
   if (exceptId !== 'imagePreviewModal' && document.getElementById('imagePreviewModal').classList.contains('open')) closeModal('imagePreviewModal');
+  // 🩹 dmModalOverlay（バックアップ）とiconCustomModal（アイコンカスタマイズ）は、
+  // 開く側の経路が既に自分の親モーダルを閉じている（またはprofileモーダルの上に
+  // 意図的にネストする）ためここでの登録が漏れていたが、グローバル'?'ショートカット
+  // はそのクリック連鎖を経由せずsettingsOpenModal相当を直接呼ぶため、これらが開いた
+  // ままだと設定モーダルがその上に積み重なってしまう。閉じられる側として登録する。
+  if (exceptId !== 'dmModalOverlay' && document.getElementById('dmModalOverlay').classList.contains('open')) dmCloseModal();
+  if (exceptId !== 'iconCustomModal' && document.getElementById('iconCustomModal').classList.contains('open')) closeModal('iconCustomModal');
 }
 
 /* ================================================================
@@ -4311,11 +4323,18 @@ function closeTopmostOpenModal() {
   if (fn) fn(); else el.classList.remove('open');
 }
 
+// 🩹 input要素はtypeを問わず一律「入力中」扱いにしていたため、type=colorのような
+// 実際には'?'や'd'をリテラル文字として受け付けない入力（チェックボックス/ラジオ/
+// レンジ/カラー/ボタン等）にフォーカスがあるだけでショートカットが死んでいた。
+// 実際に文字を打ち込めるtypeだけを「入力中」とみなす。
+const FT_NON_TEXT_INPUT_TYPES = ['checkbox', 'radio', 'range', 'color', 'button', 'submit', 'reset', 'file', 'image', 'hidden'];
+
 document.addEventListener('keydown', function (e) {
   if (e.repeat) return;
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const evTarget = e.target;
-  const isTyping = evTarget && (evTarget.tagName === 'INPUT' || evTarget.tagName === 'TEXTAREA' || evTarget.tagName === 'SELECT' || evTarget.isContentEditable);
+  const isTextInput = evTarget && evTarget.tagName === 'INPUT' && FT_NON_TEXT_INPUT_TYPES.indexOf((evTarget.type || '').toLowerCase()) === -1;
+  const isTyping = evTarget && (isTextInput || evTarget.tagName === 'TEXTAREA' || evTarget.tagName === 'SELECT' || evTarget.isContentEditable);
 
   if (e.key === 'Escape') {
     // Escapeはテキスト入力中でもsky_shortcuts_enabledの設定に関わらず常に有効

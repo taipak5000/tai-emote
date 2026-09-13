@@ -9,7 +9,7 @@
 //
 // キャッシュを作り直したい場合はCACHE_VERSIONの文字列を上げるだけでよい。
 // 古いバージョンのキャッシュはactivate時に自動で破棄される。
-const CACHE_VERSION = 'v9'; // v9: ダッシュボードsummaryのフォーカストラップ対応・初期フォーカス競合修正・オーバーレイ排他制御の対象追加
+const CACHE_VERSION = 'v10'; // v10: isTypingガードのinput type判定・オーバーレイ排他制御へdmModalOverlay/iconCustomModal追加・site-dockのz-index引き上げ
 const CACHE_NAME = `emote-shell-${CACHE_VERSION}`;
 
 // self.registration.scope（このSWが登録されているディレクトリ）からの相対パスで解決する。
