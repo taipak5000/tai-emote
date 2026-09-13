@@ -2803,14 +2803,21 @@ function pfDashCalendarBarItems(data, year, month) {
     return colorMap.get(name);
   }
 
-  function pushItems(schedule, name) {
+  // colorKeyは省略時はnameと同じ（季節・イベント・キャンドル2倍は各々名前が一意なので
+  // それで十分）。再訪精霊だけは表示名が全スケジュール共通の汎用文言（「再訪精霊」）に
+  // なるため、nameで色分けすると同時に2つ以上の再訪スケジュールが表示された際に
+  // 別スケジュールなのに同じ色になってしまう。そのためpushItemsの呼び出し側で
+  // スケジュールオブジェクトごとに一意なcolorKeyを明示的に渡す（表示テキストは
+  // 変えず、色分けのキーだけをスケジュール単位にする）。
+  function pushItems(schedule, name, colorKey) {
+    const key = colorKey !== undefined ? colorKey : name;
     pfDashOccurrencesInRange(schedule, rangeStart, rangeEnd).forEach(o => {
       const clipStart = o.start && o.start > rangeStart ? o.start : rangeStart;
       const clipEnd = o.end < rangeEnd ? o.end : rangeEnd;
       if (clipEnd < clipStart) return;
       items.push({
         name,
-        color: colorFor(name),
+        color: colorFor(key),
         startDay: clipStart.getDate(),
         endDay: clipEnd.getDate(),
         // 実際の開始/終了がこの月の表示範囲内にあるかどうか（範囲外なら、その端は
@@ -2831,7 +2838,15 @@ function pfDashCalendarBarItems(data, year, month) {
   }
   (data.eventSchedule || []).forEach(ev => pushItems(ev, dashEventName(ev.name)));
   (data.candleBonusSchedule || []).forEach(ev => pushItems(ev, dashEventName(ev.name)));
-  (data.revisitSchedules || []).forEach(sch => pushItems(sch, t('dashRevisitSpirit')));
+  (data.revisitSchedules || []).forEach((sch, idx) => pushItems(
+    sch,
+    t('dashRevisitSpirit'),
+    // 表示名は共通の汎用文言のままにしつつ、色だけは「どの来訪スケジュール由来か」で
+    // 一意に決める。起点日+周期（周期的な再訪）または開始日+終了日（一回限りの来訪団）の
+    // 組み合わせは各スケジュールを安定して一意に識別できるが、念のため配列インデックスも
+    // 足して同一構成のスケジュールが将来追加されても衝突しないようにする。
+    `revisit:${idx}:${sch.anchorStart || sch.start || ''}:${sch.intervalDays || ''}:${sch.anchorEnd || sch.end || ''}`
+  ));
 
   // 開始日が早い順、同じ開始日なら長い予定を優先してレーンに割り当てる
   // （長い予定ほど上のレーンに固定されやすくなり、月をまたいでも位置が安定しやすい）

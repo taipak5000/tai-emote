@@ -9,7 +9,7 @@
 //
 // キャッシュを作り直したい場合はCACHE_VERSIONの文字列を上げるだけでよい。
 // 古いバージョンのキャッシュはactivate時に自動で破棄される。
-const CACHE_VERSION = 'v7'; // v7: モーダル幅をitem基準の720/960pxに統一し、全モーダル共通のフォーカストラップとオーバーレイ排他制御を追加
+const CACHE_VERSION = 'v8'; // v8: ダッシュボードカレンダーの再訪精霊バーの色分けキーをスケジュール単位に変更（表示名共通による同時表示時の色衝突を修正）
 const CACHE_NAME = `emote-shell-${CACHE_VERSION}`;
 
 // self.registration.scope（このSWが登録されているディレクトリ）からの相対パスで解決する。
