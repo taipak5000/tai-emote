@@ -9,7 +9,7 @@
 //
 // キャッシュを作り直したい場合はCACHE_VERSIONの文字列を上げるだけでよい。
 // 古いバージョンのキャッシュはactivate時に自動で破棄される。
-const CACHE_VERSION = 'v5'; // v5: ダッシュボードにイベントカレンダー機能を追加
+const CACHE_VERSION = 'v6'; // v6: ダッシュボードカレンダーをドット+凡例からGoogleカレンダー風の複数日バー表示に刷新
 const CACHE_NAME = `emote-shell-${CACHE_VERSION}`;
 
 // self.registration.scope（このSWが登録されているディレクトリ）からの相対パスで解決する。
