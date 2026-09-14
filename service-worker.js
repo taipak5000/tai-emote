@@ -9,7 +9,7 @@
 //
 // キャッシュを作り直したい場合はCACHE_VERSIONの文字列を上げるだけでよい。
 // 古いバージョンのキャッシュはactivate時に自動で破棄される。
-const CACHE_VERSION = 'v12'; // v12: カレンダーの開始日バーも半分幅にし日中開始であることを視覚的に伝えるよう改善
+const CACHE_VERSION = 'v13'; // v13: プロフィールバー(.pf-bar-text)を非フォーカス可能なspanからキーボード操作可能なボタン相当に変更し、フォーカストラップのトリガー参照corruption(document.bodyへ逃げる問題)を修正
 const CACHE_NAME = `emote-shell-${CACHE_VERSION}`;
 
 // self.registration.scope（このSWが登録されているディレクトリ）からの相対パスで解決する。

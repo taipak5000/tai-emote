@@ -153,6 +153,12 @@
     }
     .pf-bar b { color: var(--blue); font-weight: 700; }
     .pf-bar-text { flex: 1; min-width: 0; cursor: pointer; }
+    /* 🩹 spirit-catalogの.spirit-cardと同じ理由で追加：tabindexを持たない非フォーカス
+       可能要素をクリックすると、ブラウザはフォーカスを当てずdocument.body等へ逃がす。
+       trapPush()はopenModal()実行時点のdocument.activeElementを「開く前にフォーカス
+       していたトリガー」として保存するため、この要素自体がフォーカスされないと
+       trapPop()での復帰先を見失う（詳細はpfOpenModal()呼び出し側のHTML付近のコメント）。 */
+    .pf-bar-text:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: var(--r-sm); }
     .pf-dash-btn { background: var(--bg); border: 1px solid var(--sep); color: var(--text-2);
       border-radius: 6px; padding: 5px 10px; font-size: 14px; cursor: pointer; flex-shrink: 0; line-height: 1; }
     .pf-dash-btn:hover { background: var(--sep); }
@@ -2514,7 +2520,7 @@ function pfRenderBar() {
   const bar = document.getElementById('pfBar');
   if (bar) {
     bar.innerHTML = `
-      <span class="pf-bar-text" onclick="pfOpenModal()"><b>${escapeHtml(pfDisplayName(profile))}</b> ${t('pfBarActiveSuffix')}</span>
+      <span class="pf-bar-text" tabindex="0" role="button" onclick="pfOpenModal()" onkeydown="if(event.target===event.currentTarget&&(event.key==='Enter'||event.key===' ')){event.preventDefault();pfOpenModal();}"><b>${escapeHtml(pfDisplayName(profile))}</b> ${t('pfBarActiveSuffix')}</span>
       <button type="button" class="pf-dash-btn" onclick="pfDashOpen()" title="${escapeAttr(t('pfDashBtnTitle'))}"><svg class="inline-icon" width="15" height="15"><use href="#i-calendar"/></svg></button>`;
   }
   // 🧭 画面下部ドックの「プロフィール」ボタンにも、現在アクティブなプロフィール名を表示する
