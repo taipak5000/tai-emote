@@ -4175,6 +4175,19 @@ let trapListenerAttached = false;
 // trapPop()自身のフォーカス復元を止めておく（Escape等ユーザーが直接1つだけ閉じる
 // 通常のpopでは、このフラグは立たないので今までどおり即座に復元される）。
 let pfSuppressTrapFocusRestore = 0;
+// overlayIdをキーに、そのオーバーレイを直接開ける下部ドックの自分自身のボタンを引く。
+// trapPop()のフォールバック時、「見えているドックへならどこでも逃がす」よりも
+// 「閉じようとしていたオーバーレイ自身の開閉ボタン」に戻す方が文脈として自然なため
+// （例：ダッシュボードを閉じたらダッシュボードのドックボタンへ）。ドックに直接の
+// ボタンを持たないオーバーレイ（バックアップモーダルやアイコンカスタマイズ等、他の
+// モーダルの中からしか開けないもの）はここに含めず、汎用フォールバック（ドックの
+// 先頭ボタン）に委ねる。
+const OVERLAY_SELF_DOCK_SELECTOR = {
+  pfModalOverlay: '.site-dock [onclick^="pfOpenModal"]',
+  dashModalOverlay: '.site-dock [onclick^="pfDashOpen"]',
+  sidebar: '.site-dock [onclick^="openSidebarMobile"]',
+  settingsModal: '.site-dock [onclick^="openSettingsModal"]',
+};
 
 // モーダル内でTab移動の対象になる要素（表示されているものだけ）を取得する
 function trapFocusableEls(container) {
@@ -4225,7 +4238,8 @@ function trapPush(overlayId, card) {
 // 再描画等で既にDOMから失われていた場合に備えた安全策。offsetParentのチェックは、
 // トリガーがDOM上には残っているものの（例：別のオーバーレイの中の要素）、その
 // オーバーレイ自体が閉じてdisplay:noneになりフォーカス不可能になっているケースに
-// 備えたもの——この場合は無言で失敗させず、常に見えている下部ドックへ安全に逃がす。
+// 備えたもの——この場合は無言で失敗させず、そのオーバーレイ自身のドックボタン
+// （無ければドックの先頭ボタン）へ安全に逃がす。
 function trapPop(overlayId) {
   const idx = trapStack.findIndex(s => s.overlayId === overlayId);
   if (idx === -1) return;
@@ -4239,7 +4253,8 @@ function trapPop(overlayId) {
   if (el && typeof el.focus === 'function' && document.contains(el) && el.offsetParent !== null) {
     el.focus();
   } else {
-    const fallback = document.querySelector('.site-dock button, .site-dock a');
+    const selfSelector = OVERLAY_SELF_DOCK_SELECTOR[overlayId];
+    const fallback = (selfSelector && document.querySelector(selfSelector)) || document.querySelector('.site-dock button, .site-dock a');
     if (fallback) fallback.focus();
   }
 }
