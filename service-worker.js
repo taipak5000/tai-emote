@@ -9,7 +9,7 @@
 //
 // キャッシュを作り直したい場合はCACHE_VERSIONの文字列を上げるだけでよい。
 // 古いバージョンのキャッシュはactivate時に自動で破棄される。
-const CACHE_VERSION = 'v16'; // v16: trapPop()のフォールバック先をドック先頭ボタン固定からオーバーレイ自身のドックボタンへ改善
+const CACHE_VERSION = 'v17'; // v17: サイドバー関連ツール一覧に再訪精霊データベース(tai-revisit)を羽トラッカーの直後に追加
 const CACHE_NAME = `emote-shell-${CACHE_VERSION}`;
 
 // self.registration.scope（このSWが登録されているディレクトリ）からの相対パスで解決する。
