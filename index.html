@@ -311,11 +311,17 @@
     .pf-currency-title { font-size: 12px; font-weight: 700; color: var(--text-2); margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.4px;
       display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
     .pf-currency-toggle-label { font-size: 11px; font-weight: 700; text-transform: none; letter-spacing: 0; }
-    .pf-currency-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 5px 2px; }
-    .pf-currency-label { font-size: 13px; color: var(--text); }
-    .pf-currency-input { width: 90px; background: var(--bg); border: 1px solid var(--sep); border-radius: 6px;
+    .pf-currency-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 2px;
+      border-bottom: 0.5px solid var(--sep); }
+    .pf-currency-row:last-child { border-bottom: none; }
+    .pf-currency-label { font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 5px; }
+    .pf-currency-input-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+    .pf-currency-input { width: 96px; background: var(--bg); border: 1px solid var(--sep); border-radius: 6px;
       padding: 6px 8px; font-size: 14px; color: var(--text); font-family: inherit; outline: none; box-sizing: border-box; text-align: right; }
     .pf-currency-input:focus { border-color: var(--orange); }
+    /* 桁数が大きい値でも読み間違えないよう、type=numberでは表示できない3桁区切り済みの値を
+       入力欄の下に補助表示する（1000未満は素の入力欄だけで十分読めるため出さない）。 */
+    .pf-currency-preview { font-size: 10.5px; color: var(--text-3); line-height: 1; min-height: 11px; padding-right: 2px; }
 
     /* ── Layout ───────────────────────── */
     .app-layout { max-width: 720px; margin: 0 auto; padding: 0 16px; }
@@ -1329,6 +1335,12 @@
       <button type="button" class="action-btn secondary" id="settingsThemeToggleBtn" onclick="toggleTheme()"></button>
     </div>
 
+    <div class="customize-section-label" data-i18n="settingsTitlesSectionLabel"><svg class="inline-icon" width="15" height="15"><use href="#i-trophy"/></svg> 称号</div>
+    <label class="customize-toggle-opt">
+      <input type="checkbox" id="settingsTitlesVisible" onchange="onSettingsTitlesVisibleToggle(this.checked)">
+      <span data-i18n="settingsTitlesVisibleLabel">称号を表示する</span>
+    </label>
+
     <div class="customize-section-label" data-i18n="settingsShortcutsSectionLabel"><svg class="inline-icon" width="15" height="15"><use href="#i-keyboard"/></svg> キーボードショートカット</div>
     <label class="customize-toggle-opt">
       <input type="checkbox" id="settingsShortcutsEnabled" onchange="onSettingsShortcutsToggle(this.checked)">
@@ -1646,6 +1658,8 @@ const I18N = {
     settingsThemeAriaDark: '現在のテーマ: ダーク（クリックでシステムに従うへ切り替え）',
     settingsThemeAriaSystem: '現在のテーマ: システムに従う（クリックでライトに切り替え）',
     settingsLangSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-globe"/></svg> 言語 / Language',
+    settingsTitlesSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-trophy"/></svg> 称号',
+    settingsTitlesVisibleLabel: '称号を表示する',
     settingsShortcutsSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-keyboard"/></svg> キーボードショートカット',
     settingsShortcutsEnableLabel: 'ショートカットを有効にする',
     settingsShortcutOpenSettings: 'この設定を開く',
@@ -1938,6 +1952,8 @@ const I18N = {
     settingsThemeAriaDark: 'Current theme: Dark (click to switch to Follow System)',
     settingsThemeAriaSystem: 'Current theme: Follow System (click to switch to Light)',
     settingsLangSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-globe"/></svg> Language',
+    settingsTitlesSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-trophy"/></svg> Titles',
+    settingsTitlesVisibleLabel: 'Show titles',
     settingsShortcutsSectionLabel: '<svg class="inline-icon" width="15" height="15"><use href="#i-keyboard"/></svg> Keyboard Shortcuts',
     settingsShortcutsEnableLabel: 'Enable keyboard shortcuts',
     settingsShortcutOpenSettings: 'Open this settings panel',
@@ -2093,6 +2109,17 @@ function skyShortcutsEnabled() {
 }
 function setSkyShortcutsEnabled(on) {
   try { localStorage.setItem(SHORTCUTS_KEY, on ? '1' : '0'); } catch (e) {}
+}
+
+// 🏆 称号の表示/非表示（端末単位の設定。THEME_KEY/SHORTCUTS_KEYと同様、プロフィールには
+// 依存しないnamespaceしないキーにする）。未設定時（値がnull）はデフォルトで表示する。
+const TITLES_VISIBLE_KEY = 'sky_titles_visible';
+function skyTitlesVisible() {
+  const v = localStorage.getItem(TITLES_VISIBLE_KEY);
+  return v === null ? true : v === '1';
+}
+function setSkyTitlesVisible(on) {
+  try { localStorage.setItem(TITLES_VISIBLE_KEY, on ? '1' : '0'); } catch (e) {}
 }
 
 /* ================================================================
@@ -2350,6 +2377,19 @@ function pfPlainNumberForInput(n) {
   if (!Number.isFinite(n)) return '0';
   return n.toLocaleString('en-US', { useGrouping: false, maximumFractionDigits: 0 });
 }
+// 🩹 入力欄(type=number)は桁区切りを表示できないため、1,000以上の値だけ
+// 「= 12,345」のような3桁区切り済みの表示を入力欄の下に補助表示する
+// （読み間違い防止。1,000未満はひと目で読めるので出さない）。
+function pfCurrencyPreviewText(n) {
+  n = Math.max(0, Math.trunc(Number(n) || 0));
+  if (n < 1000) return '';
+  return '= ' + n.toLocaleString(LANG === 'en' ? 'en-US' : 'ja-JP');
+}
+function pfUpdateCurrencyPreview(input) {
+  const wrap = input.closest('.pf-currency-input-wrap');
+  const preview = wrap && wrap.querySelector('.pf-currency-preview');
+  if (preview) preview.textContent = pfCurrencyPreviewText(input.value);
+}
 function pfRenderCurrency() {
   const body = document.getElementById('pfCurrencyBody');
   if (!body) return;
@@ -2357,8 +2397,12 @@ function pfRenderCurrency() {
   body.innerHTML = PF_CURRENCY_FIELDS.map(f => `
     <div class="pf-currency-row">
       <span class="pf-currency-label">${f.icon} ${t(f.labelKey)}</span>
-      <input type="number" min="0" class="pf-currency-input" value="${pfPlainNumberForInput(c[f.key])}"
-        onchange="pfSaveCurrencyField('${f.key}', this.value)">
+      <span class="pf-currency-input-wrap">
+        <input type="number" min="0" inputmode="numeric" class="pf-currency-input" value="${pfPlainNumberForInput(c[f.key])}"
+          onfocus="this.select()" oninput="pfUpdateCurrencyPreview(this)"
+          onchange="pfSaveCurrencyField('${f.key}', this.value)">
+        <span class="pf-currency-preview">${pfCurrencyPreviewText(c[f.key])}</span>
+      </span>
     </div>`).join('');
   pfSyncCurrencyToggleUI();
 }
@@ -3409,10 +3453,12 @@ function pfRenderModal() {
     const colorVal = pfIsSafeColor(p.color) ? p.color : '#FF9500';
 
     // 🏆 全ツール横断の称号（プロフィールを切り替えなくても、そのプロフィールIDのまま
-    // 各ツールのlocalStorageを直接読んで獲得済みの称号数・一覧を出す）
+    // 各ツールのlocalStorageを直接読んで獲得済みの称号数・一覧を出す）。表示設定
+    // （⚙️ 表示設定モーダルの「称号を表示する」）がOFFの間はこの行自体を出さない。
     const isTitlesExpanded = pfTitlesExpandedIds.has(p.id);
-    const crossTitles = pfCollectCrossToolTitles(p.id);
-    const titlesToggleHtml = `
+    const titlesToggleHtml = skyTitlesVisible() ? (() => {
+      const crossTitles = pfCollectCrossToolTitles(p.id);
+      return `
         <button type="button" class="pf-titles-toggle" aria-expanded="${isTitlesExpanded ? 'true' : 'false'}"
           onclick="pfToggleProfileTitles('${p.id}')">
           <span>${t('pfTitlesToggleTemplate', { n: crossTitles.length })}</span>
@@ -3427,6 +3473,7 @@ function pfRenderModal() {
                 <span class="pf-title-line-body"><span class="pf-title-line-name">${escapeHtml(x.name)}</span> — ${escapeHtml(x.desc)}<span class="pf-title-line-source">${escapeHtml(x.source)}</span></span>
               </div>`).join('')}</div>`
         ) : ''}`;
+    })() : '';
 
     return `
       <div class="pf-row ${isActive ? 'active' : ''}" style="flex-wrap: wrap;">
@@ -3886,11 +3933,15 @@ function checkTitles(stats) {
   });
   if (newly.length > 0) {
     saveTitles(earned);
-    if (newly.length === 1) {
-      showToast(t('titleUnlockToastTemplate', { name: L({ ja: newly[0].name, en: newly[0].nameEn }) }));
-    } else {
-      const names = newly.map(x => L({ ja: x.name, en: x.nameEn })).join('、');
-      showToast(t('titleUnlockToastMultiTemplate', { n: newly.length, names }));
+    // 🏆 称号の解除・保存自体は表示設定に関わらず常に行う（非表示中に条件を満たした分を
+    // 後から表示ONにした時に取りこぼさないため）。トースト通知だけ表示設定に従わせる。
+    if (skyTitlesVisible()) {
+      if (newly.length === 1) {
+        showToast(t('titleUnlockToastTemplate', { name: L({ ja: newly[0].name, en: newly[0].nameEn }) }));
+      } else {
+        const names = newly.map(x => L({ ja: x.name, en: x.nameEn })).join('、');
+        showToast(t('titleUnlockToastMultiTemplate', { n: newly.length, names }));
+      }
     }
   }
   return earned;
@@ -3898,6 +3949,8 @@ function checkTitles(stats) {
 
 function renderTitles(stats) {
   const earned = checkTitles(stats);
+  const panel = document.getElementById('titlesPanel');
+  if (panel) panel.style.display = skyTitlesVisible() ? '' : 'none';
   const row = document.getElementById('titlesChipRow');
   const countEl = document.getElementById('titlesCount');
   if (!row || !countEl) return;
@@ -4408,6 +4461,8 @@ function updateSettingsModalUI() {
   }
   const cb = document.getElementById('settingsShortcutsEnabled');
   if (cb) cb.checked = skyShortcutsEnabled();
+  const titlesCb = document.getElementById('settingsTitlesVisible');
+  if (titlesCb) titlesCb.checked = skyTitlesVisible();
   const langJaBtn = document.getElementById('settingsLangJaBtn');
   const langEnBtn = document.getElementById('settingsLangEnBtn');
   if (langJaBtn && langEnBtn) {
@@ -4416,6 +4471,14 @@ function updateSettingsModalUI() {
   }
 }
 function onSettingsShortcutsToggle(checked) { setSkyShortcutsEnabled(checked); }
+// 🏆 称号の表示/非表示トグル。設定変更を即座に画面へ反映する：現在表示中の称号パネルと、
+// プロフィール切替モーダルが同時に開いていた場合はその中の称号トグル行も再描画する。
+function onSettingsTitlesVisibleToggle(checked) {
+  setSkyTitlesVisible(checked);
+  const panel = document.getElementById('titlesPanel');
+  if (panel) panel.style.display = checked ? '' : 'none';
+  if (document.getElementById('pfModalOverlay').classList.contains('open')) pfRenderModal();
+}
 
 /* ================================================================
    ⌨️ グローバルキーボードショートカット（'?' で表示設定を開く／'D' でダーク
