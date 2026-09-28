@@ -432,6 +432,11 @@
       outline: 2px solid var(--focus-ring); outline-offset: 1px;
     }
     .search-input::placeholder { color: var(--text-3); }
+    /* 🩹 iOS Safariの自動ズーム防止（16px未満だとフォーカス時にズームインし解除されず固定される）。
+       .select-boxはselect要素とも共有しているため、テキスト入力であるこちらだけを上書き。
+       16pxへの引き上げで狭い画面幅ではプレースホルダーが入力欄からはみ出すようになったため、
+       あわせてellipsis省略も付与（はみ出し自体は解消しないが唐突な尻切れを避けられる）。 */
+    .search-input { font-size: 16px; overflow: hidden; text-overflow: ellipsis; }
 
     .list-header-row {
       display: flex; align-items: center; justify-content: space-between;
@@ -737,7 +742,7 @@
     }
     .customize-comment-input {
       width: 100%; box-sizing: border-box; border: 1px solid var(--sep);
-      border-radius: var(--r-sm); padding: 10px 12px; font-size: 13.5px;
+      border-radius: var(--r-sm); padding: 10px 12px; font-size: 16px;
       font-family: inherit; color: var(--text); resize: vertical; min-height: 60px;
       background: var(--bg);
     }
