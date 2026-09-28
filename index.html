@@ -268,14 +268,14 @@
     body { background: linear-gradient(var(--pf-tint-rgb, transparent), var(--pf-tint-rgb, transparent)), var(--bg) !important; }
     .pf-add-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
     .pf-input { flex: 1; min-width: 0; background: var(--bg); border: 1px solid var(--sep); border-radius: 6px;
-      padding: 8px 10px; font-size: 14px; color: var(--text); font-family: inherit; outline: none; box-sizing: border-box; }
+      padding: 8px 10px; font-size: 16px; color: var(--text); font-family: inherit; outline: none; box-sizing: border-box; }
     .pf-add-btn { background: var(--blue-solid); color: #fff; border: none; border-radius: 6px; padding: 8px 14px;
       font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; }
     .pf-hint { font-size: 11.5px; color: var(--text-2); line-height: 1.5; margin: 12px 0 0; }
     .pf-close-btn { display: block; width: 100%; margin-top: 16px; background: var(--bg); border: 1px solid var(--sep);
       color: var(--text); border-radius: var(--r-sm); padding: 10px; font-size: 14px; cursor: pointer; }
     .pf-row-input { flex: 1; min-width: 0; background: var(--bg); border: 1px solid var(--blue); border-radius: 6px;
-      padding: 6px 8px; font-size: 14px; color: var(--text); font-family: inherit; outline: none; box-sizing: border-box; }
+      padding: 6px 8px; font-size: 16px; color: var(--text); font-family: inherit; outline: none; box-sizing: border-box; }
     /* flex-basis:100%にすることで、この要素は親.pf-row（flex-wrap:wrap指定時）の中で
        必ず自分の行いっぱいに広がる＝ボタン列より先に単独で折り返される。素の flex:1
        （flex-basis:0%相当）だと横幅の希望値が0扱いになり、ボタンと同じ行に押し込まれて
@@ -317,7 +317,7 @@
     .pf-currency-label { font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 5px; }
     .pf-currency-input-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
     .pf-currency-input { width: 96px; background: var(--bg); border: 1px solid var(--sep); border-radius: 6px;
-      padding: 6px 8px; font-size: 14px; color: var(--text); font-family: inherit; outline: none; box-sizing: border-box; text-align: right; }
+      padding: 6px 8px; font-size: 16px; color: var(--text); font-family: inherit; outline: none; box-sizing: border-box; text-align: right; }
     .pf-currency-input:focus { border-color: var(--orange); }
     /* 桁数が大きい値でも読み間違えないよう、type=numberでは表示できない3桁区切り済みの値を
        入力欄の下に補助表示する（1000未満は素の入力欄だけで十分読めるため出さない）。 */
